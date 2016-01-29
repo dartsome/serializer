@@ -5,7 +5,35 @@
 
 library serializer.base;
 
-/// Checks if you are awesome. Spoiler: you are.
-class Awesome {
-  bool get isAwesome => true;
+import "dart:convert";
+import "package:reflectable/reflectable.dart";
+
+part "api.dart";
+part "convert.dart";
+
+const String type_info_key = "@dart_type";
+
+class Serializable extends Reflectable {
+  const Serializable()
+      : super.fromList(const [
+          invokingCapability,
+          typeCapability,
+          typingCapability,
+          superclassQuantifyCapability,
+          newInstanceCapability,
+          reflectedTypeCapability,
+          libraryCapability,
+          instanceInvokeCapability
+        ]);
+}
+
+const serializable = const Serializable();
+
+initSerializer({Type max_superclass: Serialize}) {
+  Serializer.max_superclass_type = max_superclass;
+  for (ClassMirror classMirror in serializable.annotatedClasses) {
+    if (classMirror != null && classMirror.qualifiedName != null) {
+      Serializer.classes[classMirror.qualifiedName.split(".").last] = classMirror;
+    }
+  }
 }

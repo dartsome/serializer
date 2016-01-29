@@ -6,6 +6,4 @@ library serializer.example;
 import 'package:serializer/serializer.dart';
 
 main() {
-  var awesome = new Awesome();
-  print('awesome: ${awesome.isAwesome}');
 }

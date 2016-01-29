@@ -6,6 +6,4 @@
 /// This is an awesome library. More dartdocs go here.
 library serializer;
 
-// TODO: Export any libraries intended for clients of this package.
-
 export 'src/serializer_base.dart';
