@@ -1,19 +1,6 @@
 # serializer
 
-A library for Dart developers. It is awesome.
+Serializer to JSON using reflectable.
 
-## Usage
+[Example](https://github.com/walletek/serializer/tree/master/example)
 
-A simple usage example:
-
-    import 'package:serializer/serializer.dart';
-
-    main() {
-      var awesome = new Awesome();
-    }
-
-## Features and bugs
-
-Please file feature requests and bugs at the [issue tracker][tracker].
-
-[tracker]: http://example.com/issues/replaceme

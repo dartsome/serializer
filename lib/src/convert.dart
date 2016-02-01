@@ -47,7 +47,7 @@ List _fromList(List list, Type type) {
 }
 
 Object _fromMap(Map json, Type type) {
-  if (json?.isEmpty) {
+  if (json == null || json.isEmpty) {
     return null;
   }
   json.remove(type_info_key);
@@ -135,7 +135,7 @@ Map _toMap(Object obj) {
 
   data[type_info_key] = obj.runtimeType.toString();
 
-  while (cm.superclass != null &&
+  while (cm != null && cm.superclass != null &&
       cm.reflectedType != Serializer.max_superclass_type) {
     cm.declarations.forEach((String key, DeclarationMirror dec) {
       if ((dec is VariableMirror && _isSerializableVariable(dec)) ||
@@ -152,7 +152,7 @@ Map _toMap(Object obj) {
         }
       }
     });
-    cm = cm.superclass;
+    cm = cm?.superclass;
   }
   return data;
 }
