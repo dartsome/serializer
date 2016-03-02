@@ -14,8 +14,22 @@ abstract class Proxy extends Serialize {}
 abstract class ProxyA extends Proxy {}
 
 @serializable
+class ModelInt extends ProxyA {
+  int _bar;
+
+
+  int get bar => _bar;
+  set bar(int value) => _bar = value;
+
+  ModelInt([this._bar = 42]);
+
+
+}
+
+@serializable
 class ModelA extends ProxyA {
   String _foo;
+
 
   String get foo => _foo;
   set foo(String value) => _foo = value;
@@ -76,7 +90,7 @@ main() {
     test("Map to Map", () {
       Map a = {"test": "toto", "titi": new ModelA()};
       String json = Serializer.toJson(a);
-      expect('{"test":"toto","titi":"{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"}","@dart_type":"_InternalLinkedHashMap"}', json);
+      expect('{"test":"toto","titi":{"@dart_type":"ModelA","foo":"bar"},"@dart_type":"_InternalLinkedHashMap"}', json);
     });
 
     test("list", () {

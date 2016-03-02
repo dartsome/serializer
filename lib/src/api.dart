@@ -4,10 +4,11 @@
 
 part of serializer.base;
 
+@serializable
 abstract class Serialize {
   Map get toMap => Serializer.toMap(this);
   String toString() => toMap.toString();
-  String toJson() => Serializer.toJson(this);
+  String toJson() => JSON.encode(toMap);
 }
 
 class Serializer {

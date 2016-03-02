@@ -37,3 +37,9 @@ initSerializer({Type max_superclass: Serialize}) {
     }
   }
 }
+
+class Ignore {
+  const Ignore();
+}
+
+const ignore = const Ignore();
