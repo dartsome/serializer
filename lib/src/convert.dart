@@ -128,6 +128,8 @@ List _convertList(List list) {
   return _list;
 }
 
+bool _isValidGetterName(String name) =>/* name != 'toString' && */name != 'toMap' && name != 'toJson';
+
 Map _toMap(Object obj) {
   if (obj == null || obj is List) {
     return null;
@@ -158,7 +160,7 @@ Map _toMap(Object obj) {
     cm.declarations.forEach((String key, DeclarationMirror dec) {
       if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
               (dec is MethodMirror && dec.isGetter)) &&
-          !_asMetadata(dec, Ignore)) {
+          !_asMetadata(dec, Ignore) && _isValidGetterName(dec.simpleName)) {
         var value = mir.invokeGetter(dec.simpleName);
         if (_isObjPrimaryType(value)) {
           data[key] = value;

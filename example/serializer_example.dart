@@ -26,7 +26,7 @@ main() async {
   ModelA a = new ModelA("toto", 15);
   ModelB b = new ModelB("Paris", "France");
 
-  print(b.toJson());
+  print(b.toJson);
   print(b.toMap);
 
   print(Serializer.toJson(a));

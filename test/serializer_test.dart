@@ -22,8 +22,6 @@ class ModelInt extends ProxyA {
   set bar(int value) => _bar = value;
 
   ModelInt([this._bar = 42]);
-
-
 }
 
 @serializable

@@ -1,6 +1,6 @@
 name: serializer
 description: Serialization to JSON using reflectable
-version: 0.1.5
+version: 0.1.6
 author: Walletek <hadrien.lejard@gmail.com>
 homepage: https://github.com/walletek/serializer
 
