@@ -172,9 +172,9 @@ main() {
 
     test("Datetime", () {
       Date date = new Date(new DateTime(2016, 1, 1));
-      expect({"@dart_type": "Date", "date": "2016-01-01 00:00:00.000"},
+      expect({"@dart_type": "Date", "date": "2016-01-01T00:00:00.000"},
           date.toMap());
-      expect('{"@dart_type":"Date","date":"2016-01-01 00:00:00.000"}',
+      expect('{"@dart_type":"Date","date":"2016-01-01T00:00:00.000"}',
           date.toJson());
     });
 
@@ -280,10 +280,10 @@ main() {
 
     test("Datetime", () {
       Date date = Serializer.fromJson(
-          '{"@dart_type":"Date","date":"2016-01-01 00:00:00.000"}', Date);
+          '{"@dart_type":"Date","date":"2016-01-01T00:00:00.000"}', Date);
 
-      expect("2016-01-01 00:00:00.000", date.date.toString());
-      expect('{"@dart_type":"Date","date":"2016-01-01 00:00:00.000"}',
+      expect("2016-01-01T00:00:00.000", date.date.toIso8601String());
+      expect('{"@dart_type":"Date","date":"2016-01-01T00:00:00.000"}',
           date.toJson());
     });
   });
