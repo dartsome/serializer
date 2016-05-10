@@ -158,7 +158,7 @@ Map _toMap(Object obj) {
         } else if (value is List) {
           data[key] = _convertList(value);
         } else if (value is DateTime) {
-          data[key] = value.toString();
+          data[key] = value.toIso8601String();
         }
       }
     });
