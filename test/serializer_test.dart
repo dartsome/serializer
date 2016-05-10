@@ -8,6 +8,10 @@ import "dart:convert";
 import "package:test/test.dart";
 import "package:serializer/serializer.dart";
 
+abstract class DontWantToBeSerialize {
+  String foo = "bar";
+}
+
 @serializable
 abstract class Serialize {
   Map toMap() => Serializer.toMap(this);
@@ -79,8 +83,13 @@ class Date extends ProxyA {
   Date([this.date]);
 }
 
+@serializable
+class TestMaxSuperClass extends DontWantToBeSerialize {
+  String serialize = "okay";
+}
+
 main() {
-  initSerializer();
+  initSerializer(max_superclass: DontWantToBeSerialize);
 
 
   group("Serialize", () {
@@ -174,6 +183,14 @@ main() {
           date.toMap());
       expect('{"@dart_type":"Date","date":"2016-01-01 00:00:00.000"}',
           date.toJson());
+    });
+
+    test("Max Superclass", () {
+      TestMaxSuperClass _test = new TestMaxSuperClass();
+      expect(
+          '{"@dart_type":"TestMaxSuperClass","serialize":"okay"}',
+          Serializer.toJson(_test));
+      expect({"@dart_type":"TestMaxSuperClass","serialize":"okay"}, Serializer.toMap(_test));
     });
   });
 
