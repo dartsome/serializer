@@ -120,7 +120,6 @@ List _convertList(List list) {
       elem = _convertList(elem);
     } else if (elem is Map ||
         elem is Serialize ||
-        _isObjPrimaryType(elem) ||
         Serializer.classes.containsKey(elem.runtimeType.toString())) {
       elem = _toMap(elem);
     }

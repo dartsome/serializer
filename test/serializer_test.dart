@@ -101,7 +101,7 @@ main() {
           json);
     });
 
-    test("inner list", () {
+    test("inner list 1", () {
       List<ModelA> list = [new ModelA("toto"), new ModelA()];
       ModelD test = new ModelD(list);
       String json = test.toJson();
@@ -109,6 +109,12 @@ main() {
       expect(
           '{"@dart_type":"ModelD","tests":["{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"toto\\"}","{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"}"]}',
           json);
+    });
+
+    test("inner list 2", () {
+      ModelE e = new ModelE(["toto","bar"]);
+
+      expect('{"@dart_type":"ModelE","tests":["toto","bar"]}', e.toJson());
     });
 
     test("inner class non-serializable", () {
