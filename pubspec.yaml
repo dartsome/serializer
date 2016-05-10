@@ -12,3 +12,12 @@ dependencies:
 
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'
+
+transformers:
+  - reflectable:
+      entry_points:
+        - example/**_example.dart
+        - test/**_test.dart
+  - test/pub_serve:
+      $include:
+        - test/**_test.dart
