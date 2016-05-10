@@ -82,7 +82,7 @@ main() {
 
       expect("{@dart_type: ModelA, foo: toto}", a.toString());
       expect('{"@dart_type":"ModelA","foo":"toto"}', a.toJson());
-      expect({"@dart_type": "ModelA", "foo": "toto"}, a.toMap);
+      expect({"@dart_type": "ModelA", "foo": "toto"}, a.toMap());
     });
 
     test("Map to Map", () {
@@ -120,7 +120,7 @@ main() {
     test("inner class non-serializable", () {
       ModelB b = new ModelB();
       expect('{"@dart_type":"ModelB","toto":"tata"}', b.toJson());
-      expect({"@dart_type": "ModelB", "toto": "tata"}, b.toMap);
+      expect({"@dart_type": "ModelB", "toto": "tata"}, b.toMap());
     });
 
     test("inner class serializable", () {
@@ -132,7 +132,7 @@ main() {
         "@dart_type": "ModelC",
         "foo": {"@dart_type": "ModelA", "foo": "bar"},
         "plop": "titi"
-      }, c.toMap);
+      }, c.toMap());
     });
 
     test("list class non-serializable", () {
@@ -164,7 +164,7 @@ main() {
     test("Datetime", () {
       Date date = new Date(new DateTime(2016, 1, 1));
       expect({"@dart_type": "Date", "date": "2016-01-01 00:00:00.000"},
-          date.toMap);
+          date.toMap());
       expect('{"@dart_type":"Date","date":"2016-01-01 00:00:00.000"}',
           date.toJson());
     });

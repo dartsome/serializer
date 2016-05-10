@@ -38,7 +38,7 @@ main() async {
   ModelC c = new ModelC("Alice", "ThereIsNone", 42);
 
   print(b.toJson());
-  print(b.toMap);
+  print(b.toMap());
   print(c.toJson());
 
   print(Serializer.toJson(a));
