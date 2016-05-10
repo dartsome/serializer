@@ -9,6 +9,13 @@ import "package:test/test.dart";
 import "package:serializer/serializer.dart";
 
 @serializable
+abstract class Serialize {
+  Map toMap() => Serializer.toMap(this);
+  String toString() => toMap().toString();
+  String toJson() => Serializer.toJson(this);
+}
+
+@serializable
 abstract class Proxy extends Serialize {}
 
 abstract class ProxyA extends Proxy {}

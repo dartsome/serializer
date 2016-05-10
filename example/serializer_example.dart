@@ -6,6 +6,13 @@ library serializer.example;
 import 'package:serializer/serializer.dart';
 
 @serializable
+abstract class Serialize {
+  Map toMap() => Serializer.toMap(this);
+  String toString() => toMap().toString();
+  String toJson() => Serializer.toJson(this);
+}
+
+@serializable
 class ModelA {
   String name;
   num age;

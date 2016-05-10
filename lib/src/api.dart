@@ -4,16 +4,8 @@
 
 part of serializer.base;
 
-@serializable
-abstract class Serialize {
-  Map toMap() => Serializer.toMap(this);
-  String toString() => toMap().toString();
-  String toJson() => Serializer.toJson(this);
-}
-
 class Serializer {
   static final Map<String, ClassMirror> classes = <String, ClassMirror>{};
-  static Type max_superclass_type = Serialize;
   static Map toMap(Object obj) => _toMap(obj);
   static String toJson(Object obj) => _toJson(obj);
   static Object fromJson(String json, Type type) => _fromJson(json, type);
