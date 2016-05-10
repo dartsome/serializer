@@ -18,16 +18,6 @@ Type _decodeType(String name) {
   return classMirror?.dynamicReflectedType;
 }
 
-String findGenericOfList(Type type) {
-  String str = type.toString();
-  RegExp reg = new RegExp(r"^List<(.*)>$");
-  Iterable<Match> matches = reg.allMatches(str);
-  if (matches == null || matches.isEmpty) {
-    return null;
-  }
-  return matches.first.group(1);
-}
-
 List _fromList(List list, Type type) {
   List _list = new List.from(list);
 
@@ -61,7 +51,6 @@ Object _fromMap(Map json, Type type) {
     return null;
   }
   json.remove(type_info_key);
-  json.remove("useCache");
 
   if (type == Map) {
     return new Map.from(json);
