@@ -88,7 +88,8 @@ main() {
     test("Map to Map", () {
       Map a = {"test": "toto", "titi": new ModelA()};
       String json = Serializer.toJson(a);
-      expect('{"test":"toto","titi":{"@dart_type":"ModelA","foo":"bar"},"@dart_type":"_InternalLinkedHashMap"}', json);
+      String mapType = (new Map()).runtimeType.toString();
+      expect('{"test":"toto","titi":{"@dart_type":"ModelA","foo":"bar"},"@dart_type":"' + mapType + '"}', json);
     });
 
     test("list", () {

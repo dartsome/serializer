@@ -20,14 +20,26 @@ class ModelB extends Serialize {
   ModelB([this.city, this.country]);
 }
 
+@serializable
+class ModelC extends Serialize {
+  String name, password;
+
+  @ignore
+  int age;
+
+  ModelC([this.name, this.password, this.age]);
+}
+
 main() async {
   await initSerializer();
 
   ModelA a = new ModelA("toto", 15);
   ModelB b = new ModelB("Paris", "France");
+  ModelC c = new ModelC("Alice", "ThereIsNone", 42);
 
-  print(b.toJson);
+  print(b.toJson());
   print(b.toMap);
+  print(c.toJson());
 
   print(Serializer.toJson(a));
   print(Serializer.toMap(a));
@@ -35,5 +47,4 @@ main() async {
   ModelA A = Serializer.fromJson(Serializer.toJson(a), ModelA);
 
   print(Serializer.toJson(A));
-
 }
