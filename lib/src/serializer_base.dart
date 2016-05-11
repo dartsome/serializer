@@ -11,7 +11,7 @@ import "package:reflectable/reflectable.dart";
 part "api.dart";
 part "convert.dart";
 
-const String type_info_key = "@dart_type";
+String _type_info_key;
 
 class Serializable extends Reflectable {
   const Serializable()
@@ -29,7 +29,8 @@ class Serializable extends Reflectable {
 
 const serializable = const Serializable();
 
-initSerializer() {
+initSerializer({String type_info_key: "@type"}) {
+  _type_info_key = type_info_key;
   for (ClassMirror classMirror in serializable.annotatedClasses) {
     if (classMirror != null
         && classMirror.simpleName != null

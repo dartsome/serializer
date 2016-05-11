@@ -92,7 +92,7 @@ class TestMaxSuperClass extends DontWantToBeSerialize {
 }
 
 main() {
-  initSerializer();
+  initSerializer(type_info_key: "@dart_type");
 
 
   group("Serialize", () {

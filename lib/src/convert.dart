@@ -29,8 +29,8 @@ List _fromList(List list, Type type) {
       _list[i] = JSON.decode(_list[i]);
     }
     Type _type = type;
-    if (_list[i] is Map && _list[i].containsKey(type_info_key)) {
-      _type = _decodeType(_list[i][type_info_key]);
+    if (_list[i] is Map && _list[i].containsKey(_type_info_key)) {
+      _type = _decodeType(_list[i][_type_info_key]);
     }
     _list[i] = _decode(_list[i], _type ?? type);
   }
@@ -50,7 +50,7 @@ Object _fromMap(Map json, Type type) {
   if (json == null || json.isEmpty) {
     return null;
   }
-  json.remove(type_info_key);
+  json.remove(_type_info_key);
 
   if (type == Map) {
     return new Map.from(json);
@@ -125,7 +125,7 @@ Map _toMap(Object obj) {
   }
   if (obj is Map) {
     Map data = new Map.from(obj);
-    data[type_info_key] = obj.runtimeType.toString();
+    data[_type_info_key] = obj.runtimeType.toString();
     data.forEach((key, value) {
       if (value is List) {
         data[key] = _convertList(value);
@@ -140,7 +140,7 @@ Map _toMap(Object obj) {
   ClassMirror cm = mir.type;
   Map data = new Map();
 
-  data[type_info_key] = obj.runtimeType.toString();
+  data[_type_info_key] = obj.runtimeType.toString();
 
   while (cm != null
       && cm.superclass != null
