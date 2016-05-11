@@ -4,7 +4,6 @@
 
 library serializer.test;
 
-import "dart:convert";
 import "package:test/test.dart";
 import "package:serializer/serializer.dart";
 
@@ -108,7 +107,7 @@ main() {
       Map a = {"test": "toto", "titi": new ModelA()};
       String json = Serializer.toJson(a);
       String mapType = (new Map()).runtimeType.toString();
-      expect('{"test":"toto","titi":{"@dart_type":"ModelA","foo":"bar"},"@dart_type":"' + mapType + '"}', json);
+      expect('{"@dart_type":"' + mapType + '","test":"toto","titi":{"@dart_type":"ModelA","foo":"bar"}}', json);
     });
 
     test("list", () {
@@ -116,7 +115,7 @@ main() {
 
       String json = Serializer.toJson(list);
       expect(
-          '["{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"toto\\"}","{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"}"]',
+          '[{"@dart_type":"ModelA","foo":"toto"},{"@dart_type":"ModelA","foo":"bar"}]',
           json);
     });
 
@@ -126,7 +125,7 @@ main() {
       String json = test.toJson();
 
       expect(
-          '{"@dart_type":"ModelD","tests":["{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"toto\\"}","{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"}"]}',
+          '{"@dart_type":"ModelD","tests":[{"@dart_type":"ModelA","foo":"toto"},{"@dart_type":"ModelA","foo":"bar"}]}',
           json);
     });
 
@@ -158,7 +157,7 @@ main() {
       List list = [new ModelB(), new ModelB()];
       String json = Serializer.toJson(list);
       expect(
-          '["{\\"@dart_type\\":\\"ModelB\\",\\"toto\\":\\"tata\\"}","{\\"@dart_type\\":\\"ModelB\\",\\"toto\\":\\"tata\\"}"]',
+          '[{"@dart_type":"ModelB","toto":"tata"},{"@dart_type":"ModelB","toto":"tata"}]',
           json);
     });
 
@@ -168,7 +167,7 @@ main() {
       String json = Serializer.toJson(listB);
       print(json);
       expect(
-          '["{\\"@dart_type\\":\\"ModelB\\",\\"toto\\":\\"tata\\"}",["{\\"@dart_type\\":\\"ModelB\\",\\"toto\\":\\"tata\\"}","{\\"@dart_type\\":\\"ModelB\\",\\"toto\\":\\"tata\\"}"]]',
+          '[{"@dart_type":"ModelB","toto":"tata"},[{"@dart_type":"ModelB","toto":"tata"},{"@dart_type":"ModelB","toto":"tata"}]]',
           json);
     });
 
@@ -176,7 +175,7 @@ main() {
       List list = [new ModelC(), new ModelC()];
       String json = Serializer.toJson(list);
       expect(
-          '["{\\"@dart_type\\":\\"ModelC\\",\\"foo\\":{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"},\\"plop\\":\\"titi\\"}","{\\"@dart_type\\":\\"ModelC\\",\\"foo\\":{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"},\\"plop\\":\\"titi\\"}"]',
+          '[{"@dart_type":"ModelC","foo":{"@dart_type":"ModelA","foo":"bar"},"plop":"titi"},{"@dart_type":"ModelC","foo":{"@dart_type":"ModelA","foo":"bar"},"plop":"titi"}]',
           json);
     });
 
@@ -232,7 +231,7 @@ main() {
 
     test("list - fromJson", () {
       List list = Serializer.fromJson(
-          '["{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"toto\\"}","{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"}"]',
+          '[{"@dart_type":"ModelA","foo":"toto"},{"@dart_type":"ModelA","foo":"bar"}]',
           ModelA);
 
       expect(2, list.length);
@@ -245,8 +244,7 @@ main() {
 
     test("list - fromList", () {
       List list = Serializer.fromList(
-          JSON.decode(
-              '["{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"toto\\"}","{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"}"]'),
+          [{"@dart_type":"ModelA","foo":"toto"},{"@dart_type":"ModelA","foo":"bar"}],
           ModelA);
 
       expect(2, list.length);
@@ -259,7 +257,7 @@ main() {
 
     test("inner list 1", () {
       ModelD test = Serializer.fromJson(
-          '{"@dart_type":"ModelD","tests":["{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"toto\\"}","{\\"@dart_type\\":\\"ModelA\\",\\"foo\\":\\"bar\\"}"]}',
+          '{"@dart_type":"ModelD","tests":[{"@dart_type":"ModelA","foo":"toto"},{"@dart_type":"ModelA","foo":"bar"}]}',
           ModelD);
 
       expect(2, test?.tests?.length);
