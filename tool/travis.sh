@@ -15,7 +15,8 @@ pub run test --pub-serve=8080 -p content-shell -p firefox
 
 # Install dart_coveralls
 # Gather and send coverage data.
-if [ "$COVERALLS_TOKEN" ] && [ "$TRAVIS_DART_VERSION" = "stable" ]; then
+# Force 1.15.0: https://github.com/duse-io/dart-coveralls/issues/55
+if [ "$COVERALLS_TOKEN" ] && [ "$TRAVIS_DART_VERSION" = "1.15.0" ]; then
   pub global activate dart_coveralls
   pub global run dart_coveralls report \
     --exclude-test-files \
