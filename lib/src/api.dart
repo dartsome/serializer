@@ -23,7 +23,7 @@ abstract class Serialize {
 /**
  * Utility class to access to the serializer api
  */
-class Serializer {
+abstract class Serializer {
   static final Map<String, ClassMirror> classes = <String, ClassMirror>{};
   //static Type max_superclass_type = Serialize;
 
