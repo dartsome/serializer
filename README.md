@@ -16,6 +16,8 @@ Serializer to JSON using reflectable.
     @serializable
     class MyModel {
         String name;
+        
+        @ignore //ignore this attribute during serialization
         num age;
     
         //constructor need to be without parameters or with optional or positional.
