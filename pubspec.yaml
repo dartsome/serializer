@@ -1,7 +1,9 @@
 name: serializer
 description: Serialization to JSON using reflectable
 version: 0.1.7
-author: Walletek <hadrien.lejard@gmail.com>
+authors:
+  - Hadrien Lejard <hadrien.lejard@gmail.com>
+
 homepage: https://github.com/walletek/serializer
 
 environment:
