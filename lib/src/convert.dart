@@ -140,10 +140,12 @@ Map _toMap(Object obj) {
 
   data[type_info_key] = obj.runtimeType.toString();
 
-  while (cm != null && cm.superclass != null) {
+  while (cm != null
+      && cm.superclass != null
+      && Serializer.classes.containsKey(cm.simpleName)) {
     cm.declarations.forEach((String key, DeclarationMirror dec) {
       if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
-              (dec is MethodMirror && dec.isGetter)) &&
+          (dec is MethodMirror && dec.isGetter)) &&
           !_asMetadata(dec, Ignore) && _isValidGetterName(dec.simpleName)) {
         var value = mir.invokeGetter(dec.simpleName);
         if (_isObjPrimaryType(value)) {

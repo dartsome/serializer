@@ -89,7 +89,7 @@ class TestMaxSuperClass extends DontWantToBeSerialize {
 }
 
 main() {
-  initSerializer(max_superclass: DontWantToBeSerialize);
+  initSerializer();
 
 
   group("Serialize", () {
