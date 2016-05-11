@@ -29,17 +29,6 @@ class Serializable extends Reflectable {
 
 const serializable = const Serializable();
 
-initSerializer({String type_info_key: "@type"}) {
-  _type_info_key = type_info_key;
-  for (ClassMirror classMirror in serializable.annotatedClasses) {
-    if (classMirror != null
-        && classMirror.simpleName != null
-        && classMirror.metadata.contains(serializable)) {
-      Serializer.classes[classMirror.simpleName] = classMirror;
-    }
-  }
-}
-
 class Ignore {
   const Ignore();
 }
