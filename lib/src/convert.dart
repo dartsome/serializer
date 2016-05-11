@@ -69,16 +69,18 @@ Object _fromMap(Map json, Type type) {
   }
 
   for (var key in json.keys) {
-    MethodMirror dec = cm.instanceMembers[key];
-    if (dec != null &&
-        _isSerializableVariable(dec) &&
-        !_asMetadata(dec, Ignore)) {
-      if (_isPrimaryType(dec.reflectedReturnType)) {
+    MethodMirror met = cm.instanceMembers[key];
+    DeclarationMirror dec = cm.declarations[key];
+    if (met != null
+        && dec != null
+        && _isSerializableVariable(met)
+        && !_asMetadata(dec, Ignore)) {
+      if (_isPrimaryType(met.reflectedReturnType)) {
         instance.invokeSetter(key, json[key]);
-      } else if (dec.reflectedReturnType == DateTime) {
+      } else if (met.reflectedReturnType == DateTime) {
         instance.invokeSetter(key, DateTime.parse(json[key]));
       } else {
-        instance.invokeSetter(key, _decode(json[key], dec.reflectedReturnType));
+        instance.invokeSetter(key, _decode(json[key], met.reflectedReturnType));
       }
     }
   }

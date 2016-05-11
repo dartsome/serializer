@@ -70,6 +70,16 @@ class ModelE extends ProxyA {
 }
 
 @serializable
+class WithIgnore extends ProxyA {
+  String a;
+  String b;
+  @ignore
+  String secret;
+
+  WithIgnore([this.a, this.b, this.secret]);
+}
+
+@serializable
 class Date extends ProxyA {
   DateTime date = new DateTime.now();
 
@@ -83,6 +93,7 @@ class TestMaxSuperClass extends DontWantToBeSerialize {
 
 main() {
   initSerializer();
+
 
   group("Serialize", () {
     test("simple test", () {
@@ -184,6 +195,14 @@ main() {
           Serializer.toJson(_test));
       expect({"@dart_type":"TestMaxSuperClass","serialize":"okay"}, Serializer.toMap(_test));
     });
+
+    test("Ignore attribute", () {
+      WithIgnore _ignore = new WithIgnore("1337", "42", "ThisIsASecret");
+      expect(
+          '{"@dart_type":"WithIgnore","a":"1337","b":"42"}',
+          Serializer.toJson(_ignore));
+      expect({"@dart_type":"WithIgnore","a":"1337","b":"42"}, Serializer.toMap(_ignore));
+    });
   });
 
   group("Deserialize", () {
@@ -284,6 +303,25 @@ main() {
       expect("2016-01-01T00:00:00.000", date.date.toIso8601String());
       expect('{"@dart_type":"Date","date":"2016-01-01T00:00:00.000"}',
           date.toJson());
+    });
+
+    test("Max Superclass", () {
+      TestMaxSuperClass _test = Serializer.fromJson(
+          '{"@dart_type":"TestMaxSuperClass","serialize":"okay","foo":"nobar"}',
+          TestMaxSuperClass);
+
+      expect("okay", _test.serialize);
+      expect("bar", _test.foo);
+    });
+
+    test("Ignore attribute", () {
+      WithIgnore _ignore = Serializer.fromJson(
+          '{"@dart_type":"WithIgnore","a":"1337","b":"42","secret":"ignore"}',
+          WithIgnore);
+
+      expect("1337", _ignore.a);
+      expect("42", _ignore.b);
+      expect(null, _ignore.secret);
     });
   });
 }
