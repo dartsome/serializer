@@ -108,7 +108,6 @@ List _convertList(List list) {
     if (elem is List) {
       elem = _convertList(elem);
     } else if (elem is Map ||
-        elem is Serialize ||
         Serializer.classes.containsKey(elem.runtimeType.toString())) {
       elem = _toMap(elem);
     }
@@ -129,7 +128,6 @@ Map _toMap(Object obj) {
       if (value is List) {
         data[key] = _convertList(value);
       } else if (value is Map ||
-          value.runtimeType is Serialize ||
           Serializer.classes.containsKey(value.runtimeType.toString())) {
         data[key] = _toMap(value);
       }
@@ -142,12 +140,12 @@ Map _toMap(Object obj) {
 
   data[type_info_key] = obj.runtimeType.toString();
 
-  while (cm != null &&
-      cm.superclass != null &&
-      cm.reflectedType != Serializer.max_superclass_type) {
+  while (cm != null
+      && cm.superclass != null
+      && Serializer.classes.containsKey(cm.simpleName)) {
     cm.declarations.forEach((String key, DeclarationMirror dec) {
       if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
-              (dec is MethodMirror && dec.isGetter)) &&
+          (dec is MethodMirror && dec.isGetter)) &&
           !_asMetadata(dec, Ignore) && _isValidGetterName(dec.simpleName)) {
         var value = mir.invokeGetter(dec.simpleName);
         if (_isObjPrimaryType(value)) {

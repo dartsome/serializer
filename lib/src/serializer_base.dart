@@ -29,11 +29,12 @@ class Serializable extends Reflectable {
 
 const serializable = const Serializable();
 
-initSerializer({Type max_superclass: Serialize}) {
-  Serializer.max_superclass_type = max_superclass;
+initSerializer() {
   for (ClassMirror classMirror in serializable.annotatedClasses) {
-    if (classMirror != null && classMirror.qualifiedName != null) {
-      Serializer.classes[classMirror.qualifiedName.split(".").last] = classMirror;
+    if (classMirror != null
+        && classMirror.simpleName != null
+        && classMirror.metadata.contains(serializable)) {
+      Serializer.classes[classMirror.simpleName] = classMirror;
     }
   }
 }
