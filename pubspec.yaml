@@ -3,6 +3,7 @@ description: Serialization to JSON using reflectable
 version: 0.2.0
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
+  - Stéphane Este-Gracias <sestegra@gmail.com>
 
 homepage: https://github.com/walletek/serializer
 
