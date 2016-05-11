@@ -69,16 +69,18 @@ Object _fromMap(Map json, Type type) {
   }
 
   for (var key in json.keys) {
-    MethodMirror dec = cm.instanceMembers[key];
-    if (dec != null &&
-        _isSerializableVariable(dec) &&
-        !_asMetadata(dec, Ignore)) {
-      if (_isPrimaryType(dec.reflectedReturnType)) {
+    MethodMirror met = cm.instanceMembers[key];
+    DeclarationMirror dec = cm.declarations[key];
+    if (met != null
+        && dec != null
+        && _isSerializableVariable(met)
+        && !_asMetadata(dec, Ignore)) {
+      if (_isPrimaryType(met.reflectedReturnType)) {
         instance.invokeSetter(key, json[key]);
-      } else if (dec.reflectedReturnType == DateTime) {
+      } else if (met.reflectedReturnType == DateTime) {
         instance.invokeSetter(key, DateTime.parse(json[key]));
       } else {
-        instance.invokeSetter(key, _decode(json[key], dec.reflectedReturnType));
+        instance.invokeSetter(key, _decode(json[key], met.reflectedReturnType));
       }
     }
   }
@@ -108,7 +110,6 @@ List _convertList(List list) {
     if (elem is List) {
       elem = _convertList(elem);
     } else if (elem is Map ||
-        elem is Serialize ||
         Serializer.classes.containsKey(elem.runtimeType.toString())) {
       elem = _toMap(elem);
     }
@@ -129,7 +130,6 @@ Map _toMap(Object obj) {
       if (value is List) {
         data[key] = _convertList(value);
       } else if (value is Map ||
-          value.runtimeType is Serialize ||
           Serializer.classes.containsKey(value.runtimeType.toString())) {
         data[key] = _toMap(value);
       }
@@ -142,12 +142,12 @@ Map _toMap(Object obj) {
 
   data[type_info_key] = obj.runtimeType.toString();
 
-  while (cm != null &&
-      cm.superclass != null &&
-      cm.reflectedType != Serializer.max_superclass_type) {
+  while (cm != null
+      && cm.superclass != null
+      && Serializer.classes.containsKey(cm.simpleName)) {
     cm.declarations.forEach((String key, DeclarationMirror dec) {
       if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
-              (dec is MethodMirror && dec.isGetter)) &&
+          (dec is MethodMirror && dec.isGetter)) &&
           !_asMetadata(dec, Ignore) && _isValidGetterName(dec.simpleName)) {
         var value = mir.invokeGetter(dec.simpleName);
         if (_isObjPrimaryType(value)) {
