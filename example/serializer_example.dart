@@ -44,7 +44,6 @@ main() async {
   print(Serializer.toJson(a));
   print(Serializer.toMap(a));
 
-  ModelA A = Serializer.fromJson(Serializer.toJson(a), ModelA);
-
+  ModelA A = Serializer.fromJson(Serializer.toJson(a));
   print(Serializer.toJson(A));
 }
