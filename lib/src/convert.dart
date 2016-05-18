@@ -4,6 +4,26 @@
 
 part of serializer.base;
 
+List<Type> _findGenericOfMap(Type type) {
+  String str = type.toString();
+  RegExp reg = new RegExp(r"^Map<(.*)\ *,\ *(.*)>$");
+  Iterable<Match> matches = reg.allMatches(str);
+  if (matches == null || matches.isEmpty) {
+    return null;
+  }
+  return [ _decodeType(matches.first.group(1)), _decodeType(matches.first.group(2))];
+}
+
+Type _findGenericOfList(Type type) {
+  String str = type.toString();
+  RegExp reg = new RegExp(r"^List<(.*)>$");
+  Iterable<Match> matches = reg.allMatches(str);
+  if (matches == null || matches.isEmpty) {
+    return null;
+  }
+  return _decodeType(matches.first.group(1));
+}
+
 bool _isSerializableVariable(DeclarationMirror vm) {
   return !vm.isPrivate;
 }
@@ -14,27 +34,29 @@ bool _isPrimaryType(Type obj) =>
     obj == num || obj == String || obj == bool || obj == int || obj == double;
 
 Type _decodeType(String name) {
-  ClassMirror classMirror = Serializer.classes[name];
-  return classMirror?.dynamicReflectedType;
+  switch (name) {
+    case "num":
+      return num;
+    case "String":
+      return String;
+    case "bool":
+      return bool;
+    case "int":
+      return int;
+    case "double":
+      return double;
+    case "DateTime":
+      return DateTime;
+    default:
+      ClassMirror classMirror = Serializer.classes[name];
+      return classMirror?.dynamicReflectedType;
+  }
 }
 
-List _fromList(List list, Type type) {
-  List _list = new List.from(list);
-
-  for (var i = 0; i < _list.length; i++) {
-    if (_list[i] is String &&
-        ((_list[i][0] == '"' && _list[i][_list[i].length - 1] == '"') ||
-            (_list[i][0] == '{' && _list[i][_list[i].length - 1] == '}') ||
-            (_list[i][0] == '[' && _list[i][_list[i].length - 1] == ']'))) {
-      _list[i] = JSON.decode(_list[i]);
-    }
-    Type _type = type;
-    if (_list[i] is Map && _list[i].containsKey(_type_info_key)) {
-      _type = _decodeType(_list[i][_type_info_key]);
-    }
-    _list[i] = _decode(_list[i], _type ?? type);
-  }
-  return _list;
+List _fromList(List list, [Type type]) {
+  List data = new List();
+  list.forEach((value) => data.add(_decode(value, type)));
+  return data;
 }
 
 bool _asMetadata(DeclarationMirror dec, Type type) {
@@ -46,16 +68,30 @@ bool _asMetadata(DeclarationMirror dec, Type type) {
   return false;
 }
 
-Object _fromMap(Map json, Type type) {
-  if (json == null || json.isEmpty) {
+Object _fromMap(Map map, [Type embedType]) {
+  if (map == null || map.isEmpty) {
     return null;
   }
-  json.remove(_type_info_key);
+  var type = _decodeType(map.remove(_type_info_key));
 
-  if (type == Map) {
-    return new Map.from(json);
+  // Only Map
+  if (type == null) {
+    Map data = new Map();
+    map.forEach((key, value){
+      if (value is Map) {
+        data[key] = _fromMap(value);
+      } else if (value is List) {
+        data[key] = _fromList(value, type);
+      } else if (embedType == DateTime) {
+        data[key] = DateTime.parse(value);
+      } else {
+        data[key] = value;
+      }
+    });
+    return data;
   }
 
+  // Class from Map
   ClassMirror cm;
   Object obj;
   InstanceMirror instance;
@@ -68,19 +104,38 @@ Object _fromMap(Map json, Type type) {
     return null;
   }
 
-  for (var key in json.keys) {
+  for (var key in map.keys) {
     MethodMirror met = cm.instanceMembers[key];
     DeclarationMirror dec = cm.declarations[key];
     if (met != null
         && dec != null
         && _isSerializableVariable(met)
         && !_asMetadata(dec, Ignore)) {
-      if (_isPrimaryType(met.reflectedReturnType)) {
-        instance.invokeSetter(key, json[key]);
-      } else if (met.reflectedReturnType == DateTime) {
-        instance.invokeSetter(key, DateTime.parse(json[key]));
-      } else {
-        instance.invokeSetter(key, _decode(json[key], met.reflectedReturnType));
+      var _type = met.reflectedReturnType;
+      if (_isPrimaryType(_type)) {
+        instance.invokeSetter(key, map[key]);
+      } else if (_type == DateTime) {
+        instance.invokeSetter(key, DateTime.parse(map[key]));
+      } else if (_type.toString().startsWith("List")) {
+        var listOf = _findGenericOfList(_type);
+        if (_isPrimaryType(listOf)) {
+          instance.invokeSetter(key, _fromList(map[key]));
+        } else if (listOf == DateTime) {
+          instance.invokeSetter(key, _fromList(map[key], DateTime));
+        } else if (Serializer.classes.containsKey(listOf.toString())) {
+          instance.invokeSetter(key, _fromList(map[key], listOf));
+        }
+      } else if (_type.toString().startsWith("Map")) {
+        var mapOf = _findGenericOfMap(_type);
+        if (_isPrimaryType(mapOf[1])) {
+          instance.invokeSetter(key, _fromMap(map[key]));
+        } else if (mapOf[1] == DateTime) {
+          instance.invokeSetter(key, _fromMap(map[key], DateTime));
+        } else {
+          instance.invokeSetter(key, _fromMap(map[key]));
+        }
+      } else if (Serializer.classes.containsKey(_type.toString())) {
+        instance.invokeSetter(key, _fromMap(map[key]));
       }
     }
   }
@@ -88,33 +143,50 @@ Object _fromMap(Map json, Type type) {
   return instance.reflectee;
 }
 
-Object _decode(Object decode, Type type) {
+Object _decode(Object decode, [Type type]) {
   if (decode is Map) {
-    return _fromMap(decode, type);
+    return _fromMap(decode);
   } else if (decode is List) {
     return _fromList(decode, type);
+  } else if (type == DateTime) {
+    return DateTime.parse(decode);
   }
   return decode;
 }
 
-Object _fromJson(String json, Type type) {
+Object _fromJson(String json) {
   if (json == null || json.isEmpty) {
     return null;
   }
-  return _decode(JSON.decode(json), type);
+  return _decode(JSON.decode(json));
 }
 
 List _convertList(List list) {
-  List _list = new List.from(list);
-  for (var elem in list) {
-    if (elem is List) {
-      elem = _convertList(elem);
-    } else if (elem is Map ||
+  return list.map((elem) {
+    if (elem is Map ||
         Serializer.classes.containsKey(elem.runtimeType.toString())) {
-      elem = _toMap(elem);
+      return _toMap(elem);
+    } else if (elem is List) {
+      return _convertList(elem);
+    } else if (elem is DateTime) {
+      return elem.toIso8601String();
+    } else if (_isObjPrimaryType(elem)) {
+      return elem;
     }
+  }).toList(growable: false);
+}
+
+_convertMap(Map data, key, value) {
+  if (value is Map ||
+      Serializer.classes.containsKey(value.runtimeType.toString())) {
+    data[key] = _toMap(value);
+  } else if (value is List) {
+    data[key] = _convertList(value);
+  } else if (value is DateTime) {
+    data[key] = value.toIso8601String();
+  } else if (_isObjPrimaryType(value)) {
+    data[key] = value;
   }
-  return _list;
 }
 
 bool _isValidGetterName(String name) =>/* name != 'toString' && */name != 'toMap' && name != 'toJson';
@@ -124,22 +196,13 @@ Map _toMap(Object obj) {
     return null;
   }
   if (obj is Map) {
-    Map data = new Map.from(obj);
-    data[_type_info_key] = obj.runtimeType.toString();
-    data.forEach((key, value) {
-      if (value is List) {
-        data[key] = _convertList(value);
-      } else if (value is Map ||
-          Serializer.classes.containsKey(value.runtimeType.toString())) {
-        data[key] = _toMap(value);
-      }
-    });
+    Map data = new Map();
+    obj.forEach((key, value) => _convertMap(data, key, value));
     return data;
   }
   InstanceMirror mir = serializable.reflect(obj);
   ClassMirror cm = mir.type;
   Map data = new Map();
-
   data[_type_info_key] = obj.runtimeType.toString();
 
   while (cm != null
@@ -149,17 +212,7 @@ Map _toMap(Object obj) {
       if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
           (dec is MethodMirror && dec.isGetter)) &&
           !_asMetadata(dec, Ignore) && _isValidGetterName(dec.simpleName)) {
-        var value = mir.invokeGetter(dec.simpleName);
-        if (_isObjPrimaryType(value)) {
-          data[key] = value;
-        } else if (value is Map ||
-            Serializer.classes.containsKey(value.runtimeType.toString())) {
-          data[key] = _toMap(value);
-        } else if (value is List) {
-          data[key] = _convertList(value);
-        } else if (value is DateTime) {
-          data[key] = value.toIso8601String();
-        }
+        _convertMap(data, key, mir.invokeGetter(dec.simpleName));
       }
     });
     cm = cm?.superclass;
