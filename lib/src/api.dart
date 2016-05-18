@@ -34,10 +34,10 @@ abstract class Serializer {
   static String toJson(Object obj) => _toJson(obj);
 
   /// Convert a JSON String
-  static Object fromJson(String json) => _fromJson(json);
+  static Object fromJson(String json, [Type type]) => _fromJson(json, type);
 
   /// Convert a Map<String, dynamic>
-  static Object fromMap(Map map) => _fromMap(map);
+  static Object fromMap(Map map, [Type type]) => _fromMap(map, type);
 
   /// Convert a JSON String list to a List of the given Type
   static Object fromList(List list, Type type) => _fromList(list, type);

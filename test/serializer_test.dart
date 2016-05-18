@@ -231,6 +231,14 @@ main() {
       expect("toto", a.foo);
     });
 
+    test("simple test - fromMap - without type field", () {
+      ModelA a =
+      Serializer.fromMap({"foo": "toto"}, ModelA);
+
+      expect(ModelA, a.runtimeType);
+      expect("toto", a.foo);
+    });
+
     test("simple test - fromMap", () {
       ModelA a =
       Serializer.fromMap({"@dart_type": "ModelA", "foo": "toto"});
@@ -238,6 +246,8 @@ main() {
       expect(ModelA, a.runtimeType);
       expect("toto", a.foo);
     });
+
+
 
     test("Map fromMap Map", () {
       Map a = {"test": "toto", "titi": new ModelA()};
@@ -350,15 +360,15 @@ main() {
           ..stringSet  = { "strA": "1", "strB": "3" }
           ..boolSet    = { "ok": true, "nok": false }
           ..intSet     = { "intA": 1, "intB": 12 }
-          ..doubleSet  = { "dblA": 1, "dblB": 12 }
+          ..doubleSet  = { "dblA": 1.0, "dblB": 12.0 }
           ..dateSet    = { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) }
           ..ignoreSet  = { "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"), "B": new WithIgnore("1337B", "42B", "ThisIsASecretB") };
       var json = Serializer.toJson(complex);
-      expect(json, '{"@dart_type":"Complex","nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},"B":{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
+      expect(json, '{"@dart_type":"Complex","nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},"B":{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
     });
 
     test("Deserialize", () {
-      Complex complex = Serializer.fromJson('{"@dart_type":"Complex","listInnerMap":{ "test": ["123456"] },"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},"B":{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}}}');
+      Complex complex = Serializer.fromJson('{"@dart_type":"Complex","listInnerMap":{"test":["123456"]},"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@dart_type":"WithIgnore","a":"1337A","b":"42A"},"B":{"@dart_type":"WithIgnore","a":"1337B","b":"42B"}}}');
 
       expect(complex.nums,    [ 1, 2.2, 3 ]);
       expect(complex.strings, [ "1", "2", "3" ]);

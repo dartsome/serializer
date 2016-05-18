@@ -72,17 +72,17 @@ Object _fromMap(Map map, [Type embedType]) {
   if (map == null || map.isEmpty) {
     return null;
   }
-  var type = _decodeType(map.remove(_type_info_key));
+  Type type = embedType ?? _decodeType(map.remove(_type_info_key)) ?? Map;
 
   // Only Map
-  if (type == null) {
+  if (type == Map || type == DateTime) {
     Map data = new Map();
-    map.forEach((key, value){
+    map.forEach((key, value) {
       if (value is Map) {
         data[key] = _fromMap(value);
       } else if (value is List) {
         data[key] = _fromList(value, type);
-      } else if (embedType == DateTime) {
+      } else if (type == DateTime) {
         data[key] = DateTime.parse(value);
       } else {
         data[key] = value;
@@ -135,7 +135,7 @@ Object _fromMap(Map map, [Type embedType]) {
           instance.invokeSetter(key, _fromMap(map[key]));
         }
       } else if (Serializer.classes.containsKey(_type.toString())) {
-        instance.invokeSetter(key, _fromMap(map[key]));
+        instance.invokeSetter(key, _fromMap(map[key], _type));
       }
     }
   }
@@ -145,7 +145,7 @@ Object _fromMap(Map map, [Type embedType]) {
 
 Object _decode(Object decode, [Type type]) {
   if (decode is Map) {
-    return _fromMap(decode);
+    return _fromMap(decode, type);
   } else if (decode is List) {
     return _fromList(decode, type);
   } else if (type == DateTime) {
@@ -154,11 +154,11 @@ Object _decode(Object decode, [Type type]) {
   return decode;
 }
 
-Object _fromJson(String json) {
+Object _fromJson(String json, [Type type]) {
   if (json == null || json.isEmpty) {
     return null;
   }
-  return _decode(JSON.decode(json));
+  return _decode(JSON.decode(json), type);
 }
 
 List _convertList(List list) {
@@ -189,7 +189,7 @@ _convertMap(Map data, key, value) {
   }
 }
 
-bool _isValidGetterName(String name) =>/* name != 'toString' && */name != 'toMap' && name != 'toJson';
+bool _isValidGetterName(String name) => /* name != 'toString' && */name != 'toMap' && name != 'toJson';
 
 Map _toMap(Object obj) {
   if (obj == null || obj is List) {
