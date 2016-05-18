@@ -4,6 +4,16 @@
 
 part of serializer.base;
 
+List<Type> _findGenericOfMap(Type type) {
+  String str = type.toString();
+  RegExp reg = new RegExp(r"^Map<(.*)\ *,\ *(.*)>$");
+  Iterable<Match> matches = reg.allMatches(str);
+  if (matches == null || matches.isEmpty) {
+    return null;
+  }
+  return [ _decodeType(matches.first.group(1)), _decodeType(matches.first.group(2))];
+}
+
 Type _findGenericOfList(Type type) {
   String str = type.toString();
   RegExp reg = new RegExp(r"^List<(.*)>$");
@@ -11,8 +21,20 @@ Type _findGenericOfList(Type type) {
   if (matches == null || matches.isEmpty) {
     return null;
   }
-  var match = matches.first.group(1);
-  switch (match) {
+  return _decodeType(matches.first.group(1));
+}
+
+bool _isSerializableVariable(DeclarationMirror vm) {
+  return !vm.isPrivate;
+}
+
+bool _isObjPrimaryType(Object obj) => _isPrimaryType(obj.runtimeType);
+
+bool _isPrimaryType(Type obj) =>
+    obj == num || obj == String || obj == bool || obj == int || obj == double;
+
+Type _decodeType(String name) {
+  switch (name) {
     case "num":
       return num;
     case "String":
@@ -26,22 +48,9 @@ Type _findGenericOfList(Type type) {
     case "DateTime":
       return DateTime;
     default:
-      return _decodeType(match);
+      ClassMirror classMirror = Serializer.classes[name];
+      return classMirror?.dynamicReflectedType;
   }
-}
-
-bool _isSerializableVariable(DeclarationMirror vm) {
-  return !vm.isPrivate;
-}
-
-bool _isObjPrimaryType(Object obj) => _isPrimaryType(obj.runtimeType);
-
-bool _isPrimaryType(Type obj) =>
-    obj == num || obj == String || obj == bool || obj == int || obj == double;
-
-Type _decodeType(String name) {
-  ClassMirror classMirror = Serializer.classes[name];
-  return classMirror?.dynamicReflectedType;
 }
 
 List _fromList(List list, [Type type]) {
@@ -59,7 +68,7 @@ bool _asMetadata(DeclarationMirror dec, Type type) {
   return false;
 }
 
-Object _fromMap(Map map) {
+Object _fromMap(Map map, [Type embedType]) {
   if (map == null || map.isEmpty) {
     return null;
   }
@@ -73,6 +82,8 @@ Object _fromMap(Map map) {
         data[key] = _fromMap(value);
       } else if (value is List) {
         data[key] = _fromList(value, type);
+      } else if (embedType == DateTime) {
+        data[key] = DateTime.parse(value);
       } else {
         data[key] = value;
       }
@@ -114,8 +125,16 @@ Object _fromMap(Map map) {
         } else if (Serializer.classes.containsKey(listOf.toString())) {
           instance.invokeSetter(key, _fromList(map[key], listOf));
         }
-      } else if (_type.toString().startsWith("Map")
-          || Serializer.classes.containsKey(_type.toString())) {
+      } else if (_type.toString().startsWith("Map")) {
+        var mapOf = _findGenericOfMap(_type);
+        if (_isPrimaryType(mapOf[1])) {
+          instance.invokeSetter(key, _fromMap(map[key]));
+        } else if (mapOf[1] == DateTime) {
+          instance.invokeSetter(key, _fromMap(map[key], DateTime));
+        } else {
+          instance.invokeSetter(key, _fromMap(map[key]));
+        }
+      } else if (Serializer.classes.containsKey(_type.toString())) {
         instance.invokeSetter(key, _fromMap(map[key]));
       }
     }
