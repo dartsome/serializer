@@ -7,6 +7,10 @@ library serializer.test;
 import "package:test/test.dart";
 import "package:serializer/serializer.dart";
 
+class TestApi extends Serializer {
+
+}
+
 abstract class DontWantToBeSerialize {
   String foo = "bar";
 }
@@ -112,6 +116,10 @@ class Complex extends ProxyA {
 main() {
   initSerializer(type_info_key: "@dart_type");
 
+  test("Test Api Serializer", () {
+    TestApi api = new TestApi();
+    expect(true, api is Serializer);
+  });
 
   group("Serialize", () {
     test("simple test", () {
