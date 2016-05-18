@@ -350,6 +350,16 @@ main() {
       expect("42", _ignore.b);
       expect(null, _ignore.secret);
     });
+
+    test("Test reflectable error", () {
+      try {
+        DontWantToBeSerialize a = Serializer.fromJson(
+            '{"foo":"bar"}', DontWantToBeSerialize);
+      } catch (e) {
+       expect(true, e is String);
+        expect("Cannot instantiate abstract class DontWantToBeSerialize: _url 'null' line null", e);
+      }
+    });
   });
 
   group("Complex", () {
