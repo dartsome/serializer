@@ -100,8 +100,7 @@ Object _fromMap(Map map, [Type embedType]) {
     obj = cm.newInstance('', []);
     instance = serializable.reflect(obj);
   } catch (e) {
-    print(e);
-    return null;
+    throw e.toString();
   }
 
   for (var key in map.keys) {

@@ -191,7 +191,6 @@ main() {
       List listA = [new ModelB(), new ModelB()];
       List listB = [new ModelB(), listA];
       String json = Serializer.toJson(listB);
-      print(json);
       expect(
           '[{"@dart_type":"ModelB","toto":"tata"},[{"@dart_type":"ModelB","toto":"tata"},{"@dart_type":"ModelB","toto":"tata"}]]',
           json);
