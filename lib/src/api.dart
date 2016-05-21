@@ -37,7 +37,7 @@ abstract class Serializer {
   static Object fromJson(String json, [Type type]) => _fromJson(json, type);
 
   /// Convert a Map<String, dynamic>
-  static Object fromMap(Map map, [Type type]) => _fromMap(map, type);
+  static Object fromMap(Map map, [Type type, List<Type> mapOf]) => _fromMap(map, type, mapOf);
 
   /// Convert a JSON String list to a List of the given Type
   static Object fromList(List list, Type type) => _fromList(list, type);
@@ -45,11 +45,8 @@ abstract class Serializer {
 
 /**
  * Init the Serializer by mapping every class annotated with @serializable
- *
- * [type_info_key] define the key use to store the type of the Dart Object inside JSON and Map
  */
-initSerializer({String type_info_key: "@type"}) {
-  _type_info_key = type_info_key;
+initSerializer() {
   for (ClassMirror classMirror in serializable.annotatedClasses) {
     if (classMirror != null
         && classMirror.simpleName != null
