@@ -43,15 +43,13 @@ Type _decodeType(String name) {
       return int;
     case "double":
       return double;
-    case "Map":
-      return Map;
-    case "List":
-      return List;
-    case "DateTime":
-      return DateTime;
     default:
-      ClassMirror classMirror = Serializer.classes[name];
-      return classMirror?.dynamicReflectedType;
+      if (Serializer.codecs.containsKey(name)) {
+        return Serializer.codecs[name].type;
+      } else {
+        ClassMirror classMirror = Serializer.classes[name];
+        return classMirror?.dynamicReflectedType;
+      }
   }
 }
 
@@ -130,8 +128,8 @@ Object _fromJson(String json, [Type type]) {
 }
 
 Object _decodeValue(Object value, Type type) {
-  if (type == DateTime) {
-    return DateTime.parse(value);
+  if (Serializer.codecs.containsKey(type.toString())) {
+    return Serializer.codecs[type.toString()].decode(value);
   } else if (type.toString().startsWith("Map")) {
     return _fromMap(value, Map, _findGenericOfMap(type));
   } else if (type.toString().startsWith("List")) {
@@ -144,13 +142,12 @@ Object _decodeValue(Object value, Type type) {
 }
 
 Object _encodeValue(value) {
-  if (value is Map ||
-      Serializer.classes.containsKey(value.runtimeType.toString())) {
+  if (Serializer.codecs.containsKey(value.runtimeType.toString())) {
+    return Serializer.codecs[value.runtimeType.toString()].encode(value);
+  } else if (value is Map || Serializer.classes.containsKey(value.runtimeType.toString())) {
     return _toMap(value);
   } else if (value is List) {
     return _encodeList(value);
-  } else if (value is DateTime) {
-    return value.toIso8601String();
   } else if (_isPrimaryType(value.runtimeType)) {
     return value;
   }

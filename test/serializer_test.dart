@@ -4,8 +4,9 @@
 
 library serializer.test;
 
-import "package:test/test.dart";
-import "package:serializer/serializer.dart";
+import 'package:test/test.dart';
+import 'package:serializer/serializer.dart';
+import 'package:serializer/codecs/date_time.dart';
 
 class TestApi extends Serializer {
 
@@ -114,7 +115,7 @@ class Complex extends ProxyA {
 }
 
 main() {
-  initSerializer();
+  initSerializer(codecs: {"DateTime": new DateTimeCodec()});
 
   test("Test Api Serializer", () {
     TestApi api = new TestApi();

@@ -25,7 +25,7 @@ abstract class Serialize {
  */
 abstract class Serializer {
   static final Map<String, ClassMirror> classes = <String, ClassMirror>{};
-  //static Type max_superclass_type = Serialize;
+  static final Map<String, TypeCodec> codecs = <String, TypeCodec>{};
 
   /// Convert the object to a Map<String, dynamic>
   static Map toMap(Object obj) => _toMap(obj);
@@ -46,7 +46,7 @@ abstract class Serializer {
 /**
  * Init the Serializer by mapping every class annotated with @serializable
  */
-initSerializer({String type_info_key}) {
+initSerializer({String type_info_key, Map<String, TypeCodec> codecs}) {
   _type_info_key = type_info_key;
   for (ClassMirror classMirror in serializable.annotatedClasses) {
     if (classMirror != null
@@ -54,5 +54,8 @@ initSerializer({String type_info_key}) {
         && classMirror.metadata.contains(serializable)) {
       Serializer.classes[classMirror.simpleName] = classMirror;
     }
+  }
+  if (codecs != null) {
+    Serializer.codecs.addAll(codecs);
   }
 }
