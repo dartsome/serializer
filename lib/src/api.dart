@@ -46,7 +46,8 @@ abstract class Serializer {
 /**
  * Init the Serializer by mapping every class annotated with @serializable
  */
-initSerializer() {
+initSerializer({String type_info_key}) {
+  _type_info_key = type_info_key;
   for (ClassMirror classMirror in serializable.annotatedClasses) {
     if (classMirror != null
         && classMirror.simpleName != null

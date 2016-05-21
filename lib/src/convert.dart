@@ -75,6 +75,10 @@ Object _fromMap(Map map, [Type type = Map, List<Type> mapOf]) {
     return null;
   }
 
+  if (_type_info_key != null && map.containsKey(_type_info_key)) {
+    type = _decodeType(map.remove(_type_info_key));
+  }
+
   // Only Map
   if (type == Map) {
     Type embedType = mapOf != null ? mapOf[1] : null;
@@ -178,6 +182,10 @@ Map _toMap(Object obj) {
   InstanceMirror mir = serializable.reflect(obj);
   ClassMirror cm = mir.type;
   Map data = new Map();
+
+  if (_type_info_key != null) {
+    data[_type_info_key] = obj.runtimeType.toString();
+  }
 
   while (cm != null
       && cm.superclass != null

@@ -30,8 +30,8 @@ class ModelC extends Serialize {
   ModelC([this.name, this.password, this.age]);
 }
 
-main() async {
-  await initSerializer();
+main() {
+  initSerializer(type_info_key: '@dart_type');
 
   ModelA a = new ModelA("toto", 15);
   ModelB b = new ModelB("Paris", "France");
@@ -44,6 +44,6 @@ main() async {
   print(Serializer.toJson(a));
   print(Serializer.toMap(a));
 
-  ModelA A = Serializer.fromJson(Serializer.toJson(a), ModelA);
+  ModelA A = Serializer.fromJson(Serializer.toJson(a));
   print(Serializer.toJson(A));
 }
