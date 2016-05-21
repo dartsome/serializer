@@ -25,7 +25,7 @@ abstract class Serialize {
  */
 abstract class Serializer {
   static final Map<String, ClassMirror> classes = <String, ClassMirror>{};
-  //static Type max_superclass_type = Serialize;
+  static final Map<String, TypeCodec> codecs = <String, TypeCodec>{};
 
   /// Convert the object to a Map<String, dynamic>
   static Map toMap(Object obj) => _toMap(obj);
@@ -37,7 +37,7 @@ abstract class Serializer {
   static Object fromJson(String json, [Type type]) => _fromJson(json, type);
 
   /// Convert a Map<String, dynamic>
-  static Object fromMap(Map map, [Type type]) => _fromMap(map, type);
+  static Object fromMap(Map map, [Type type, List<Type> mapOf]) => _fromMap(map, type, mapOf);
 
   /// Convert a JSON String list to a List of the given Type
   static Object fromList(List list, Type type) => _fromList(list, type);
@@ -45,10 +45,8 @@ abstract class Serializer {
 
 /**
  * Init the Serializer by mapping every class annotated with @serializable
- *
- * [type_info_key] define the key use to store the type of the Dart Object inside JSON and Map
  */
-initSerializer({String type_info_key: "@type"}) {
+initSerializer({String type_info_key, Map<String, TypeCodec> codecs}) {
   _type_info_key = type_info_key;
   for (ClassMirror classMirror in serializable.annotatedClasses) {
     if (classMirror != null
@@ -56,5 +54,8 @@ initSerializer({String type_info_key: "@type"}) {
         && classMirror.metadata.contains(serializable)) {
       Serializer.classes[classMirror.simpleName] = classMirror;
     }
+  }
+  if (codecs != null) {
+    Serializer.codecs.addAll(codecs);
   }
 }

@@ -5,11 +5,13 @@
 
 library serializer.base;
 
-import "dart:convert";
-import "package:reflectable/reflectable.dart";
+import 'dart:convert';
+import 'package:reflectable/reflectable.dart';
 
-part "api.dart";
-part "convert.dart";
+import 'package:serializer/type_codec.dart';
+
+part 'api.dart';
+part 'convert.dart';
 
 String _type_info_key;
 
@@ -17,13 +19,10 @@ class Serializable extends Reflectable {
   const Serializable()
       : super.fromList(const [
           invokingCapability,
-          typeCapability,
-          typingCapability,
+          typeRelationsCapability,
+          metadataCapability,
           superclassQuantifyCapability,
-          newInstanceCapability,
-          reflectedTypeCapability,
-          libraryCapability,
-          instanceInvokeCapability
+          reflectedTypeCapability
         ]);
 }
 
@@ -34,3 +33,8 @@ class Ignore {
 }
 
 const ignore = const Ignore();
+
+class SerializedName {
+  final String name;
+  const SerializedName(this.name);
+}
