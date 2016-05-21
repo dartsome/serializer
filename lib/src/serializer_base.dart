@@ -15,13 +15,10 @@ class Serializable extends Reflectable {
   const Serializable()
       : super.fromList(const [
           invokingCapability,
-          typeCapability,
-          typingCapability,
+          typeRelationsCapability,
+          metadataCapability,
           superclassQuantifyCapability,
-          newInstanceCapability,
-          reflectedTypeCapability,
-          libraryCapability,
-          instanceInvokeCapability
+          reflectedTypeCapability
         ]);
 }
 
