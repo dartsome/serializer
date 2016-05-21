@@ -74,6 +74,14 @@ class ModelE extends ProxyA {
 }
 
 @serializable
+class ModelRenamed extends ModelE {
+  @SerializedName("new")
+  String original;
+
+  ModelRenamed([this.original]);
+}
+
+@serializable
 class WithIgnore extends ProxyA {
   String a;
   String b;
@@ -111,7 +119,7 @@ class Complex extends ProxyA {
   Map<String, double>     doubleSet;
   Map<String, DateTime>   dateSet;
   Map<String, WithIgnore> ignoreSet;
-  Map<String, List> listInnerMap;
+  Map<String, List>       listInnerMap;
 }
 
 main() {
@@ -226,6 +234,13 @@ main() {
           '{"a":"1337","b":"42"}',
           Serializer.toJson(_ignore));
       expect({"a":"1337","b":"42"}, Serializer.toMap(_ignore));
+    });
+
+    test("Serialized name", () {
+      ModelRenamed _model = new ModelRenamed("Hello")
+          ..tests = ["A", "B", "C"];
+      expect('{"new":"Hello","tests":["A","B","C"]}', Serializer.toJson(_model));
+      expect({"new":"Hello","tests":["A","B","C"]}, Serializer.toMap(_model));
     });
   });
 
@@ -348,6 +363,14 @@ main() {
       expect(null, _ignore.secret);
     });
 
+    test("Serialized name", () {
+      ModelRenamed _model = Serializer.fromJson(
+          '{"new":"Hello","tests":["A","B","C"]}', ModelRenamed);
+
+      expect("Hello", _model.original);
+      expect(["A","B","C"], _model.tests);
+    });
+
     test("Test reflectable error", () {
       try {
         DontWantToBeSerialize _ = Serializer.fromJson(
@@ -362,7 +385,6 @@ main() {
   group("Complex", () {
     test("Serialize", () {
       var complex = new Complex()
-      ..listInnerMap = { "test": ["123456"] }
           ..nums     = [ 1, 2.2, 3 ]
           ..strings  = [ "1", "2", "3" ]
           ..bools    = [ true, false, true ]
@@ -376,7 +398,8 @@ main() {
           ..intSet     = { "intA": 1, "intB": 12 }
           ..doubleSet  = { "dblA": 1, "dblB": 12 }
           ..dateSet    = { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) }
-          ..ignoreSet  = { "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"), "B": new WithIgnore("1337B", "42B", "ThisIsASecretB") };
+          ..ignoreSet  = { "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"), "B": new WithIgnore("1337B", "42B", "ThisIsASecretB") }
+          ..listInnerMap = { "test": ["123456"] };
       var json = Serializer.toJson(complex);
       expect(json, '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
     });

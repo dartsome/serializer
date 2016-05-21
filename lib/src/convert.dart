@@ -68,6 +68,24 @@ bool _hasMetadata(DeclarationMirror dec, Type type) {
   return false;
 }
 
+Object _metadata(DeclarationMirror dec, Type type) {
+  for (var data in dec?.metadata) {
+    if (data.runtimeType == type) {
+      return data;
+    }
+  }
+  return null;
+}
+
+String _serializedName(DeclarationMirror dec) {
+  SerializedName serializedName = _metadata(dec, SerializedName);
+  if (serializedName != null) {
+    return serializedName.name;
+  } else {
+    return dec.simpleName;
+  }
+}
+
 Object _fromMap(Map map, [Type type = Map, List<Type> mapOf]) {
   if (map == null || map.isEmpty) {
     return null;
@@ -97,18 +115,26 @@ Object _fromMap(Map map, [Type type = Map, List<Type> mapOf]) {
     throw e.toString();
   }
 
-  for (var key in map.keys) {
-    MethodMirror met = cm.instanceMembers[key];
-    DeclarationMirror dec = cm.declarations[key];
-    if (met != null
-        && dec != null
-        && _isSerializableVariable(met)
-        && !_hasMetadata(dec, Ignore)) {
-      var value = _decodeValue(map[key], met.reflectedReturnType);
-      if (value != null) {
-        instance.invokeSetter(key, value);
+  while (cm != null
+      && cm.superclass != null
+      && Serializer.classes.containsKey(cm.simpleName)) {
+    cm.declarations.forEach((String originalName, DeclarationMirror dec) {
+      var name = _serializedName(dec);
+
+      if (map.containsKey(name)) {
+        MethodMirror met = cm.instanceMembers[originalName];
+        if (met != null
+            && dec != null
+            && _isSerializableVariable(met)
+            && !_hasMetadata(dec, Ignore)) {
+          var value = _decodeValue(map[name], met.reflectedReturnType);
+          if (value != null) {
+            instance.invokeSetter(originalName, value);
+          }
+        }
       }
-    }
+    });
+    cm = cm?.superclass;
   }
 
   return instance.reflectee;
@@ -187,11 +213,11 @@ Map _toMap(Object obj) {
   while (cm != null
       && cm.superclass != null
       && Serializer.classes.containsKey(cm.simpleName)) {
-    cm.declarations.forEach((String key, DeclarationMirror dec) {
+    cm.declarations.forEach((String originalName, DeclarationMirror dec) {
       if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
           (dec is MethodMirror && dec.isGetter)) &&
-          !_hasMetadata(dec, Ignore) && _isValidGetterName(dec.simpleName)) {
-        _encodeMap(data, key, mir.invokeGetter(dec.simpleName));
+          !_hasMetadata(dec, Ignore) && _isValidGetterName(originalName)) {
+        _encodeMap(data, _serializedName(dec), mir.invokeGetter(originalName));
       }
     });
     cm = cm?.superclass;
