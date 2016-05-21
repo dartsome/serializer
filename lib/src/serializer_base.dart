@@ -9,11 +9,10 @@ import 'dart:convert';
 import 'package:reflectable/reflectable.dart';
 
 import 'package:serializer/type_codec.dart';
+import 'package:serializer/codecs/date_time.dart';
 
 part 'api.dart';
 part 'convert.dart';
-
-String _type_info_key;
 
 class Serializable extends Reflectable {
   const Serializable()
