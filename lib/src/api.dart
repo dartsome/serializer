@@ -5,10 +5,15 @@
 part of serializer.base;
 
 final _SerializerJson = new Serializer.Json();
+final _SerializerTypedJson = new Serializer.TypedJson();
 
 /// Utility class for a Serializable object
 @serializable
 abstract class Serialize {
+  /// Get the serializer instance
+  @ignore
+  static Serializer get serializer => null;
+
   /// Convert the object to a map
   Map toMap();
 
@@ -19,11 +24,29 @@ abstract class Serialize {
 /// Utility class for a JSON object
 @serializable
 abstract class JsonObject extends Serialize {
+  /// Get the JSON serializer instance
+  @ignore
+  static Serializer get serializer => _SerializerJson;
+
   /// Convert the object to a map
   Map toMap() => _SerializerJson.toMap(this);
 
   /// Convert the object to JSON string
   String toJson() => _SerializerJson.encode(this);
+}
+
+/// Utility class for a typed JSON object
+@serializable
+abstract class TypedJsonObject extends Serialize {
+  /// Get the typed JSON serializer instance
+  @ignore
+  static Serializer get serializer => _SerializerTypedJson;
+
+  /// Convert the object to a map
+  Map toMap() => _SerializerTypedJson.toMap(this);
+
+  /// Convert the object to JSON string
+  String toJson() => _SerializerTypedJson.encode(this);
 }
 
 // Singleton that maps every class annotated with @serializable
