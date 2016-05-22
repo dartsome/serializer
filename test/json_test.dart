@@ -2,8 +2,6 @@
  * Created by lejard_h on 04/01/16.
  */
 
-library serializer.test;
-
 import 'package:test/test.dart';
 import 'package:serializer/serializer.dart';
 
@@ -122,7 +120,7 @@ class Complex extends ProxyA {
 }
 
 main() {
-  var jsonSerialization = new Serializer.Json();
+  var serializer = new Serializer.Json();
 
   test("Test Api Serializer", () {
     TestApi api = new TestApi();
@@ -140,14 +138,14 @@ main() {
 
     test("Map to Map", () {
       Map a = {"test": "toto", "titi": new ModelA()};
-      String json = jsonSerialization.encode(a);
+      String json = serializer.encode(a);
       expect('{"test":"toto","titi":{"foo":"bar"}}', json);
     });
 
     test("list", () {
       List<ModelA> list = [new ModelA("toto"), new ModelA()];
 
-      String json = jsonSerialization.encode(list);
+      String json = serializer.encode(list);
       expect(
           '[{"foo":"toto"},{"foo":"bar"}]',
           json);
@@ -188,7 +186,7 @@ main() {
 
     test("list class non-serializable", () {
       List list = [new ModelB(), new ModelB()];
-      String json = jsonSerialization.encode(list);
+      String json = serializer.encode(list);
       expect(
           '[{"toto":"tata"},{"toto":"tata"}]',
           json);
@@ -197,7 +195,7 @@ main() {
     test("list inner list", () {
       List listA = [new ModelB(), new ModelB()];
       List listB = [new ModelB(), listA];
-      String json = jsonSerialization.encode(listB);
+      String json = serializer.encode(listB);
       expect(
           '[{"toto":"tata"},[{"toto":"tata"},{"toto":"tata"}]]',
           json);
@@ -205,7 +203,7 @@ main() {
 
     test("list class serializable", () {
       List list = [new ModelC(), new ModelC()];
-      String json = jsonSerialization.encode(list);
+      String json = serializer.encode(list);
       expect(
           '[{"foo":{"foo":"bar"},"plop":"titi"},{"foo":{"foo":"bar"},"plop":"titi"}]',
           json);
@@ -223,30 +221,30 @@ main() {
       TestMaxSuperClass _test = new TestMaxSuperClass();
       expect(
           '{"serialize":"okay"}',
-          jsonSerialization.encode(_test));
-      expect({"serialize":"okay"}, jsonSerialization.toMap(_test));
+          serializer.encode(_test));
+      expect({"serialize":"okay"}, serializer.toMap(_test));
     });
 
     test("Ignore attribute", () {
       WithIgnore _ignore = new WithIgnore("1337", "42", "ThisIsASecret");
       expect(
           '{"a":"1337","b":"42"}',
-          jsonSerialization.encode(_ignore));
-      expect({"a":"1337","b":"42"}, jsonSerialization.toMap(_ignore));
+          serializer.encode(_ignore));
+      expect({"a":"1337","b":"42"}, serializer.toMap(_ignore));
     });
 
     test("Serialized name", () {
       ModelRenamed _model = new ModelRenamed("Hello")
           ..tests = ["A", "B", "C"];
-      expect('{"new":"Hello","tests":["A","B","C"]}', jsonSerialization.encode(_model));
-      expect({"new":"Hello","tests":["A","B","C"]}, jsonSerialization.toMap(_model));
+      expect('{"new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
+      expect({"new":"Hello","tests":["A","B","C"]}, serializer.toMap(_model));
     });
   });
 
   group("Deserialize", () {
     test("simple test - fromJson", () {
       ModelA a =
-      jsonSerialization.decode('{"foo":"toto"}', ModelA);
+      serializer.decode('{"foo":"toto"}', ModelA);
 
       expect(ModelA, a.runtimeType);
       expect("toto", a.foo);
@@ -254,7 +252,7 @@ main() {
 
     test("simple test - fromMap - without type field", () {
       ModelA a =
-      jsonSerialization.fromMap({"foo": "toto"}, ModelA);
+      serializer.fromMap({"foo": "toto"}, ModelA);
 
       expect(ModelA, a.runtimeType);
       expect("toto", a.foo);
@@ -262,7 +260,7 @@ main() {
 
     test("simple test - fromMap", () {
       ModelA a =
-      jsonSerialization.fromMap({"foo": "toto"}, ModelA);
+      serializer.fromMap({"foo": "toto"}, ModelA);
 
       expect(ModelA, a.runtimeType);
       expect("toto", a.foo);
@@ -270,14 +268,14 @@ main() {
 
     test("Map fromMap Map", () {
       Map a = {"titi": new ModelA().toMap()};
-      Map b = jsonSerialization.fromMap(a, Map, [String, ModelA]);
+      Map b = serializer.fromMap(a, Map, [String, ModelA]);
 
       expect(ModelA, b["titi"].runtimeType);
       expect("bar", b["titi"].foo);
     });
 
     test("list - fromJson", () {
-      List<ModelA> list = jsonSerialization.decode(
+      List<ModelA> list = serializer.decode(
           '[{"foo":"toto"},{"foo":"bar"}]', ModelA);
 
       expect(2, list.length);
@@ -289,7 +287,7 @@ main() {
     });
 
     test("list - fromList", () {
-      List list = jsonSerialization.fromList(
+      List list = serializer.fromList(
           [{"@dart_type":"ModelA","foo":"toto"},{"@dart_type":"ModelA","foo":"bar"}],
           ModelA);
 
@@ -302,7 +300,7 @@ main() {
     });
 
     test("inner list 1", () {
-      ModelD test = jsonSerialization.decode(
+      ModelD test = serializer.decode(
           '{"tests":[{"foo":"toto"},{"foo":"bar"}]}', ModelD);
 
       expect(2, test?.tests?.length);
@@ -313,7 +311,7 @@ main() {
     });
 
     test("inner list 2", () {
-      ModelE test = jsonSerialization.decode(
+      ModelE test = serializer.decode(
           '{"tests":["toto","bar"]}', ModelE);
 
       expect(2, test?.tests?.length);
@@ -322,14 +320,14 @@ main() {
     });
 
     test("inner class non-serializable", () {
-      ModelB b = jsonSerialization.decode(
+      ModelB b = serializer.decode(
           '{"toto":"tata","foo":{"toto":"tata"}}', ModelB);
 
       expect("tata", b.foo.toto);
     });
 
     test("inner class serializable", () {
-      ModelC c = jsonSerialization.decode(
+      ModelC c = serializer.decode(
           '{"foo":{"foo":"toto"},"plop":"bar"}', ModelC);
       expect(ModelA, c.foo.runtimeType);
       expect("toto", c.foo.foo);
@@ -337,7 +335,7 @@ main() {
     });
 
     test("Datetime", () {
-      Date date = jsonSerialization.decode(
+      Date date = serializer.decode(
           '{"date":"2016-01-01T00:00:00.000"}', Date);
 
       expect("2016-01-01T00:00:00.000", date.date.toIso8601String());
@@ -346,7 +344,7 @@ main() {
     });
 
     test("Max Superclass", () {
-      TestMaxSuperClass _test = jsonSerialization.decode(
+      TestMaxSuperClass _test = serializer.decode(
           '{"serialize":"okay","foo":"nobar"}', TestMaxSuperClass);
 
       expect("okay", _test.serialize);
@@ -354,7 +352,7 @@ main() {
     });
 
     test("Ignore attribute", () {
-      WithIgnore _ignore = jsonSerialization.decode(
+      WithIgnore _ignore = serializer.decode(
           '{"a":"1337","b":"42","secret":"ignore"}', WithIgnore);
 
       expect("1337", _ignore.a);
@@ -363,7 +361,7 @@ main() {
     });
 
     test("Serialized name", () {
-      ModelRenamed _model = jsonSerialization.decode(
+      ModelRenamed _model = serializer.decode(
           '{"new":"Hello","tests":["A","B","C"]}', ModelRenamed);
 
       expect("Hello", _model.original);
@@ -372,7 +370,7 @@ main() {
 
     test("Test reflectable error", () {
       try {
-        DontWantToBeSerialize _ = jsonSerialization.decode(
+        DontWantToBeSerialize _ = serializer.decode(
             '{"foo":"bar"}', DontWantToBeSerialize);
       } catch (e) {
        expect(true, e is String);
@@ -399,12 +397,12 @@ main() {
           ..dateSet    = { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) }
           ..ignoreSet  = { "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"), "B": new WithIgnore("1337B", "42B", "ThisIsASecretB") }
           ..listInnerMap = { "test": ["123456"] };
-      var json = jsonSerialization.encode(complex);
+      var json = serializer.encode(complex);
       expect(json, '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
     });
 
     test("Deserialize", () {
-      Complex complex = jsonSerialization.decode('{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}', Complex);
+      Complex complex = serializer.decode('{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}', Complex);
 
       expect(complex.nums,    [ 1, 2.2, 3 ]);
       expect(complex.strings, [ "1", "2", "3" ]);

@@ -119,7 +119,7 @@ class Serializer {
   Object fromMap(Map map, [Type type, List<Type> mapOf]) => _fromMap(map, type, mapOf);
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List fromList(List list, Type type) => _fromList(list, type);
+  List fromList(List list, [Type type]) => _fromList(list, type);
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -156,7 +156,11 @@ class Serializer {
       case "double":
         return double;
       default:
-        if (_typeCodecs.containsKey(name)) {
+        if (name == _MapTypeString) {
+          return Map;
+        } else if (name == _ListTypeString) {
+          return List;
+        } else if (_typeCodecs.containsKey(name)) {
           return _typeCodecs[name].type;
         } else {
           ClassMirror classMirror = _classes[name];
@@ -178,13 +182,15 @@ class Serializer {
     return _decodeValue(value, type);
   }
 
-  Object _fromMap(Map map, [Type type = Map, List<Type> mapOf]) {
+  Object _fromMap(Map map, [Type type, List<Type> mapOf]) {
     if (map == null || map.isEmpty) {
       return null;
     }
 
     if (_typeInfoKey != null && map.containsKey(_typeInfoKey)) {
       type = _decodeType(map.remove(_typeInfoKey));
+    } else {
+      type ??= Map;
     }
 
     // Only Map
@@ -239,6 +245,7 @@ class Serializer {
   }
 
   Object _decodeValue(Object value, Type type) {
+    type ??= _decodeType(value.runtimeType.toString());
     if (hasTypeCodec(type)) {
       return typeCodec(type).decode(value);
     } else if (type.toString().startsWith("Map")) {

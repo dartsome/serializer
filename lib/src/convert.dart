@@ -4,6 +4,9 @@
 
 part of serializer.base;
 
+final String _MapTypeString  = {}.runtimeType.toString();
+final String _ListTypeString = [].runtimeType.toString();
+
 bool _isSerializableVariable(DeclarationMirror vm) {
   return !vm.isPrivate;
 }
