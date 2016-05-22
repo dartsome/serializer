@@ -52,11 +52,13 @@ abstract class TypedJsonObject extends Serialize {
 // Singleton that maps every class annotated with @serializable
 final _singletonClasses = <String, ClassMirror>{};
 _initSingletonClasses() {
-  for (ClassMirror classMirror in serializable.annotatedClasses) {
-    if (   classMirror != null
-        && classMirror.simpleName != null
-        && classMirror.metadata.contains(serializable)) {
-      _singletonClasses[classMirror.simpleName] = classMirror;
+  if (_singletonClasses.isEmpty) {
+    for (ClassMirror classMirror in serializable.annotatedClasses) {
+      if (classMirror != null
+          && classMirror.simpleName != null
+          && classMirror.metadata.contains(serializable)) {
+        _singletonClasses[classMirror.simpleName] = classMirror;
+      }
     }
   }
 }
@@ -64,6 +66,10 @@ _initSingletonClasses() {
 /// Utility class to access to the serializer api
 class Serializer {
   static final Map<String, ClassMirror> _classes = _singletonClasses;
+
+  /// Dump serializable classes
+  static dumpSerializables() => _dumpSerializables();
+
   final String _typeInfoKey;
   final Codec _codec;
   final Map<String, TypeCodec> _typeCodecs = <String, TypeCodec>{};
@@ -73,9 +79,7 @@ class Serializer {
   /// The type info key is an added field (i.e. "@type") during the serialization,
   /// storing the type of the Dart Object
   Serializer([this._codec = JSON, this._typeInfoKey]) {
-    if (_singletonClasses.isEmpty) {
-      _initSingletonClasses();
-    }
+    _initSingletonClasses();
   }
 
   /// Create a default JSON serializer plus a simple DateTime codec
@@ -218,22 +222,21 @@ class Serializer {
       throw e.toString();
     }
 
+    var visitedNames = [];
     while (cm != null
         && cm.superclass != null
         && _classes.containsKey(cm.simpleName)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         var name = _serializedName(dec);
-
-        if (map.containsKey(name)) {
-          MethodMirror met = cm.instanceMembers[originalName];
-          if (met != null
-              && dec != null
-              && _isSerializableVariable(met)
-              && !_hasMetadata(dec, Ignore)) {
-            var value = _decodeValue(map[name], met.reflectedReturnType);
-            if (value != null) {
-              instance.invokeSetter(originalName, value);
-            }
+        if (   map.containsKey(name)
+            && !visitedNames.contains(name)
+            && !_hasMetadata(dec, Ignore)
+            && (   (dec is VariableMirror && _isSerializableVariable(dec))
+                || (dec is MethodMirror))) {
+          var value = _decodeValue(map[name], cm.instanceMembers[originalName].reflectedReturnType);
+          if (value != null) {
+            instance.invokeSetter(originalName, value);
+            visitedNames.add(name);
           }
         }
       });
@@ -311,10 +314,13 @@ class Serializer {
         && cm.superclass != null
         && _classes.containsKey(cm.simpleName)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
-        if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
-            (dec is MethodMirror && dec.isGetter)) &&
-            !_hasMetadata(dec, Ignore)) {
-          _encodeMap(data, _serializedName(dec), mir.invokeGetter(originalName));
+        var name = _serializedName(dec);
+
+        if (   !data.containsKey(name)
+            && !_hasMetadata(dec, Ignore)
+            && (   (dec is VariableMirror && _isSerializableVariable(dec))
+                || (dec is MethodMirror && dec.isGetter))) {
+          _encodeMap(data, name, mir.invokeGetter(originalName));
         }
       });
       cm = cm?.superclass;
