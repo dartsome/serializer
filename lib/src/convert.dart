@@ -38,5 +38,3 @@ String _serializedName(DeclarationMirror dec) {
     return dec.simpleName;
   }
 }
-
-bool _isValidGetterName(String name) => /* name != 'toString' && */name != 'toMap' && name != 'toJson';

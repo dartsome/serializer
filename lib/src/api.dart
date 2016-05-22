@@ -278,7 +278,7 @@ class Serializer {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         if (((dec is VariableMirror && _isSerializableVariable(dec)) ||
             (dec is MethodMirror && dec.isGetter)) &&
-            !_hasMetadata(dec, Ignore) && _isValidGetterName(originalName)) {
+            !_hasMetadata(dec, Ignore)) {
           _encodeMap(data, _serializedName(dec), mir.invokeGetter(originalName));
         }
       });
