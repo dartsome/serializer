@@ -268,11 +268,12 @@ main() {
     });
 
     test("Map fromMap Map", () {
-      Map a = {"titi": new TypedModelA().toMap()};
+      Map a = {"titi": new TypedModelA().toMap(), "foo": "bar"};
       Map b = serializer.fromMap(a);
 
       expect(TypedModelA, b["titi"].runtimeType);
       expect("bar", b["titi"].foo);
+      expect("bar", b["foo"]);
     });
 
     test("list - fromJson", () {
