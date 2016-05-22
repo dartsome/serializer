@@ -285,7 +285,7 @@ main() {
 
       expect(TypedModelA, list[0]?.runtimeType);
       expect(TypedModelA, list[1]?.runtimeType);
-    });
+    }, testOn: "!js"); // TODO Issue #25 - https://github.com/walletek/serializer/issues/25
 
     test("list - fromList", () {
       List list = serializer.fromList(
