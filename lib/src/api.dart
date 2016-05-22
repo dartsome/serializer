@@ -155,6 +155,11 @@ class Serializer {
         return int;
       case "double":
         return double;
+      case "Map":
+      case "_JsonMap":
+        return Map;
+      case "List":
+        return List;
       default:
         if (name == _MapTypeString) {
           return Map;
