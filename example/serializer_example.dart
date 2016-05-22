@@ -14,14 +14,14 @@ class ModelA {
 }
 
 @serializable
-class ModelB extends Serialize {
+class ModelB extends JsonObject {
   String city, country;
 
   ModelB([this.city, this.country]);
 }
 
 @serializable
-class ModelC extends Serialize {
+class ModelC extends JsonObject {
   String name, password;
 
   @ignore

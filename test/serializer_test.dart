@@ -6,7 +6,6 @@ library serializer.test;
 
 import 'package:test/test.dart';
 import 'package:serializer/serializer.dart';
-import 'package:serializer/codecs/date_time.dart';
 
 class TestApi extends Serializer {
 
@@ -17,7 +16,7 @@ abstract class DontWantToBeSerialize {
 }
 
 @serializable
-abstract class Proxy extends Serialize {}
+abstract class Proxy extends JsonObject {}
 
 abstract class ProxyA extends Proxy {}
 

@@ -9,13 +9,20 @@ final _SerializerJson = new Serializer.Json();
 /// Utility class for a Serializable object
 @serializable
 abstract class Serialize {
-  /// Convert the object to a Map<String, dynamic>
+  /// Convert the object to a map
+  Map toMap();
+
+  /// Override the toString method to show a stringify map of the object
+  String toString() => toMap().toString();
+}
+
+/// Utility class for a JSON object
+@serializable
+abstract class JsonObject extends Serialize {
+  /// Convert the object to a map
   Map toMap() => _SerializerJson.toMap(this);
 
-  /// Override the toString method to show a Stringify map of the object
-  String toString() => toMap().toString();
-
-  /// Convert the object to JSON
+  /// Convert the object to JSON string
   String toJson() => _SerializerJson.encode(this);
 }
 
