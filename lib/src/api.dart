@@ -19,32 +19,43 @@ abstract class Serialize {
   String toJson() => _SerializerJson.encode(this);
 }
 
+// Singleton that maps every class annotated with @serializable
+final _singletonClasses = <String, ClassMirror>{};
+_initSingletonClasses() {
+  for (ClassMirror classMirror in serializable.annotatedClasses) {
+    if (   classMirror != null
+        && classMirror.simpleName != null
+        && classMirror.metadata.contains(serializable)) {
+      _singletonClasses[classMirror.simpleName] = classMirror;
+    }
+  }
+}
+
 /// Utility class to access to the serializer api
 class Serializer {
+  static final Map<String, ClassMirror> _classes = _singletonClasses;
   final String _typeInfoKey;
   final Codec _codec;
-  final Map<String, ClassMirror> _classes = <String, ClassMirror>{};
   final Map<String, TypeCodec> _typeCodecs = <String, TypeCodec>{};
 
-  /// Create a Serializer by mapping every class annotated with @serializable
-  /// with an optional type info key.
-  /// The type info key is a added field "@type" during the serialization,
-  /// storing the type of the Dart Object.
+
+  /// Create a Serializer with a optional codec and type info key.
+  /// The type info key is an added field (i.e. "@type") during the serialization,
+  /// storing the type of the Dart Object
   Serializer([this._codec = JSON, this._typeInfoKey]) {
-    for (ClassMirror classMirror in serializable.annotatedClasses) {
-      if (classMirror != null
-          && classMirror.simpleName != null
-          && classMirror.metadata.contains(serializable)) {
-        _classes[classMirror.simpleName] = classMirror;
-      }
+    if (_singletonClasses.isEmpty) {
+      _initSingletonClasses();
     }
   }
 
+  /// Create a default JSON serializer plus a simple DateTime codec
   factory Serializer.Json() {
     return new Serializer()
       ..addTypeCodec(DateTime, new DateTimeCodec());
   }
 
+  /// Create a default JSON serializer plus a simple DateTime codec
+  /// with '@type' added field
   factory Serializer.TypedJson() {
     return new Serializer(JSON, "@type")
       ..addTypeCodec(DateTime, new DateTimeCodec());
