@@ -14,14 +14,14 @@ class ModelA {
 }
 
 @serializable
-class ModelB extends Serialize {
+class ModelB extends JsonObject {
   String city, country;
 
   ModelB([this.city, this.country]);
 }
 
 @serializable
-class ModelC extends Serialize {
+class ModelC extends JsonObject {
   String name, password;
 
   @ignore
@@ -31,8 +31,6 @@ class ModelC extends Serialize {
 }
 
 main() {
-  initSerializer(type_info_key: '@dart_type');
-
   ModelA a = new ModelA("toto", 15);
   ModelB b = new ModelB("Paris", "France");
   ModelC c = new ModelC("Alice", "ThereIsNone", 42);
@@ -41,9 +39,10 @@ main() {
   print(b.toMap());
   print(c.toJson());
 
-  print(Serializer.toJson(a));
-  print(Serializer.toMap(a));
+  var sz = TypedJsonObject.serializer;
+  print(sz.toMap(a));
+  print(sz.encode(a));
 
-  ModelA A = Serializer.fromJson(Serializer.toJson(a));
-  print(Serializer.toJson(A));
+  ModelA A = sz.decode(sz.encode(a));
+  print(sz.encode(A));
 }
