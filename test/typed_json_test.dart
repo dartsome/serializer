@@ -278,7 +278,7 @@ main() {
 
     test("list - fromJson", () {
       List<TypedModelA> list = serializer.decode(
-          '[{"@type":"TypedModelA","foo":"toto"},{"@type":"TypedModelA","foo":"bar"}]');
+          '[{"@type":"TypedModelA","foo":"toto"},{"@type":"TypedModelA","foo":"bar"}]') as List<TypedModelA>;
 
       expect(2, list.length);
       expect("toto", list[0]?.foo);
@@ -393,12 +393,12 @@ main() {
           ..stringSet  = { "strA": "1", "strB": "3" }
           ..boolSet    = { "ok": true, "nok": false }
           ..intSet     = { "intA": 1, "intB": 12 }
-          ..doubleSet  = { "dblA": 1, "dblB": 12 }
+          ..doubleSet  = { "dblA": 1.0, "dblB": 12.0 }
           ..dateSet    = { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) }
           ..ignoreSet  = { "A": new TypedWithIgnore("1337A", "42A", "ThisIsASecretA"), "B": new TypedWithIgnore("1337B", "42B", "ThisIsASecretB") }
           ..listInnerMap = { "test": ["123456"] };
       var json = serializer.encode(complex);
-      expect(json, '{"@type":"TypedComplex","nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},"B":{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
+      expect(json, '{"@type":"TypedComplex","nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},"B":{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
     });
 
     test("Deserialize", () {

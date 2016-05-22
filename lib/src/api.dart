@@ -2,7 +2,14 @@
  * Created by lejard_h on 29/01/16.
  */
 
-part of serializer.base;
+import 'dart:convert';
+
+import 'package:reflectable/reflectable.dart';
+import 'package:serializer/codecs/type_codec.dart';
+import 'package:serializer/codecs/date_time.dart';
+
+import 'annotations.dart';
+import "convert.dart";
 
 final _SerializerJson = new Serializer.Json();
 final _SerializerTypedJson = new Serializer.TypedJson();
@@ -49,26 +56,16 @@ abstract class TypedJsonObject extends Serialize {
   String toJson() => _SerializerTypedJson.encode(this);
 }
 
-// Singleton that maps every class annotated with @serializable
-final _singletonClasses = <String, ClassMirror>{};
-_initSingletonClasses() {
-  if (_singletonClasses.isEmpty) {
-    for (ClassMirror classMirror in serializable.annotatedClasses) {
-      if (classMirror != null
-          && classMirror.simpleName != null
-          && classMirror.metadata.contains(serializable)) {
-        _singletonClasses[classMirror.simpleName] = classMirror;
-      }
-    }
-  }
-}
-
 /// Utility class to access to the serializer api
 class Serializer {
-  static final Map<String, ClassMirror> _classes = _singletonClasses;
+  static final Map<String, ClassMirror> _classes = singletonClasses;
+
+  ///////////////////
+  // Public
+  /////////////////////////////////////////////////////////////////////////////
 
   /// Dump serializable classes
-  static dumpSerializables() => _dumpSerializables();
+  static dumpSerializables() => dumpSerializables();
 
   final String _typeInfoKey;
   final Codec _codec;
@@ -79,7 +76,7 @@ class Serializer {
   /// The type info key is an added field (i.e. "@type") during the serialization,
   /// storing the type of the Dart Object
   Serializer([this._codec = JSON, this._typeInfoKey]) {
-    _initSingletonClasses();
+    initSingletonClasses();
   }
 
   /// Create a default JSON serializer plus a simple DateTime codec
@@ -126,7 +123,9 @@ class Serializer {
   List fromList(List list, [Type type]) => _fromList(list, type);
 
 
-  //////////////////////////////////////////////////////////////////////////////
+  ///////////////////
+  // Private
+  /////////////////////////////////////////////////////////////////////////////
   List<Type> _findGenericOfMap(Type type) {
     String str = type.toString();
     RegExp reg = new RegExp(r"^Map<(.*)\ *,\ *(.*)>$");
@@ -165,9 +164,9 @@ class Serializer {
       case "List":
         return List;
       default:
-        if (name == _MapTypeString) {
+        if (name == MapTypeString) {
           return Map;
-        } else if (name == _ListTypeString) {
+        } else if (name == ListTypeString) {
           return List;
         } else if (_typeCodecs.containsKey(name)) {
           return _typeCodecs[name].type;
@@ -227,11 +226,11 @@ class Serializer {
         && cm.superclass != null
         && _classes.containsKey(cm.simpleName)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
-        var name = _serializedName(dec);
+        var name = serializedName(dec);
         if (   map.containsKey(name)
             && !visitedNames.contains(name)
-            && !_hasMetadata(dec, Ignore)
-            && (   (dec is VariableMirror && _isSerializableVariable(dec))
+            && !hasMetadata(dec, Ignore)
+            && (   (dec is VariableMirror && isSerializableVariable(dec))
                 || (dec is MethodMirror))) {
           var value = _decodeValue(map[name], cm.instanceMembers[originalName].reflectedReturnType);
           if (value != null) {
@@ -262,7 +261,7 @@ class Serializer {
       return _fromList(value, _findGenericOfList(type));
     } else if (isSerializable(type)) {
       return _fromMap(value, type);
-    } else if (type == null || _isPrimaryType(type)) {
+    } else if (type == null || isPrimaryType(type)) {
       return value;
     }
     return null;
@@ -275,7 +274,7 @@ class Serializer {
       return _toMap(value);
     } else if (value is List) {
       return _encodeList(value);
-    } else if (_isPrimaryType(value.runtimeType)) {
+    } else if (isPrimaryType(value.runtimeType)) {
       return value;
     }
     return null;
@@ -314,11 +313,11 @@ class Serializer {
         && cm.superclass != null
         && _classes.containsKey(cm.simpleName)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
-        var name = _serializedName(dec);
+        var name = serializedName(dec);
 
         if (   !data.containsKey(name)
-            && !_hasMetadata(dec, Ignore)
-            && (   (dec is VariableMirror && _isSerializableVariable(dec))
+            && !hasMetadata(dec, Ignore)
+            && (   (dec is VariableMirror && isSerializableVariable(dec))
                 || (dec is MethodMirror && dec.isGetter))) {
           _encodeMap(data, name, mir.invokeGetter(originalName));
         }

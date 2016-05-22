@@ -1,4 +1,4 @@
-import 'package:serializer/type_codec.dart';
+import 'codec.dart';
 
 /// A simple DateTime codec
 class DateTimeCodec extends TypeCodec<DateTime> {

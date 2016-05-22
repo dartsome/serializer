@@ -7,3 +7,4 @@
 library serializer;
 
 export 'src/serializer_base.dart';
+export 'codecs/type_codec.dart';

@@ -2,20 +2,23 @@
  * Created by lejard_h on 29/01/16.
  */
 
-part of serializer.base;
+import 'package:reflectable/reflectable.dart';
 
-final String _MapTypeString  = {}.runtimeType.toString();
-final String _ListTypeString = [].runtimeType.toString();
+import 'annotations.dart';
 
-bool _isSerializableVariable(DeclarationMirror vm) {
+
+final String MapTypeString  = {}.runtimeType.toString();
+final String ListTypeString = [].runtimeType.toString();
+
+bool isSerializableVariable(DeclarationMirror vm) {
   return !vm.isPrivate;
 }
 
-bool _isPrimaryType(Type obj) =>
+bool isPrimaryType(Type obj) =>
     obj == num || obj == String || obj == bool || obj == int || obj == double;
 
 
-bool _hasMetadata(DeclarationMirror dec, Type type) {
+bool hasMetadata(DeclarationMirror dec, Type type) {
   for (var data in dec?.metadata) {
     if (data.runtimeType == type) {
       return true;
@@ -24,7 +27,7 @@ bool _hasMetadata(DeclarationMirror dec, Type type) {
   return false;
 }
 
-Object _metadata(DeclarationMirror dec, Type type) {
+Object metadata(DeclarationMirror dec, Type type) {
   for (var data in dec?.metadata) {
     if (data.runtimeType == type) {
       return data;
@@ -33,8 +36,8 @@ Object _metadata(DeclarationMirror dec, Type type) {
   return null;
 }
 
-String _serializedName(DeclarationMirror dec) {
-  SerializedName serializedName = _metadata(dec, SerializedName);
+String serializedName(DeclarationMirror dec) {
+  SerializedName serializedName = metadata(dec, SerializedName);
   if (serializedName != null) {
     return serializedName.name;
   } else {
@@ -46,15 +49,15 @@ String _serializedName(DeclarationMirror dec) {
   }
 }
 
-Map<String, dynamic> _dumpSerializables() {
-  _initSingletonClasses();
-  _singletonClasses.values.forEach((classMirror) {
+void dumpSerializables() {
+  initSingletonClasses();
+  singletonClasses.values.forEach((classMirror) {
     var cm = classMirror;
 
     print(cm.simpleName);
     while (cm != null
         && cm.superclass != null
-        && _singletonClasses.containsValue(cm)) {
+        && singletonClasses.containsValue(cm)) {
       print("  " + cm.simpleName);
       cm.declarations.forEach((symbol, decl) {
         if (!decl.isPrivate) {
@@ -62,8 +65,8 @@ Map<String, dynamic> _dumpSerializables() {
           Type type;
           bool isSetter  = false;
           bool isGetter  = false;
-          bool isIgnored = _hasMetadata(decl, Ignore);
-          String renamed = _serializedName(decl);
+          bool isIgnored = hasMetadata(decl, Ignore);
+          String renamed = serializedName(decl);
 
           if (decl is VariableMirror) {
             type = decl.reflectedType;
@@ -100,4 +103,18 @@ Map<String, dynamic> _dumpSerializables() {
       cm = cm?.superclass;
     }
   });
+}
+
+// Singleton that maps every class annotated with @serializable
+final singletonClasses = <String, ClassMirror>{};
+initSingletonClasses() {
+  if (singletonClasses.isEmpty) {
+    for (ClassMirror classMirror in serializable.annotatedClasses) {
+      if (classMirror != null
+          && classMirror.simpleName != null
+          && classMirror.metadata.contains(serializable)) {
+        singletonClasses[classMirror.simpleName] = classMirror;
+      }
+    }
+  }
 }
