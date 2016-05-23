@@ -432,7 +432,6 @@ main() {
         }
         ..listInnerMap = { "test": ["123456"]};
       var json = serializer.encode(complex);
-      print(serializer.toMap(complex));
       expect(json,
           '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.1,"dblB":12.1},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
     });

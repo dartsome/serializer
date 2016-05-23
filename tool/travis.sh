@@ -6,10 +6,11 @@ set -e
 # Verify that the libraries are error free
 dartanalyzer --fatal-warnings \
   lib/*.dart \
+  lib/src/*.dart \
   lib/codecs/*.dart \
   test/*_test.dart
 
-TESTS="test/json_test.dart test/typed_json_test.dart"
+TESTS="test/json_test.dart test/typed_json_test.dart test/double_json_test.dart"
 # Run vm tests
 pub run test -p vm ${TESTS}
 
@@ -27,5 +28,5 @@ if [ "${COVERALLS_TOKEN}" ] && [ "${TRAVIS_DART_VERSION}" = "1.15.0" ]; then
   pub global activate dart_coveralls
   pub global run dart_coveralls report \
     --exclude-test-files \
-    test/all_test.dart
+    ${TESTS}
 fi
