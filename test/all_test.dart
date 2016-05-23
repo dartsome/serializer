@@ -3,9 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'json_test.dart' as _json;
+import 'double_json_test.dart' as _double_json;
 import 'typed_json_test.dart' as _typed_json;
 
 main() {
   _json.main();
   _typed_json.main();
+  _double_json.main();
 }
