@@ -1,13 +1,11 @@
 // Copyright (c) 2016, the Serializer project authors.  Please see the AUTHORS file
+
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:test/test.dart';
 import 'package:serializer/serializer.dart';
-
-class TestApi extends Serializer {
-
-}
+import "package:serializer/src/convert.dart";
 
 abstract class DontWantToBeSerialize {
   String foo = "bar";
@@ -24,9 +22,14 @@ class ModelInt extends ProxyA {
 
 
   int get bar => _bar;
+
   set bar(int value) => _bar = value;
 
   ModelInt([this._bar = 42]);
+
+  factory ModelInt.fromJson(String json) {
+    ModelInt data = serializer.decode(json, ModelInt);
+  }
 }
 
 @serializable
@@ -42,6 +45,7 @@ class ModelA extends ProxyA {
 
 
   String get foo => _foo;
+
   set foo(String value) => _foo = value;
 
   ModelA([this._foo = "bar"]);
@@ -109,29 +113,32 @@ class TestMaxSuperClass extends DontWantToBeSerialize {
 
 @serializable
 class Complex extends ProxyA {
-  List<num>        nums;
-  List<String>     strings;
-  List<bool>       bools;
-  List<int>        ints;
-  List<double>     doubles;
-  List<DateTime>   dates;
+  List<num> nums;
+  List<String> strings;
+  List<bool> bools;
+  List<int> ints;
+  List<double> doubles;
+  List<DateTime> dates;
   List<WithIgnore> ignores;
-  Map<String, num>        numSet;
-  Map<String, String>     stringSet;
-  Map<String, bool>       boolSet;
-  Map<String, int>        intSet;
-  Map<String, double>     doubleSet;
-  Map<String, DateTime>   dateSet;
+  Map<String, num> numSet;
+  Map<String, String> stringSet;
+  Map<String, bool> boolSet;
+  Map<String, int> intSet;
+  Map<String, double> doubleSet;
+  Map<String, DateTime> dateSet;
   Map<String, WithIgnore> ignoreSet;
-  Map<String, List>       listInnerMap;
+  Map<String, List> listInnerMap;
 }
 
-main() {
-  var serializer = new Serializer.Json();
+Serializer serializer;
 
-  test("Test Api Serializer", () {
-    TestApi api = new TestApi();
-    expect(true, api is Serializer);
+main() {
+  setUpAll(() {
+    serializer = new Serializer.Json();
+  });
+
+  tearDownAll(() {
+    dumpSerializables();
   });
 
   group("Serialize", () {
@@ -169,7 +176,7 @@ main() {
     });
 
     test("inner list 2", () {
-      ModelE e = new ModelE(["toto","bar"]);
+      ModelE e = new ModelE(["toto", "bar"]);
 
       expect('{"tests":["toto","bar"]}', e.toJson());
     });
@@ -237,20 +244,19 @@ main() {
       expect(
           '{"a":"1337","b":"42"}',
           serializer.encode(_ignore));
-      expect({"a":"1337","b":"42"}, serializer.toMap(_ignore));
+      expect({"a":"1337", "b":"42"}, serializer.toMap(_ignore));
     });
 
     test("Serialized name", () {
       ModelRenamed _model = new ModelRenamed("Hello")
-          ..tests = ["A", "B", "C"];
+        ..tests = ["A", "B", "C"];
       expect('{"new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
-      expect({"new":"Hello","tests":["A","B","C"]}, serializer.toMap(_model));
+      expect({"new":"Hello", "tests":["A", "B", "C"]}, serializer.toMap(_model));
     });
 
     test("Test Double", () {
       ModelDouble d = new ModelDouble();
       expect({"bar": 42.42}, serializer.toMap(d));
-
     });
   });
 
@@ -301,7 +307,7 @@ main() {
 
     test("list - fromList", () {
       List list = serializer.fromList(
-          [{"@dart_type":"ModelA","foo":"toto"},{"@dart_type":"ModelA","foo":"bar"}],
+          [{"@dart_type":"ModelA", "foo":"toto"}, {"@dart_type":"ModelA", "foo":"bar"}],
           ModelA);
 
       expect(2, list.length);
@@ -378,7 +384,7 @@ main() {
           '{"new":"Hello","tests":["A","B","C"]}', ModelRenamed);
 
       expect("Hello", _model.original);
-      expect(["A","B","C"], _model.tests);
+      expect(["A", "B", "C"], _model.tests);
     });
 
     test("Test reflectable error", () {
@@ -386,69 +392,75 @@ main() {
         DontWantToBeSerialize _ = serializer.decode(
             '{"foo":"bar"}', DontWantToBeSerialize);
       } catch (e) {
-       expect(true, e is String);
-       // expect("Cannot instantiate abstract class DontWantToBeSerialize: _url 'null' line null", e);
+        expect(true, e is String);
+        // expect("Cannot instantiate abstract class DontWantToBeSerialize: _url 'null' line null", e);
       }
     });
 
     test("Test Double", () {
-        ModelDouble d = serializer.decode(
-            '{"bar":42.1}', ModelDouble);
-        expect(d.bar, 42.1);
-
+      ModelDouble d = serializer.decode(
+          '{"bar":42.1}', ModelDouble);
+      expect(d.bar, 42.1);
     });
   });
 
   group("Complex", () {
     test("Serialize", () {
       var complex = new Complex()
-          ..nums     = [ 1, 2.2, 3 ]
-          ..strings  = [ "1", "2", "3" ]
-          ..bools    = [ true, false, true ]
-          ..ints     = [ 1, 2, 3 ]
-          ..doubles  = [ 1.1, 2.2, 3.3 ]
-          ..dates    = [ new DateTime(2016,12,24), new DateTime(2016,12,25), new DateTime(2016,12,26)]
-          ..ignores  = [ new WithIgnore("1337A", "42A", "ThisIsASecretA"), new WithIgnore("1337B", "42B", "ThisIsASecretB") ]
-          ..numSet     = { "numA": 1, "numB": 12.2 }
-          ..stringSet  = { "strA": "1", "strB": "3" }
-          ..boolSet    = { "ok": true, "nok": false }
-          ..intSet     = { "intA": 1, "intB": 12 }
-          ..doubleSet  = { "dblA": 1.0, "dblB": 12.0 }
-          ..dateSet    = { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) }
-          ..ignoreSet  = { "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"), "B": new WithIgnore("1337B", "42B", "ThisIsASecretB") }
-          ..listInnerMap = { "test": ["123456"] };
+        ..nums = [ 1, 2.2, 3]
+        ..strings = [ "1", "2", "3"]
+        ..bools = [ true, false, true]
+        ..ints = [ 1, 2, 3]
+        ..doubles = [ 1.1, 2.2, 3.3]
+        ..dates = [ new DateTime(2016, 12, 24), new DateTime(2016, 12, 25), new DateTime(2016, 12, 26)]
+        ..ignores = [ new WithIgnore("1337A", "42A", "ThisIsASecretA"), new WithIgnore("1337B", "42B", "ThisIsASecretB")
+        ]
+        ..numSet = { "numA": 1, "numB": 12.2}
+        ..stringSet = { "strA": "1", "strB": "3"}
+        ..boolSet = { "ok": true, "nok": false}
+        ..intSet = { "intA": 1, "intB": 12}
+        ..doubleSet = { "dblA": 1.0, "dblB": 12.0}
+        ..dateSet = { "fiesta": new DateTime(2016, 12, 24), "christmas": new DateTime(2016, 12, 25)}
+        ..ignoreSet = {
+          "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"),
+          "B": new WithIgnore("1337B", "42B", "ThisIsASecretB")
+        }
+        ..listInnerMap = { "test": ["123456"]};
       var json = serializer.encode(complex);
-      expect(json, '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
+      expect(json,
+          '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
     });
 
     test("Deserialize", () {
-      Complex complex = serializer.decode('{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}', Complex);
+      Complex complex = serializer.decode(
+          '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}',
+          Complex);
 
-      expect(complex.nums,    [ 1, 2.2, 3 ]);
-      expect(complex.strings, [ "1", "2", "3" ]);
-      expect(complex.bools,   [ true, false, true ]);
-      expect(complex.ints,    [ 1, 2, 3 ]);
-      expect(complex.doubles, [ 1.1, 2.2, 3.3 ]);
-      expect(complex.dates,   [ new DateTime(2016,12,24), new DateTime(2016,12,25), new DateTime(2016,12,26)]);
-      expect(complex.ignores[0].a,      "1337A");
-      expect(complex.ignores[0].b,      "42A");
+      expect(complex.nums, [ 1, 2.2, 3]);
+      expect(complex.strings, [ "1", "2", "3"]);
+      expect(complex.bools, [ true, false, true]);
+      expect(complex.ints, [ 1, 2, 3]);
+      expect(complex.doubles, [ 1.1, 2.2, 3.3]);
+      expect(complex.dates, [ new DateTime(2016, 12, 24), new DateTime(2016, 12, 25), new DateTime(2016, 12, 26)]);
+      expect(complex.ignores[0].a, "1337A");
+      expect(complex.ignores[0].b, "42A");
       expect(complex.ignores[0].secret, null);
-      expect(complex.ignores[1].a,      "1337B");
-      expect(complex.ignores[1].b,      "42B");
+      expect(complex.ignores[1].a, "1337B");
+      expect(complex.ignores[1].b, "42B");
       expect(complex.ignores[1].secret, null);
       expect(complex.listInnerMap["test"], [ "123456"]);
 
-      expect(complex.numSet   , { "numA": 1, "numB": 12.2 });
-      expect(complex.stringSet, { "strA": "1", "strB": "3" });
-      expect(complex.boolSet  , { "ok": true, "nok": false });
-      expect(complex.intSet   , { "intA": 1, "intB": 12 });
-      expect(complex.doubleSet, { "dblA": 1.0, "dblB": 12.0 });
-      expect(complex.dateSet  , { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) });
-      expect(complex.ignoreSet["A"].a,      "1337A");
-      expect(complex.ignoreSet["A"].b,      "42A");
+      expect(complex.numSet, { "numA": 1, "numB": 12.2});
+      expect(complex.stringSet, { "strA": "1", "strB": "3"});
+      expect(complex.boolSet, { "ok": true, "nok": false});
+      expect(complex.intSet, { "intA": 1, "intB": 12});
+      expect(complex.doubleSet, { "dblA": 1.0, "dblB": 12.0});
+      expect(complex.dateSet, { "fiesta": new DateTime(2016, 12, 24), "christmas": new DateTime(2016, 12, 25)});
+      expect(complex.ignoreSet["A"].a, "1337A");
+      expect(complex.ignoreSet["A"].b, "42A");
       expect(complex.ignoreSet["A"].secret, null);
-      expect(complex.ignoreSet["B"].a,      "1337B");
-      expect(complex.ignoreSet["B"].b,      "42B");
+      expect(complex.ignoreSet["B"].a, "1337B");
+      expect(complex.ignoreSet["B"].b, "42B");
       expect(complex.ignoreSet["B"].secret, null);
     });
   });

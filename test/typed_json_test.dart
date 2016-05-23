@@ -5,9 +5,6 @@
 import 'package:test/test.dart';
 import 'package:serializer/serializer.dart';
 
-class TypedTestApi extends Serializer {
-
-}
 
 abstract class TypedDontWantToBeSerialize {
   String foo = "bar";
@@ -122,10 +119,6 @@ class TypedComplex extends TypedProxyA {
 main() {
   var serializer = new Serializer.TypedJson();
 
-  test("Test Api Serializer", () {
-    TypedTestApi api = new TypedTestApi();
-    expect(true, api is Serializer);
-  });
 
   group("Serialize", () {
     test("simple test", () {

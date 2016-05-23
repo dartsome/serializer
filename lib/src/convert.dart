@@ -49,15 +49,19 @@ String serializedName(DeclarationMirror dec) {
   }
 }
 
-void dumpSerializables() {
+_printToString(String data) => "$data\n";
+
+String dumpSerializables() {
+  String output = "";
   initSingletonClasses();
   singletonClasses.values.forEach((classMirror) {
     var cm = classMirror;
-
+    output += _printToString(cm.simpleName);
     print(cm.simpleName);
     while (cm != null
         && cm.superclass != null
         && singletonClasses.containsValue(cm)) {
+      output += _printToString("  " + cm.simpleName);
       print("  " + cm.simpleName);
       cm.declarations.forEach((symbol, decl) {
         if (!decl.isPrivate) {
@@ -96,6 +100,7 @@ void dumpSerializables() {
             line += isIgnored ? "I" : "-";
             line += ": $type $name";
             line += renamed != name ? " => $renamed" : "";
+            output += _printToString(line);
             print(line);
           }
         }
@@ -103,6 +108,7 @@ void dumpSerializables() {
       cm = cm?.superclass;
     }
   });
+  return output;
 }
 
 // Singleton that maps every class annotated with @serializable
