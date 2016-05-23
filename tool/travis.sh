@@ -31,5 +31,5 @@ if [ "${COVERALLS_TOKEN}" ] && [ "${TRAVIS_DART_VERSION}" = "1.15.0" ]; then
   pub global activate dart_coveralls
   pub global run dart_coveralls report \
     --exclude-test-files \
-    ${TESTS}
+    test/all_test.dart
 fi
