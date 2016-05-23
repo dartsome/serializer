@@ -22,24 +22,29 @@ abstract class Serialize {
   static Serializer get serializer => null;
 
   /// Convert the object to a map
-  Map toMap();
+  Map toMap() => serializer?.toMap(this);
 
   /// Override the toString method to show a stringify map of the object
   String toString() => toMap().toString();
+
+  String encode() => serializer?.encode(this);
 }
 
 /// Utility class for a JSON object
 @serializable
 abstract class JsonObject extends Serialize {
   /// Get the JSON serializer instance
+  ///
   @ignore
   static Serializer get serializer => _SerializerJson;
 
-  /// Convert the object to a map
-  Map toMap() => _SerializerJson.toMap(this);
-
   /// Convert the object to JSON string
-  String toJson() => _SerializerJson.encode(this);
+  String toJson() => encode();
+
+  /// Convert the object to a map
+  Map toMap() => serializer?.toMap(this);
+
+  String encode() => serializer?.encode(this);
 }
 
 /// Utility class for a typed JSON object

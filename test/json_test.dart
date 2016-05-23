@@ -27,9 +27,7 @@ class ModelInt extends ProxyA {
 
   ModelInt([this._bar = 42]);
 
-  factory ModelInt.fromJson(String json) {
-    ModelInt data = serializer.decode(json, ModelInt);
-  }
+  factory ModelInt.fromJson(String json) => serializer?.decode(json, ModelInt);
 }
 
 @serializable
@@ -401,6 +399,12 @@ main() {
       ModelDouble d = serializer.decode(
           '{"bar":42.1}', ModelDouble);
       expect(d.bar, 42.1);
+    });
+
+    test("Test JsonObject", () {
+      ModelInt a = new ModelInt.fromJson('{"bar": 12}');
+
+      expect(a.bar, 12);
     });
   });
 
