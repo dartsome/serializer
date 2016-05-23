@@ -3,12 +3,15 @@
 # Fast fail the script on failures.
 set -e
 
+
+if  [ "${TRAVIS_DART_VERSION}" != "1.15.0" ]; then
 # Verify that the libraries are error free
 dartanalyzer --fatal-warnings \
   lib/*.dart \
   lib/src/*.dart \
   lib/codecs/*.dart \
   test/*_test.dart
+fi
 
 TESTS="test/json_test.dart test/typed_json_test.dart test/double_json_test.dart"
 # Run vm tests
