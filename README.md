@@ -43,8 +43,7 @@ main() {
 - [JSON](https://github.com/walletek/serializer/wiki/Json)
 - [More docs](https://www.dartdocs.org/documentation/serializer/0.3.0/)
 
-    
-[Example]()
+
 
 
 
