@@ -2,58 +2,49 @@
 [![Coverage Status](https://coveralls.io/repos/github/walletek/serializer/badge.svg?branch=master)](https://coveralls.io/github/walletek/serializer?branch=master)
 [![Pub version](https://img.shields.io/pub/v/serializer.svg)](https://pub.dartlang.org/packages/serializer)
 
-# serializer
+# Serializer
 
-Serializer to JSON using reflectable.
+Serialize and Deserialize Dart Object with reflectable
 
-##Example
+## Codecs supported:
+- Json
 
-### Import the library
+## [Example](https://github.com/walletek/serializer/tree/master/example)
 
-    import 'package:serializer/serializer.dart';
+```dart
+import 'package:serializer/serializer.dart';
 
-### Define your model
+@serializable
+class MyModel {
+    String name;
 
-    @serializable
-    class MyModel {
-        String name;
-        
-        @ignore //ignore this attribute during serialization
-        num age;
+    //constructor need to be without parameters or with optional or positional.
+    MyModel([this.name]);
+}
+
+main() {
+    Serializer serializer = new Serializer.Json();
     
-        //constructor need to be without parameters or with optional or positional.
-        MyModel([this.name, this.age]);
-    }
+    //serialize
+    MyModel model = new MyModel("John", 24);
+    String json = serializer.encode(model);
+    Map jsonMap = serializer.toMap(model);
+
+    //deserialize
+    model = serializer.decode(json, MyModel);
+    model = serializer.fromMap(jsonMap, MyModel);
+ }
+ ```
+ 
+## [Documentations](https://github.com/walletek/serializer/wiki)
+- [Getting Started](https://github.com/walletek/serializer/wiki/Getting-Started)
+- [Object Definition](https://github.com/walletek/serializer/wiki/Define-your-objects)
+- [Complexe objects (Map, List ...)](https://github.com/walletek/serializer/wiki/Complexe-Object)
+- [JSON](https://github.com/walletek/serializer/wiki/Json)
+- [More docs](https://www.dartdocs.org/documentation/serializer/0.3.0/)
+
     
-### Serialize
+[Example]()
 
-     main() async {
-        await initSerializer(
-            type_info_key: "@dart_type" // add a field "@dart_type" to the json, storing the type of the type of the Dart Object, default: "@type"
-        ); // initSerializer will map every class annotated with @serializable
-        
-        MyModel model = new MyModel("John", 24);
-        String json = Serializer.toJson(model);
-        Map jsonMap = Serializer.toMap(model);
-        print(json);
-        
-     }
-    
-### Deserialize
 
-    model = Serializer.fromJson(json, MyModel);
-    model = Serializer.fromMap(jsonMap, MyModel);
-
-You can extend you Model with the class `Serialize` to inherit of basic convert method.
-
-     Map toMap();
-     String toString();
-     String toJson();
-     
-### Work with List
-
-     String jsonList = Serializer.toJson(listModel);
-     List<MyModel> list =  Serializer.fromList(jsonList, MyModel) as List<MyModel>;
-
-[Example](https://github.com/walletek/serializer/tree/master/example)
 
