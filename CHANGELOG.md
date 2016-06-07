@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.1
+- Support mixins
+
 ## 0.3.0
 - `type_info_key` is now optional
 
