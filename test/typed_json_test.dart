@@ -116,6 +116,22 @@ class TypedComplex extends TypedProxyA {
   Map<String, List>       listInnerMap;
 }
 
+@serializable
+class Mixin extends TypedProxyA with M1, M2 {
+  String a;
+  String b;
+}
+
+@serializable
+class M1 {
+  String m1;
+}
+
+@serializable
+class M2 {
+  String m2;
+}
+
 main() {
   var serializer = new Serializer.TypedJson();
 
@@ -423,6 +439,28 @@ main() {
       expect(complex.ignoreSet["B"].a,      "1337B");
       expect(complex.ignoreSet["B"].b,      "42B");
       expect(complex.ignoreSet["B"].secret, null);
+    });
+  });
+
+  group("Mixin", () {
+    test("Serialize", () {
+      var mixin = new Mixin()
+        ..a = "A"
+        ..b = "B"
+        ..m1 = "M1"
+        ..m2 = "M2";
+      var json = serializer.encode(mixin);
+      expect(json, '{"@type":"Mixin","a":"A","b":"B","m2":"M2","m1":"M1"}');
+    });
+
+    test("Deserialize", () {
+      Mixin mixin = serializer.decode(
+          '{"@type":"Mixin","a":"A","b":"B","m2":"M2","m1":"M1"}');
+
+      expect(mixin.a, "A");
+      expect(mixin.b, "B");
+      expect(mixin.m1, "M1");
+      expect(mixin.m2, "M2");
     });
   });
 }
