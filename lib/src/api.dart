@@ -229,7 +229,7 @@ class Serializer {
     var visitedNames = [];
     while (cm != null
         && cm.superclass != null
-        && _classes.containsKey(cm.simpleName)) {
+        && isSerializableClassMirror(_classes, cm)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         var name = serializedName(dec);
         if (   map.containsKey(name)
@@ -316,7 +316,7 @@ class Serializer {
 
     while (cm != null
         && cm.superclass != null
-        && _classes.containsKey(cm.simpleName)) {
+        && isSerializableClassMirror(_classes, cm)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         var name = serializedName(dec);
 

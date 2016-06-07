@@ -10,6 +10,10 @@ import 'annotations.dart';
 final String MapTypeString  = {}.runtimeType.toString();
 final String ListTypeString = [].runtimeType.toString();
 
+bool isSerializableClassMirror(Map<String, ClassMirror> serializables, ClassMirror cm) {
+  return serializables.containsKey(cm.simpleName);
+}
+
 bool isSerializableVariable(DeclarationMirror vm) {
   return !vm.isPrivate;
 }
@@ -60,7 +64,7 @@ String printAndDumpSerializables() {
     print(cm.simpleName);
     while (cm != null
         && cm.superclass != null
-        && singletonClasses.containsValue(cm)) {
+        && isSerializableClassMirror(singletonClasses, cm)) {
       output += _printToString("  " + cm.simpleName);
       print("  " + cm.simpleName);
       cm.declarations.forEach((symbol, decl) {
