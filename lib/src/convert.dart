@@ -11,7 +11,7 @@ final String MapTypeString  = {}.runtimeType.toString();
 final String ListTypeString = [].runtimeType.toString();
 
 bool isSerializableClassMirror(Map<String, ClassMirror> serializables, ClassMirror cm) {
-  return serializables.containsKey(cm.simpleName);
+  return serializables.containsKey(cm.mixin.simpleName);
 }
 
 bool isSerializableVariable(DeclarationMirror vm) {
@@ -60,13 +60,13 @@ String printAndDumpSerializables() {
   initSingletonClasses();
   singletonClasses.values.forEach((classMirror) {
     var cm = classMirror;
-    output += _printToString(cm.simpleName);
-    print(cm.simpleName);
+    output += _printToString(cm.mixin.simpleName);
+    print(cm.mixin.simpleName);
     while (cm != null
         && cm.superclass != null
         && isSerializableClassMirror(singletonClasses, cm)) {
-      output += _printToString("  " + cm.simpleName);
-      print("  " + cm.simpleName);
+      output += _printToString("  " + cm.mixin.simpleName);
+      print("  " + cm.mixin.simpleName);
       cm.declarations.forEach((symbol, decl) {
         if (!decl.isPrivate) {
           String name = symbol;

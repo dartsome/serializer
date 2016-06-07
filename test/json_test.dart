@@ -127,10 +127,26 @@ class Complex extends ProxyA {
   Map<String, WithIgnore> ignoreSet;
   Map<String, List> listInnerMap;
 }
+
+@serializable
+class Mixin extends ProxyA with M1, M2 {
+  String a;
+  String b;
+}
+
+@serializable
+class M1 {
+  String m1;
+}
+
+@serializable
+class M2 {
+  String m2;
+}
+
 Serializer serializer;
 
 main() {
-
   setUpAll(() {
     serializer = new Serializer.Json();
   });
@@ -249,8 +265,10 @@ main() {
     test("Serialized name", () {
       ModelRenamed _model = new ModelRenamed("Hello")
         ..tests = ["A", "B", "C"];
-      expect('{"new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
-      expect({"new":"Hello", "tests":["A", "B", "C"]}, serializer.toMap(_model));
+      expect(
+          '{"new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
+      expect(
+          {"new":"Hello", "tests":["A", "B", "C"]}, serializer.toMap(_model));
     });
 
     test("Test Double", () {
@@ -306,7 +324,10 @@ main() {
 
     test("list - fromList", () {
       List list = serializer.fromList(
-          [{"@dart_type":"ModelA", "foo":"toto"}, {"@dart_type":"ModelA", "foo":"bar"}],
+          [
+            {"@dart_type":"ModelA", "foo":"toto"},
+            {"@dart_type":"ModelA", "foo":"bar"}
+          ],
           ModelA);
 
       expect(2, list.length);
@@ -417,15 +438,24 @@ main() {
         ..bools = [ true, false, true]
         ..ints = [ 1, 2, 3]
         ..doubles = [ 1.1, 2.2, 3.3]
-        ..dates = [ new DateTime(2016, 12, 24), new DateTime(2016, 12, 25), new DateTime(2016, 12, 26)]
-        ..ignores = [ new WithIgnore("1337A", "42A", "ThisIsASecretA"), new WithIgnore("1337B", "42B", "ThisIsASecretB")
+        ..dates = [
+          new DateTime(2016, 12, 24),
+          new DateTime(2016, 12, 25),
+          new DateTime(2016, 12, 26)
+        ]
+        ..ignores = [
+          new WithIgnore("1337A", "42A", "ThisIsASecretA"),
+          new WithIgnore("1337B", "42B", "ThisIsASecretB")
         ]
         ..numSet = { "numA": 1, "numB": 12.2}
         ..stringSet = { "strA": "1", "strB": "3"}
         ..boolSet = { "ok": true, "nok": false}
         ..intSet = { "intA": 1, "intB": 12}
         ..doubleSet = { "dblA": 1.1, "dblB": 12.1}
-        ..dateSet = { "fiesta": new DateTime(2016, 12, 24), "christmas": new DateTime(2016, 12, 25)}
+        ..dateSet = {
+          "fiesta": new DateTime(2016, 12, 24),
+          "christmas": new DateTime(2016, 12, 25)
+        }
         ..ignoreSet = {
           "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"),
           "B": new WithIgnore("1337B", "42B", "ThisIsASecretB")
@@ -446,7 +476,11 @@ main() {
       expect(complex.bools, [ true, false, true]);
       expect(complex.ints, [ 1, 2, 3]);
       expect(complex.doubles, [ 1.1, 2.2, 3.3]);
-      expect(complex.dates, [ new DateTime(2016, 12, 24), new DateTime(2016, 12, 25), new DateTime(2016, 12, 26)]);
+      expect(complex.dates, [
+        new DateTime(2016, 12, 24),
+        new DateTime(2016, 12, 25),
+        new DateTime(2016, 12, 26)
+      ]);
       expect(complex.ignores[0].a, "1337A");
       expect(complex.ignores[0].b, "42A");
       expect(complex.ignores[0].secret, null);
@@ -460,13 +494,39 @@ main() {
       expect(complex.boolSet, { "ok": true, "nok": false});
       expect(complex.intSet, { "intA": 1, "intB": 12});
       expect(complex.doubleSet, { "dblA": 1.0, "dblB": 12.0});
-      expect(complex.dateSet, { "fiesta": new DateTime(2016, 12, 24), "christmas": new DateTime(2016, 12, 25)});
+      expect(complex.dateSet, {
+        "fiesta": new DateTime(2016, 12, 24),
+        "christmas": new DateTime(2016, 12, 25)
+      });
       expect(complex.ignoreSet["A"].a, "1337A");
       expect(complex.ignoreSet["A"].b, "42A");
       expect(complex.ignoreSet["A"].secret, null);
       expect(complex.ignoreSet["B"].a, "1337B");
       expect(complex.ignoreSet["B"].b, "42B");
       expect(complex.ignoreSet["B"].secret, null);
+    });
+  });
+
+  group("Mixin", () {
+    test("Serialize", () {
+      var mixin = new Mixin()
+          ..a = "A"
+          ..b = "B"
+          ..m1 = "M1"
+          ..m2 = "M2";
+      var json = serializer.encode(mixin);
+      expect(json, '{"a":"A","b":"B","m2":"M2","m1":"M1"}');
+    });
+
+    test("Deserialize", () {
+      Mixin mixin = serializer.decode(
+          '{"a":"A","b":"B","m2":"M2","m1":"M1"}',
+          Mixin);
+
+      expect(mixin.a, "A");
+      expect(mixin.b, "B");
+      expect(mixin.m1, "M1");
+      expect(mixin.m2, "M2");
     });
   });
 }
