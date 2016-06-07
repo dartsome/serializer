@@ -18,5 +18,4 @@
 - json output is now simpler
 
 ## 0.1.0
-- Basic JSON serialization and desarialization 
-- 
+- Basic JSON serialization and desarialization
