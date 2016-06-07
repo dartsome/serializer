@@ -136,7 +136,7 @@ main() {
   });
 
   tearDownAll(() {
-    dumpSerializables();
+    printAndDumpSerializables();
   });
 
 

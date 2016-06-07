@@ -70,7 +70,7 @@ class Serializer {
   /////////////////////////////////////////////////////////////////////////////
 
   /// Dump serializable classes
-  static dumpSerializables() => dumpSerializables();
+  static dumpSerializables() => printAndDumpSerializables();
 
   final String _typeInfoKey;
   final Codec _codec;

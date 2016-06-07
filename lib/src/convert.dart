@@ -51,7 +51,7 @@ String serializedName(DeclarationMirror dec) {
 
 _printToString(String data) => "$data\n";
 
-String dumpSerializables() {
+String printAndDumpSerializables() {
   String output = "";
   initSingletonClasses();
   singletonClasses.values.forEach((classMirror) {
