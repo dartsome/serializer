@@ -19,3 +19,4 @@
 
 ## 0.1.0
 - Basic JSON serialization and desarialization 
+- 
