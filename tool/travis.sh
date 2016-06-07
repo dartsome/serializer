@@ -22,7 +22,7 @@ export DISPLAY=:99.0
 sh -e /etc/init.d/xvfb start
 pub serve &
 while ! nc -z localhost 8080; do sleep 1; done; echo 'pub serve is up!'
-pub run test --pub-serve=8080 -p content-shell -p firefox ${TESTS}
+pub run test --pub-serve=8080 -p firefox ${TESTS}
 
 # Install dart_coveralls
 # Gather and send coverage data.
