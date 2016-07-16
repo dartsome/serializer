@@ -22,26 +22,8 @@ bool isPrimaryType(Type obj) =>
     obj == num || obj == String || obj == bool || obj == int || obj == double;
 
 
-bool hasMetadata(DeclarationMirror dec, Type type) {
-  for (var data in dec?.metadata) {
-    if (data.runtimeType == type) {
-      return true;
-    }
-  }
-  return false;
-}
-
-Object metadata(DeclarationMirror dec, Type type) {
-  for (var data in dec?.metadata) {
-    if (data.runtimeType == type) {
-      return data;
-    }
-  }
-  return null;
-}
-
 String serializedName(DeclarationMirror dec) {
-  SerializedName serializedName = metadata(dec, SerializedName);
+  SerializedName serializedName = serializedNameMetadataManager.metadata(dec);
   if (serializedName != null) {
     return serializedName.name;
   } else {
@@ -73,7 +55,7 @@ String printAndDumpSerializables() {
           Type type;
           bool isSetter  = false;
           bool isGetter  = false;
-          bool isIgnored = hasMetadata(decl, Ignore);
+          bool isIgnored = ignoreMetadataManager.hasMetadata(decl);
           String renamed = serializedName(decl);
 
           if (decl is VariableMirror) {

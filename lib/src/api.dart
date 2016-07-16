@@ -234,7 +234,7 @@ class Serializer {
         var name = serializedName(dec);
         if (   map.containsKey(name)
             && !visitedNames.contains(name)
-            && !hasMetadata(dec, Ignore)
+            && !ignoreMetadataManager.hasMetadata(dec)
             && (   (dec is VariableMirror && isSerializableVariable(dec))
                 || (dec is MethodMirror))) {
           var value = _decodeValue(map[name], cm.instanceMembers[originalName].reflectedReturnType);
@@ -321,7 +321,7 @@ class Serializer {
         var name = serializedName(dec);
 
         if (   !data.containsKey(name)
-            && !hasMetadata(dec, Ignore)
+            && !ignoreMetadataManager.hasMetadata(dec)
             && (   (dec is VariableMirror && isSerializableVariable(dec))
                 || (dec is MethodMirror && dec.isGetter))) {
           _encodeMap(data, name, mir.invokeGetter(originalName));

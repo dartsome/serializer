@@ -8,10 +8,13 @@ import 'package:serializer/serializer.dart';
 
 @serializable
 class ModelA {
+  @Id()
+  int id;
+
   String name;
   num age;
 
-  ModelA([this.name, this.age]);
+  ModelA([this.id, this.name, this.age]);
 }
 
 @serializable
@@ -31,8 +34,12 @@ class ModelC extends JsonObject {
   ModelC([this.name, this.password, this.age]);
 }
 
+class Id extends SerializedName {
+  const Id() : super("_id");
+}
+
 main() {
-  ModelA a = new ModelA("toto", 15);
+  ModelA a = new ModelA(42, "toto", 15);
   ModelB b = new ModelB("Paris", "France");
   ModelC c = new ModelC("Alice", "ThereIsNone", 42);
 
