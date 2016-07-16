@@ -144,6 +144,25 @@ class M2 {
   String m2;
 }
 
+@referenceable
+@serializable
+class Employee {
+  @reference
+  int id;
+  String name;
+  Address address;
+  Employee manager;
+}
+
+@referenceable
+@serializable
+class Address {
+  @reference
+  int id;
+  String location;
+  Employee owner;
+}
+
 Serializer serializer;
 
 main() {
@@ -527,6 +546,36 @@ main() {
       expect(mixin.b, "B");
       expect(mixin.m1, "M1");
       expect(mixin.m2, "M2");
+    });
+  });
+
+  group("Referenceable", () {
+    test("Serialize", () {
+      Address addressManager = new Address()
+        ..id       = 1337
+        ..location = "Somewhere";
+
+      Address addressEmployee = new Address()
+        ..id       = 1338
+        ..location = "Somewhere else";
+
+      Employee manager = new Employee()
+        ..id      = 43
+        ..name    = "Alice Doo"
+        ..address = addressManager;
+      addressManager.owner = manager;
+
+      Employee employee = new Employee()
+        ..id      = 42
+        ..name    = "Bob Smith"
+        ..address = addressEmployee
+        ..manager = manager;
+      addressEmployee.owner = employee;
+
+      expect(serializer.encode(addressManager),  '{"id":1337,"location":"Somewhere","owner":{"id":43}}');
+      expect(serializer.encode(addressEmployee), '{"id":1338,"location":"Somewhere else","owner":{"id":42}}');
+      expect(serializer.encode(manager),         '{"id":43,"name":"Alice Doo","address":{"id":1337}}');
+      expect(serializer.encode(employee),        '{"id":42,"name":"Bob Smith","address":{"id":1338},"manager":{"id":43}}');
     });
   });
 }

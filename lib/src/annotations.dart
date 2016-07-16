@@ -24,6 +24,18 @@ class Ignore {
 
 const ignore = const Ignore();
 
+class Referenceable {
+  const Referenceable();
+}
+
+const referenceable = const Referenceable();
+
+class Reference {
+  const Reference();
+}
+
+const reference = const Reference();
+
 class SerializedName {
   final String name;
   const SerializedName(this.name);
@@ -47,4 +59,6 @@ class _MetadataManager<T> {
 }
 
 const _MetadataManager<SerializedName> serializedNameMetadataManager = const _MetadataManager<SerializedName>();
+const _MetadataManager<Referenceable>  referenceableMetadataManager  = const _MetadataManager<Referenceable>();
+const _MetadataManager<Reference>      referenceMetadataManager      = const _MetadataManager<Reference>();
 const _MetadataManager<Ignore>         ignoreMetadataManager         = const _MetadataManager<Ignore>();

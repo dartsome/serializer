@@ -35,7 +35,7 @@ class ModelC extends JsonObject {
 }
 
 class Id extends SerializedName {
-  const Id() : super("_id");
+  const Id(): super("_id");
 }
 
 main() {

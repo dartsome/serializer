@@ -63,7 +63,7 @@ abstract class TypedJsonObject extends Serialize {
 
 /// Utility class to access to the serializer api
 class Serializer {
-  static final Map<String, ClassMirror> _classes = singletonClasses;
+  static final Map<String, ClassSerialiazerInfo> _classes = singletonClasses;
 
   ///////////////////
   // Public
@@ -113,10 +113,10 @@ class Serializer {
       _classes.containsKey(type.toString());
 
   /// Convert the object to a Map
-  Map toMap(Object input) => _toMap(input);
+  Map toMap(Object input) => _toMap(input, true);
 
   /// Encode the object to serialized string
-  String encode(Object input) => _encode(input);
+  String encode(Object input) => _encode(input, true);
 
   /// Decode the object from a seriablized string
   Object decode(String encoded, [Type type]) => _decode(encoded, type);
@@ -176,7 +176,7 @@ class Serializer {
         } else if (_typeCodecs.containsKey(name)) {
           return _typeCodecs[name].type;
         } else {
-          ClassMirror classMirror = _classes[name];
+          ClassMirror classMirror = _classes[name]?.classMirror;
           return classMirror?.dynamicReflectedType;
         }
     }
@@ -272,21 +272,21 @@ class Serializer {
     return null;
   }
 
-  Object _encodeValue(value) {
+  Object _encodeValue(value, [bool withReferenceable = false]) {
     if (hasTypeCodec(value.runtimeType)) {
       return typeCodec(value.runtimeType).encode(value);
     } else if (value is Map || isSerializable(value.runtimeType)) {
-      return _toMap(value);
+      return _toMap(value, withReferenceable);
     } else if (value is List) {
-      return _encodeList(value);
+      return _encodeList(value, withReferenceable);
     } else if (isPrimaryType(value.runtimeType)) {
       return value;
     }
     return null;
   }
 
-  List _encodeList(List list) {
-    return list.map((elem) => _encodeValue(elem))
+  List _encodeList(List list, [bool withReferenceable = false]) {
+    return list.map((elem) => _encodeValue(elem, withReferenceable))
         .toList(growable: false);
   }
 
@@ -297,7 +297,7 @@ class Serializer {
     }
   }
 
-  Map _toMap(Object obj) {
+  Map _toMap(Object obj, [bool withReferenceable = false]) {
     if (obj == null || obj is List) {
       return null;
     }
@@ -323,7 +323,8 @@ class Serializer {
         if (   !data.containsKey(name)
             && !ignoreMetadataManager.hasMetadata(dec)
             && (   (dec is VariableMirror && isSerializableVariable(dec))
-                || (dec is MethodMirror && dec.isGetter))) {
+                || (dec is MethodMirror && dec.isGetter))
+            && isEncodeableField(_classes, cm, dec, withReferenceable)) {
           _encodeMap(data, name, mir.invokeGetter(originalName));
         }
       });
@@ -332,13 +333,13 @@ class Serializer {
     return data;
   }
 
-  String _encode(Object obj) {
+  String _encode(Object obj, [bool withReferenceable = false]) {
     if (obj == null) {
       return null;
     }
     if (obj is List) {
-      return _codec.encode(_encodeList(obj));
+      return _codec.encode(_encodeList(obj, withReferenceable));
     }
-    return _codec.encode(_toMap(obj));
+    return _codec.encode(_toMap(obj, withReferenceable));
   }
 }

@@ -132,6 +132,25 @@ class M2 {
   String m2;
 }
 
+@referenceable
+@serializable
+class Employee {
+  @reference
+  int id;
+  String name;
+  Address address;
+  Employee manager;
+}
+
+@referenceable
+@serializable
+class Address {
+  @reference
+  int id;
+  String location;
+  Employee owner;
+}
+
 main() {
   var serializer = new Serializer.TypedJson();
 
@@ -382,8 +401,8 @@ main() {
       try {
         TypedDontWantToBeSerialize _ = serializer.decode('{"@type":"TypedDontWantToBeSerialize","foo":"bar"}');
       } catch (e) {
-       expect(true, e is String);
-       // expect("Cannot instantiate abstract class DontWantToBeSerialize: _url 'null' line null", e);
+        expect(true, e is String);
+        // expect("Cannot instantiate abstract class DontWantToBeSerialize: _url 'null' line null", e);
       }
     });
   });
@@ -461,6 +480,36 @@ main() {
       expect(mixin.b, "B");
       expect(mixin.m1, "M1");
       expect(mixin.m2, "M2");
+    });
+  });
+
+  group("Referenceable", () {
+    test("Serialize", () {
+      Address addressManager = new Address()
+        ..id       = 1337
+        ..location = "Somewhere";
+
+      Address addressEmployee = new Address()
+        ..id       = 1338
+        ..location = "Somewhere else";
+
+      Employee manager = new Employee()
+        ..id      = 43
+        ..name    = "Alice Doo"
+        ..address = addressManager;
+      addressManager.owner = manager;
+
+      Employee employee = new Employee()
+        ..id      = 42
+        ..name    = "Bob Smith"
+        ..address = addressEmployee
+        ..manager = manager;
+      addressEmployee.owner = employee;
+
+      expect(serializer.encode(addressManager),  '{"@type":"Address","id":1337,"location":"Somewhere","owner":{"@type":"Employee","id":43}}');
+      expect(serializer.encode(addressEmployee), '{"@type":"Address","id":1338,"location":"Somewhere else","owner":{"@type":"Employee","id":42}}');
+      expect(serializer.encode(manager),         '{"@type":"Employee","id":43,"name":"Alice Doo","address":{"@type":"Address","id":1337}}');
+      expect(serializer.encode(employee),        '{"@type":"Employee","id":42,"name":"Bob Smith","address":{"@type":"Address","id":1338},"manager":{"@type":"Employee","id":43}}');
     });
   });
 }

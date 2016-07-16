@@ -10,7 +10,7 @@ import 'annotations.dart';
 final String MapTypeString  = {}.runtimeType.toString();
 final String ListTypeString = [].runtimeType.toString();
 
-bool isSerializableClassMirror(Map<String, ClassMirror> serializables, ClassMirror cm) {
+bool isSerializableClassMirror(Map<String, ClassSerialiazerInfo> serializables, ClassMirror cm) {
   return serializables.containsKey(cm.mixin.simpleName);
 }
 
@@ -35,15 +35,23 @@ String serializedName(DeclarationMirror dec) {
   }
 }
 
+bool isEncodeableField(Map<String, ClassSerialiazerInfo> serializables, ClassMirror cm, DeclarationMirror dec, bool withReferenceable) {
+  return withReferenceable || !serializables[cm.mixin.simpleName].isReferenceable || referenceMetadataManager.hasMetadata(dec);
+}
+
 _printToString(String data) => "$data\n";
 
 String printAndDumpSerializables() {
   String output = "";
   initSingletonClasses();
-  singletonClasses.values.forEach((classMirror) {
-    var cm = classMirror;
+  singletonClasses.values.forEach((classInfo) {
+    var cm = classInfo.classMirror;
     output += _printToString(cm.mixin.simpleName);
-    print(cm.mixin.simpleName);
+    if (classInfo.isReferenceable) {
+      print(cm.mixin.simpleName + " (with Reference)");
+    } else {
+      print(cm.mixin.simpleName);
+    }
     while (cm != null
         && cm.superclass != null
         && isSerializableClassMirror(singletonClasses, cm)) {
@@ -56,6 +64,7 @@ String printAndDumpSerializables() {
           bool isSetter  = false;
           bool isGetter  = false;
           bool isIgnored = ignoreMetadataManager.hasMetadata(decl);
+          bool isRef     = referenceMetadataManager.hasMetadata(decl);
           String renamed = serializedName(decl);
 
           if (decl is VariableMirror) {
@@ -81,6 +90,7 @@ String printAndDumpSerializables() {
 
           if (type != null) {
             var line = "    ";
+            line += isRef     ? "R" : "-";
             line += isSetter  ? "G" : "-";
             line += isGetter  ? "S" : "-";
             line += isIgnored ? "I" : "-";
@@ -98,14 +108,29 @@ String printAndDumpSerializables() {
 }
 
 // Singleton that maps every class annotated with @serializable
-final singletonClasses = <String, ClassMirror>{};
+class ClassSerialiazerInfo {
+  ClassMirror classMirror;
+  bool        isReferenceable;
+  ClassSerialiazerInfo(this.classMirror, this.isReferenceable);
+}
+
+final singletonClasses = <String, ClassSerialiazerInfo>{};
 initSingletonClasses() {
   if (singletonClasses.isEmpty) {
     for (ClassMirror classMirror in serializable.annotatedClasses) {
       if (classMirror != null
           && classMirror.simpleName != null
           && classMirror.metadata.contains(serializable)) {
-        singletonClasses[classMirror.simpleName] = classMirror;
+
+        // Searching for referenceable annotation
+        var isReferenceable = false;
+        var cm = classMirror;
+        while (cm != null && cm.superclass != null) {
+          isReferenceable = isReferenceable || referenceableMetadataManager.hasMetadata(cm);
+          cm = cm?.superclass;
+        }
+
+        singletonClasses[classMirror.simpleName] = new ClassSerialiazerInfo(classMirror, isReferenceable);
       }
     }
   }
