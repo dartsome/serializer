@@ -1,6 +1,6 @@
 name: serializer
 description: Serialization to JSON using reflectable
-version: 0.3.1
+version: 0.3.2
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>

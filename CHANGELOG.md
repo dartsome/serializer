@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+- Support cyclical objects (@referenceable & @reference annotations)
+- Support SerializedName class inheritance
+
 ## 0.3.1
 - Support mixins
 
