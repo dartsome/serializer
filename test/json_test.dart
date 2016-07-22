@@ -4,6 +4,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:test/test.dart';
+import 'package:serializer/codecs.dart';
 import 'package:serializer/serializer.dart';
 import "package:serializer/src/convert.dart";
 

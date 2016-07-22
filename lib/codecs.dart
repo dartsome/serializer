@@ -2,7 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library serializer.codec;
+library serializer.codecs;
 
-export 'type_codec.dart';
-export 'date_time.dart';
+export 'codecs/type_codec.dart';
+export 'codecs/date_time.dart';
+export 'codecs/date_time_utc.dart';
+export 'codecs/object_id.dart';
