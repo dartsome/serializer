@@ -3,7 +3,7 @@
 ## 0.4.0
 
 - Add DateTimeUtcCodec an UTC DateTime codec.
-- Add ObjectId A simple ObjectId codec (for Mongo BSON).
+- Add ObjectId a simple ObjectId codec (for Mongo BSON).
 
 **Breaking changes:**
 
