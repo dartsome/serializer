@@ -47,7 +47,7 @@ main() {
   print(b.toMap());
   print(c.toJson());
 
-  var sz = TypedJsonObject.serializer;
+  var sz = new Serializer.TypedJson();
   print(sz.toMap(a));
   print(sz.encode(a));
 

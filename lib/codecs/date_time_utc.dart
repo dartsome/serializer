@@ -4,8 +4,8 @@
 
 import 'type_codec.dart';
 
-/// A simple DateTime codec.
-class DateTimeCodec extends TypeCodec<DateTime> {
+/// A UTC DateTime codec.
+class DateTimeUtcCodec extends TypeCodec<DateTime> {
   DateTime decode(dynamic value) => DateTime.parse(value);
-  dynamic encode(DateTime value) => value.toIso8601String();
+  dynamic encode(DateTime value) => value.toUtc().toIso8601String();
 }

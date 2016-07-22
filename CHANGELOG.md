@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0
+
+- Add DateTimeUtcCodec an UTC DateTime codec.
+- Add ObjectId A simple ObjectId codec (for Mongo BSON).
+
+**Breaking changes:**
+
+- Move codecs/codec.dart to codecs.dart
+- In class Serialize, serializer getter is no more static.
+- Remove DateTimeCodec from Serializer.Json and Serializer.TypedJson factories
+
 ## 0.3.2
 - Support cyclical objects (@referenceable & @reference annotations)
 - Support SerializedName class inheritance

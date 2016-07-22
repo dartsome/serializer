@@ -4,6 +4,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:test/test.dart';
+import 'package:serializer/codecs.dart';
 import 'package:serializer/serializer.dart';
 import "package:serializer/src/convert.dart";
 
@@ -20,14 +21,11 @@ abstract class ProxyA extends Proxy {}
 class ModelInt extends ProxyA {
   int _bar;
 
-
   int get bar => _bar;
 
   set bar(int value) => _bar = value;
 
   ModelInt([this._bar = 42]);
-
- factory ModelInt.fromJson(String json) => JsonObject.serializer?.decode(json, ModelInt);
 }
 
 @serializable
@@ -40,7 +38,6 @@ class ModelDouble extends ProxyA {
 @serializable
 class ModelA extends ProxyA {
   String _foo;
-
 
   String get foo => _foo;
 
@@ -97,9 +94,15 @@ class WithIgnore extends ProxyA {
   WithIgnore([this.a, this.b, this.secret]);
 }
 
+Serializer _dateSerializer = new Serializer.Json()
+  ..addTypeCodec(DateTime, new DateTimeCodec());
+
 @serializable
 class Date extends ProxyA {
   DateTime date = new DateTime.now();
+
+  @ignore
+  Serializer get serializer => _dateSerializer;
 
   Date([this.date]);
 }
@@ -167,7 +170,8 @@ Serializer serializer;
 
 main() {
   setUpAll(() {
-    serializer = new Serializer.Json();
+    serializer = new Serializer.Json()
+        ..addTypeCodec(DateTime, new DateTimeCodec());
   });
 
   tearDownAll(() {
@@ -440,12 +444,6 @@ main() {
       ModelDouble d = serializer.decode(
           '{"bar":42.1}', ModelDouble);
       expect(d.bar, 42.1);
-    });
-
-    test("Test JsonObject", () {
-      ModelInt a = new ModelInt.fromJson('{"bar": 12}');
-
-      expect(a.bar, 12);
     });
   });
 
