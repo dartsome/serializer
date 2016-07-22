@@ -6,7 +6,6 @@ import 'dart:convert';
 
 import 'package:reflectable/reflectable.dart';
 import 'package:serializer/codecs/type_codec.dart';
-import 'package:serializer/codecs/date_time.dart';
 
 import 'annotations.dart';
 import "convert.dart";
@@ -19,7 +18,7 @@ final _SerializerTypedJson = new Serializer.TypedJson();
 abstract class Serialize {
   /// Get the serializer instance
   @ignore
-  static Serializer get serializer => null;
+  Serializer get serializer;
 
   /// Convert the object to a map
   Map toMap() => serializer?.toMap(this);
@@ -34,17 +33,16 @@ abstract class Serialize {
 @serializable
 abstract class JsonObject extends Serialize {
   /// Get the JSON serializer instance
-  ///
   @ignore
-  static Serializer get serializer => _SerializerJson;
+  Serializer get serializer => _SerializerJson;
 
   /// Convert the object to JSON string
   String toJson() => encode();
 
   /// Convert the object to a map
-  Map toMap() => serializer?.toMap(this);
+  Map toMap() => serializer.toMap(this);
 
-  String encode() => serializer?.encode(this);
+  String encode() => serializer.encode(this);
 }
 
 /// Utility class for a typed JSON object
@@ -52,13 +50,13 @@ abstract class JsonObject extends Serialize {
 abstract class TypedJsonObject extends Serialize {
   /// Get the typed JSON serializer instance
   @ignore
-  static Serializer get serializer => _SerializerTypedJson;
+  Serializer get serializer => _SerializerTypedJson;
 
   /// Convert the object to a map
-  Map toMap() => _SerializerTypedJson.toMap(this);
+  Map toMap() => serializer.toMap(this);
 
   /// Convert the object to JSON string
-  String toJson() => _SerializerTypedJson.encode(this);
+  String toJson() => serializer.encode(this);
 }
 
 /// Utility class to access to the serializer api
@@ -84,17 +82,15 @@ class Serializer {
     initSingletonClasses();
   }
 
-  /// Create a default JSON serializer plus a simple DateTime codec
+  /// Create a default JSON serializer
   factory Serializer.Json() {
-    return new Serializer()
-      ..addTypeCodec(DateTime, new DateTimeCodec());
+    return new Serializer(JSON);
   }
 
-  /// Create a default JSON serializer plus a simple DateTime codec
+  /// Create a default JSON serializer
   /// with '@type' added field
   factory Serializer.TypedJson() {
-    return new Serializer(JSON, "@type")
-      ..addTypeCodec(DateTime, new DateTimeCodec());
+    return new Serializer(JSON, "@type");
   }
 
   /// Registers a [typeCodec] for the specific [type]
