@@ -14,8 +14,8 @@ bool isSerializableClassMirror(Map<String, ClassSerialiazerInfo> serializables, 
   return serializables.containsKey(cm.mixin.simpleName);
 }
 
-bool isSerializableVariable(DeclarationMirror vm) {
-  return !vm.isPrivate;
+bool isSerializableVariable(VariableMirror vm) {
+  return !vm.isPrivate && !vm.isConst && !vm.isStatic;
 }
 
 bool isPrimaryType(Type obj) =>

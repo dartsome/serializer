@@ -166,6 +166,18 @@ class Address {
   Employee owner;
 }
 
+@serializable
+class WithStaticConst {
+  static const String GLOBAL = "GLOBAL";
+  String other;
+}
+
+@serializable
+class WithStatic {
+  static String global = "GLOBAL";
+  String other;
+}
+
 Serializer serializer;
 
 main() {
@@ -574,6 +586,38 @@ main() {
       expect(serializer.encode(addressEmployee), '{"id":1338,"location":"Somewhere else","owner":{"id":42}}');
       expect(serializer.encode(manager),         '{"id":43,"name":"Alice Doo","address":{"id":1337}}');
       expect(serializer.encode(employee),        '{"id":42,"name":"Bob Smith","address":{"id":1338},"manager":{"id":43}}');
+    });
+  });
+
+  group("Static", () {
+    test("Serialize const", () {
+      WithStaticConst static = new WithStaticConst()
+        ..other = "42";
+
+      expect(serializer.encode(static), '{"other":"42"}');
+    });
+
+    test("Deserialize const", () {
+      WithStaticConst static = serializer.decode(
+          '{"other":"42"}',
+          WithStaticConst);
+
+      expect(static.other, "42");
+    });
+
+    test("Serialize", () {
+      WithStatic static = new WithStatic()
+        ..other = "42";
+
+      expect(serializer.encode(static), '{"other":"42"}');
+    });
+
+    test("Deserialize", () {
+      WithStatic static = serializer.decode(
+          '{"other":"42"}',
+          WithStatic);
+
+      expect(static.other, "42");
     });
   });
 }
