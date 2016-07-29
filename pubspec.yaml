@@ -5,7 +5,7 @@ authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>
 
-homepage: https://github.com/walletek/serializer
+homepage: https://github.com/dartsome/serializer
 
 environment:
   sdk: '>=1.8.0 <2.0.0'
