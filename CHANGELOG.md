@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0+1
+
+- Minor fix when some value are Null.
+
 ## 0.4.0
 
 - Add DateTimeUtcCodec an UTC DateTime codec.
