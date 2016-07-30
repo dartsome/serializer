@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- Add `toPrimaryObject` method
+- fix some error with null
+
 ## 0.4.0+1
 
 - Minor fix when some value are Null.
