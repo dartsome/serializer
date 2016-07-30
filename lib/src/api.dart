@@ -195,9 +195,9 @@ class Serializer {
     try {
       return m.reflectedReturnType;
     } catch (e) {
-      try {
+      if (m.hasDynamicReflectedReturnType) {
         return m.dynamicReflectedReturnType;
-      } catch (e) {}
+      }
     }
     return m.returnType.reflectedType;
   }
