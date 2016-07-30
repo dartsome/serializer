@@ -22,7 +22,7 @@ abstract class Serialize {
   Serializer get serializer;
 
   /// Convert the object to a map
-  Map toMap() => serializer?.toMap(this);
+  Map toMap() => serializer?.toPrimaryObject(this) as Map;
 
   /// Override the toString method to show a stringify map of the object
   String toString() => toMap().toString();
@@ -41,7 +41,7 @@ abstract class JsonObject extends Serialize {
   String toJson() => encode();
 
   /// Convert the object to a map
-  Map toMap() => serializer.toMap(this);
+  Map toMap() => serializer.toPrimaryObject(this) as Map;
 
   String encode() => serializer.encode(this);
 }
@@ -94,22 +94,22 @@ class Serializer {
   }
 
   /// Registers a [typeCodec] for the specific [type]
-  addTypeCodec(Type type, TypeCodec typeCodec) =>
-    _typeCodecs[type.toString()] = typeCodec;
+  addTypeCodec(Type type, TypeCodec typeCodec) => _typeCodecs[type.toString()] = typeCodec;
 
   /// Checks if a TypeCodec is registered for the [type].
-  bool hasTypeCodec(Type type) =>
-    _typeCodecs.containsKey(type.toString());
+  bool hasTypeCodec(Type type) => _typeCodecs.containsKey(type.toString());
 
   /// Get the TypeCodec for the specific [type]
   TypeCodec typeCodec(Type type) => _typeCodecs[type.toString()];
 
   /// Checks if a class is registered as a Serializable class.
-  bool isSerializable(Type type) =>
-    _classes.containsKey(type.toString());
+  bool isSerializable(Type type) => _classes.containsKey(type.toString());
 
   /// Convert the object to a Map
   Map toMap(Object input) => _toMap(input, true);
+
+  /// Convert to a Map or a List recursively
+  Object toPrimaryObject(Object input) => _encodeValue(input, true);
 
   /// Encode the object to serialized string
   String encode(Object input) => _encode(input, true);
@@ -133,7 +133,7 @@ class Serializer {
     if (matches == null || matches.isEmpty) {
       return null;
     }
-    return [ _decodeType(matches.first.group(1)), _decodeType(matches.first.group(2))];
+    return [_decodeType(matches.first.group(1)), _decodeType(matches.first.group(2))];
   }
 
   Type _findGenericOfList(Type type) {
@@ -234,16 +234,13 @@ class Serializer {
     }
 
     var visitedNames = [];
-    while (cm != null
-      && cm.superclass != null
-      && isSerializableClassMirror(_classes, cm)) {
+    while (cm != null && cm.superclass != null && isSerializableClassMirror(_classes, cm)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         var name = serializedName(dec);
-        if (map.containsKey(name)
-          && !visitedNames.contains(name)
-          && !ignoreMetadataManager.hasMetadata(dec)
-          && ((dec is VariableMirror && isSerializableVariable(dec))
-            || (dec is MethodMirror))) {
+        if (map.containsKey(name) &&
+            !visitedNames.contains(name) &&
+            !ignoreMetadataManager.hasMetadata(dec) &&
+            ((dec is VariableMirror && isSerializableVariable(dec)) || (dec is MethodMirror))) {
           Type internalType = _getMethodMirrorReturnType(cm.instanceMembers[originalName]);
           var value = _decodeValue(map[name], internalType);
           if (value != null) {
@@ -297,8 +294,7 @@ class Serializer {
   }
 
   List _encodeList(List list, [bool withReferenceable = false]) {
-    return list.map((elem) => _encodeValue(elem, withReferenceable))
-      .toList(growable: false).where((Object obj) => obj != null).toList();
+    return list.map((elem) => _encodeValue(elem, withReferenceable)).toList(growable: false);
   }
 
   _encodeMap(Map data, key, value) {
@@ -325,17 +321,14 @@ class Serializer {
       data[_typeInfoKey] = obj.runtimeType.toString();
     }
 
-    while (cm != null
-      && cm.superclass != null
-      && isSerializableClassMirror(_classes, cm)) {
+    while (cm != null && cm.superclass != null && isSerializableClassMirror(_classes, cm)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         var name = serializedName(dec);
 
-        if (!data.containsKey(name)
-          && !ignoreMetadataManager.hasMetadata(dec)
-          && ((dec is VariableMirror && isSerializableVariable(dec))
-            || (dec is MethodMirror && dec.isGetter))
-          && isEncodeableField(_classes, cm, dec, withReferenceable)) {
+        if (!data.containsKey(name) &&
+            !ignoreMetadataManager.hasMetadata(dec) &&
+            ((dec is VariableMirror && isSerializableVariable(dec)) || (dec is MethodMirror && dec.isGetter)) &&
+            isEncodeableField(_classes, cm, dec, withReferenceable)) {
           _encodeMap(data, name, mir.invokeGetter(originalName));
         }
       });

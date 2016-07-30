@@ -85,7 +85,6 @@ class NullTest extends ProxyA {
   NullTest();
 }
 
-
 @serializable
 class ModelRenamed extends ModelE {
   @SerializedName("new")
@@ -104,8 +103,7 @@ class WithIgnore extends ProxyA {
   WithIgnore([this.a, this.b, this.secret]);
 }
 
-Serializer _dateSerializer = new Serializer.Json()
-  ..addTypeCodec(DateTime, new DateTimeCodec());
+Serializer _dateSerializer = new Serializer.Json()..addTypeCodec(DateTime, new DateTimeCodec());
 
 @serializable
 class Date extends ProxyA {
@@ -192,14 +190,12 @@ Serializer serializer;
 
 main() {
   setUpAll(() {
-    serializer = new Serializer.Json()
-        ..addTypeCodec(DateTime, new DateTimeCodec());
+    serializer = new Serializer.Json()..addTypeCodec(DateTime, new DateTimeCodec());
   });
 
   tearDownAll(() {
     printAndDumpSerializables();
   });
-
 
   group("Serialize", () {
     test("simple test", () {
@@ -220,9 +216,7 @@ main() {
       List<ModelA> list = [new ModelA("toto"), new ModelA()];
 
       String json = serializer.encode(list);
-      expect(
-          '[{"foo":"toto"},{"foo":"bar"}]',
-          json);
+      expect('[{"foo":"toto"},{"foo":"bar"}]', json);
     });
 
     test("inner list 1", () {
@@ -230,9 +224,7 @@ main() {
       ModelD test = new ModelD(list);
       String json = test.toJson();
 
-      expect(
-          '{"tests":[{"foo":"toto"},{"foo":"bar"}]}',
-          json);
+      expect('{"tests":[{"foo":"toto"},{"foo":"bar"}]}', json);
     });
 
     test("inner list 2", () {
@@ -249,9 +241,7 @@ main() {
 
     test("inner class serializable", () {
       ModelC c = new ModelC();
-      expect(
-          '{"foo":{"foo":"bar"},"plop":"titi"}',
-          c.toJson());
+      expect('{"foo":{"foo":"bar"},"plop":"titi"}', c.toJson());
       expect({
         "foo": {"foo": "bar"},
         "plop": "titi"
@@ -261,59 +251,47 @@ main() {
     test("list class non-serializable", () {
       List list = [new ModelB(), new ModelB()];
       String json = serializer.encode(list);
-      expect(
-          '[{"toto":"tata"},{"toto":"tata"}]',
-          json);
+      expect('[{"toto":"tata"},{"toto":"tata"}]', json);
     });
 
     test("list inner list", () {
       List listA = [new ModelB(), new ModelB()];
       List listB = [new ModelB(), listA];
       String json = serializer.encode(listB);
-      expect(
-          '[{"toto":"tata"},[{"toto":"tata"},{"toto":"tata"}]]',
-          json);
+      expect('[{"toto":"tata"},[{"toto":"tata"},{"toto":"tata"}]]', json);
     });
 
     test("list class serializable", () {
       List list = [new ModelC(), new ModelC()];
       String json = serializer.encode(list);
-      expect(
-          '[{"foo":{"foo":"bar"},"plop":"titi"},{"foo":{"foo":"bar"},"plop":"titi"}]',
-          json);
+      expect('[{"foo":{"foo":"bar"},"plop":"titi"},{"foo":{"foo":"bar"},"plop":"titi"}]', json);
     });
 
     test("Datetime", () {
       Date date = new Date(new DateTime(2016, 1, 1));
-      expect({"date": "2016-01-01T00:00:00.000"},
-          date.toMap());
-      expect('{"date":"2016-01-01T00:00:00.000"}',
-          date.toJson());
+      expect({"date": "2016-01-01T00:00:00.000"}, date.toMap());
+      expect('{"date":"2016-01-01T00:00:00.000"}', date.toJson());
     });
 
     test("Max Superclass", () {
       TestMaxSuperClass _test = new TestMaxSuperClass();
-      expect(
-          '{"serialize":"okay"}',
-          serializer.encode(_test));
-      expect({"serialize":"okay"}, serializer.toMap(_test));
+      expect('{"serialize":"okay"}', serializer.encode(_test));
+      expect({"serialize": "okay"}, serializer.toMap(_test));
     });
 
     test("Ignore attribute", () {
       WithIgnore _ignore = new WithIgnore("1337", "42", "ThisIsASecret");
-      expect(
-          '{"a":"1337","b":"42"}',
-          serializer.encode(_ignore));
-      expect({"a":"1337", "b":"42"}, serializer.toMap(_ignore));
+      expect('{"a":"1337","b":"42"}', serializer.encode(_ignore));
+      expect({"a": "1337", "b": "42"}, serializer.toMap(_ignore));
     });
 
     test("Serialized name", () {
-      ModelRenamed _model = new ModelRenamed("Hello")
-        ..tests = ["A", "B", "C"];
-      expect(
-          '{"new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
-      expect(
-          {"new":"Hello", "tests":["A", "B", "C"]}, serializer.toMap(_model));
+      ModelRenamed _model = new ModelRenamed("Hello")..tests = ["A", "B", "C"];
+      expect('{"new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
+      expect({
+        "new": "Hello",
+        "tests": ["A", "B", "C"]
+      }, serializer.toMap(_model));
     });
 
     test("Test Double", () {
@@ -323,32 +301,63 @@ main() {
 
     test("Null Test", () {
       NullTest d = new NullTest();
-      d.testModel = [ null ];
+      d.testModel = [null];
       d.test = "test";
-      expect(serializer.encode(d), '{"test":"test","testModel":[]}');
+      expect(serializer.encode(d), '{"test":"test","testModel":[null]}');
     });
+
+    test("toPrimaryObject 1", () {
+      expect(serializer.toPrimaryObject(new ModelA()), equals({"foo": "bar"}));
+      expect(serializer.toPrimaryObject(new ModelD([new ModelA(), null])), equals({"tests": [{"foo": "bar"}, null]}));
+      expect(serializer.toPrimaryObject(1), equals(1));
+      expect(serializer.toPrimaryObject("Test"), equals("Test"));
+      expect(serializer.toPrimaryObject({"foo": "bar"}), equals({"foo": "bar"}));
+      expect(serializer.toPrimaryObject(42.42), equals(42.42));
+      expect(serializer.toPrimaryObject(null), isNull);
+    });
+
+    test("toPrimaryObject 2", () {
+      List<NullTest> d = [
+        new NullTest()..test = "test",
+        null,
+        new NullTest()..testModel = [new ModelA(), null, new ModelA("toto")]
+      ];
+
+      var obj = serializer.toPrimaryObject(d);
+      expect(obj is List, isTrue);
+      expect((obj as List).length, equals(3));
+      expect((obj as List)[0] is Map, isTrue);
+      expect((obj as List)[0], equals({"test": "test"}));
+      expect((obj as List)[1], isNull);
+      expect((obj as List)[2] is Map, isTrue);
+      expect(
+          ((obj as List)[2] as Map)["testModel"],
+          equals([
+            {"foo": "bar"},
+            null,
+            {"foo": "toto"}
+          ]));
+    });
+
   });
 
   group("Deserialize", () {
     test("simple test - fromJson", () {
-      ModelA a =
-      serializer.decode('{"foo":"toto"}', ModelA);
+      ModelA a = serializer.decode('{"foo":"toto"}', ModelA);
 
       expect(ModelA, a.runtimeType);
       expect("toto", a.foo);
     });
 
     test("simple test - fromMap - without type field", () {
-      ModelA a =
-      serializer.fromMap({"foo": "toto"}, ModelA);
+      ModelA a = serializer.fromMap({"foo": "toto"}, ModelA);
 
       expect(ModelA, a.runtimeType);
       expect("toto", a.foo);
     });
 
     test("simple test - fromMap", () {
-      ModelA a =
-      serializer.fromMap({"foo": "toto"}, ModelA);
+      ModelA a = serializer.fromMap({"foo": "toto"}, ModelA);
 
       expect(ModelA, a.runtimeType);
       expect("toto", a.foo);
@@ -363,8 +372,7 @@ main() {
     });
 
     test("list - fromJson", () {
-      List<ModelA> list = serializer.decode(
-          '[{"foo":"toto"},{"foo":"bar"}]', ModelA) as List<ModelA>;
+      List<ModelA> list = serializer.decode('[{"foo":"toto"},{"foo":"bar"}]', ModelA) as List<ModelA>;
 
       expect(2, list.length);
       expect("toto", list[0]?.foo);
@@ -375,12 +383,10 @@ main() {
     });
 
     test("list - fromList", () {
-      List list = serializer.fromList(
-          [
-            {"@dart_type":"ModelA", "foo":"toto"},
-            {"@dart_type":"ModelA", "foo":"bar"}
-          ],
-          ModelA);
+      List list = serializer.fromList([
+        {"@dart_type": "ModelA", "foo": "toto"},
+        {"@dart_type": "ModelA", "foo": "bar"}
+      ], ModelA);
 
       expect(2, list.length);
       expect("toto", list[0]?.foo);
@@ -391,8 +397,7 @@ main() {
     });
 
     test("inner list 1", () {
-      ModelD test = serializer.decode(
-          '{"tests":[{"foo":"toto"},{"foo":"bar"}]}', ModelD);
+      ModelD test = serializer.decode('{"tests":[{"foo":"toto"},{"foo":"bar"}]}', ModelD);
 
       expect(2, test?.tests?.length);
       expect(ModelA, test?.tests[0]?.runtimeType);
@@ -402,8 +407,7 @@ main() {
     });
 
     test("inner list 2", () {
-      ModelE test = serializer.decode(
-          '{"tests":["toto","bar"]}', ModelE);
+      ModelE test = serializer.decode('{"tests":["toto","bar"]}', ModelE);
 
       expect(2, test?.tests?.length);
       expect("toto", test?.tests[0]);
@@ -411,40 +415,34 @@ main() {
     });
 
     test("inner class non-serializable", () {
-      ModelB b = serializer.decode(
-          '{"toto":"tata","foo":{"toto":"tata"}}', ModelB);
+      ModelB b = serializer.decode('{"toto":"tata","foo":{"toto":"tata"}}', ModelB);
 
       expect("tata", b.foo.toto);
     });
 
     test("inner class serializable", () {
-      ModelC c = serializer.decode(
-          '{"foo":{"foo":"toto"},"plop":"bar"}', ModelC);
+      ModelC c = serializer.decode('{"foo":{"foo":"toto"},"plop":"bar"}', ModelC);
       expect(ModelA, c.foo.runtimeType);
       expect("toto", c.foo.foo);
       expect("bar", c.plop);
     });
 
     test("Datetime", () {
-      Date date = serializer.decode(
-          '{"date":"2016-01-01T00:00:00.000"}', Date);
+      Date date = serializer.decode('{"date":"2016-01-01T00:00:00.000"}', Date);
 
       expect("2016-01-01T00:00:00.000", date.date.toIso8601String());
-      expect('{"date":"2016-01-01T00:00:00.000"}',
-          date.toJson());
+      expect('{"date":"2016-01-01T00:00:00.000"}', date.toJson());
     });
 
     test("Max Superclass", () {
-      TestMaxSuperClass _test = serializer.decode(
-          '{"serialize":"okay","foo":"nobar"}', TestMaxSuperClass);
+      TestMaxSuperClass _test = serializer.decode('{"serialize":"okay","foo":"nobar"}', TestMaxSuperClass);
 
       expect("okay", _test.serialize);
       expect("bar", _test.foo);
     });
 
     test("Ignore attribute", () {
-      WithIgnore _ignore = serializer.decode(
-          '{"a":"1337","b":"42","secret":"ignore"}', WithIgnore);
+      WithIgnore _ignore = serializer.decode('{"a":"1337","b":"42","secret":"ignore"}', WithIgnore);
 
       expect("1337", _ignore.a);
       expect("42", _ignore.b);
@@ -452,8 +450,7 @@ main() {
     });
 
     test("Serialized name", () {
-      ModelRenamed _model = serializer.decode(
-          '{"new":"Hello","tests":["A","B","C"]}', ModelRenamed);
+      ModelRenamed _model = serializer.decode('{"new":"Hello","tests":["A","B","C"]}', ModelRenamed);
 
       expect("Hello", _model.original);
       expect(["A", "B", "C"], _model.tests);
@@ -461,8 +458,7 @@ main() {
 
     test("Test reflectable error", () {
       try {
-        DontWantToBeSerialize _ = serializer.decode(
-            '{"foo":"bar"}', DontWantToBeSerialize);
+        DontWantToBeSerialize _ = serializer.decode('{"foo":"bar"}', DontWantToBeSerialize);
       } catch (e) {
         expect(true, e is String);
         // expect("Cannot instantiate abstract class DontWantToBeSerialize: _url 'null' line null", e);
@@ -470,8 +466,7 @@ main() {
     });
 
     test("Test Double", () {
-      ModelDouble d = serializer.decode(
-          '{"bar":42.1}', ModelDouble);
+      ModelDouble d = serializer.decode('{"bar":42.1}', ModelDouble);
       expect(d.bar, 42.1);
     });
 
@@ -484,34 +479,23 @@ main() {
   group("Complex", () {
     test("Serialize", () {
       var complex = new Complex()
-        ..nums = [ 1, 2.2, 3]
-        ..strings = [ "1", "2", "3"]
-        ..bools = [ true, false, true]
-        ..ints = [ 1, 2, 3]
-        ..doubles = [ 1.1, 2.2, 3.3]
-        ..dates = [
-          new DateTime(2016, 12, 24),
-          new DateTime(2016, 12, 25),
-          new DateTime(2016, 12, 26)
-        ]
-        ..ignores = [
-          new WithIgnore("1337A", "42A", "ThisIsASecretA"),
-          new WithIgnore("1337B", "42B", "ThisIsASecretB")
-        ]
-        ..numSet = { "numA": 1, "numB": 12.2}
-        ..stringSet = { "strA": "1", "strB": "3"}
-        ..boolSet = { "ok": true, "nok": false}
-        ..intSet = { "intA": 1, "intB": 12}
-        ..doubleSet = { "dblA": 1.1, "dblB": 12.1}
-        ..dateSet = {
-          "fiesta": new DateTime(2016, 12, 24),
-          "christmas": new DateTime(2016, 12, 25)
-        }
-        ..ignoreSet = {
-          "A": new WithIgnore("1337A", "42A", "ThisIsASecretA"),
-          "B": new WithIgnore("1337B", "42B", "ThisIsASecretB")
-        }
-        ..listInnerMap = { "test": ["123456"]};
+        ..nums = [1, 2.2, 3]
+        ..strings = ["1", "2", "3"]
+        ..bools = [true, false, true]
+        ..ints = [1, 2, 3]
+        ..doubles = [1.1, 2.2, 3.3]
+        ..dates = [new DateTime(2016, 12, 24), new DateTime(2016, 12, 25), new DateTime(2016, 12, 26)]
+        ..ignores = [new WithIgnore("1337A", "42A", "ThisIsASecretA"), new WithIgnore("1337B", "42B", "ThisIsASecretB")]
+        ..numSet = {"numA": 1, "numB": 12.2}
+        ..stringSet = {"strA": "1", "strB": "3"}
+        ..boolSet = {"ok": true, "nok": false}
+        ..intSet = {"intA": 1, "intB": 12}
+        ..doubleSet = {"dblA": 1.1, "dblB": 12.1}
+        ..dateSet = {"fiesta": new DateTime(2016, 12, 24), "christmas": new DateTime(2016, 12, 25)}
+        ..ignoreSet = {"A": new WithIgnore("1337A", "42A", "ThisIsASecretA"), "B": new WithIgnore("1337B", "42B", "ThisIsASecretB")}
+        ..listInnerMap = {
+          "test": ["123456"]
+        };
       var json = serializer.encode(complex);
       expect(json,
           '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.1,"dblB":12.1},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
@@ -522,33 +506,26 @@ main() {
           '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}',
           Complex);
 
-      expect(complex.nums, [ 1, 2.2, 3]);
-      expect(complex.strings, [ "1", "2", "3"]);
-      expect(complex.bools, [ true, false, true]);
-      expect(complex.ints, [ 1, 2, 3]);
-      expect(complex.doubles, [ 1.1, 2.2, 3.3]);
-      expect(complex.dates, [
-        new DateTime(2016, 12, 24),
-        new DateTime(2016, 12, 25),
-        new DateTime(2016, 12, 26)
-      ]);
+      expect(complex.nums, [1, 2.2, 3]);
+      expect(complex.strings, ["1", "2", "3"]);
+      expect(complex.bools, [true, false, true]);
+      expect(complex.ints, [1, 2, 3]);
+      expect(complex.doubles, [1.1, 2.2, 3.3]);
+      expect(complex.dates, [new DateTime(2016, 12, 24), new DateTime(2016, 12, 25), new DateTime(2016, 12, 26)]);
       expect(complex.ignores[0].a, "1337A");
       expect(complex.ignores[0].b, "42A");
       expect(complex.ignores[0].secret, null);
       expect(complex.ignores[1].a, "1337B");
       expect(complex.ignores[1].b, "42B");
       expect(complex.ignores[1].secret, null);
-      expect(complex.listInnerMap["test"], [ "123456"]);
+      expect(complex.listInnerMap["test"], ["123456"]);
 
-      expect(complex.numSet, { "numA": 1, "numB": 12.2});
-      expect(complex.stringSet, { "strA": "1", "strB": "3"});
-      expect(complex.boolSet, { "ok": true, "nok": false});
-      expect(complex.intSet, { "intA": 1, "intB": 12});
-      expect(complex.doubleSet, { "dblA": 1.0, "dblB": 12.0});
-      expect(complex.dateSet, {
-        "fiesta": new DateTime(2016, 12, 24),
-        "christmas": new DateTime(2016, 12, 25)
-      });
+      expect(complex.numSet, {"numA": 1, "numB": 12.2});
+      expect(complex.stringSet, {"strA": "1", "strB": "3"});
+      expect(complex.boolSet, {"ok": true, "nok": false});
+      expect(complex.intSet, {"intA": 1, "intB": 12});
+      expect(complex.doubleSet, {"dblA": 1.0, "dblB": 12.0});
+      expect(complex.dateSet, {"fiesta": new DateTime(2016, 12, 24), "christmas": new DateTime(2016, 12, 25)});
       expect(complex.ignoreSet["A"].a, "1337A");
       expect(complex.ignoreSet["A"].b, "42A");
       expect(complex.ignoreSet["A"].secret, null);
@@ -561,18 +538,16 @@ main() {
   group("Mixin", () {
     test("Serialize", () {
       var mixin = new Mixin()
-          ..a = "A"
-          ..b = "B"
-          ..m1 = "M1"
-          ..m2 = "M2";
+        ..a = "A"
+        ..b = "B"
+        ..m1 = "M1"
+        ..m2 = "M2";
       var json = serializer.encode(mixin);
       expect(json, '{"a":"A","b":"B","m2":"M2","m1":"M1"}');
     });
 
     test("Deserialize", () {
-      Mixin mixin = serializer.decode(
-          '{"a":"A","b":"B","m2":"M2","m1":"M1"}',
-          Mixin);
+      Mixin mixin = serializer.decode('{"a":"A","b":"B","m2":"M2","m1":"M1"}', Mixin);
 
       expect(mixin.a, "A");
       expect(mixin.b, "B");
@@ -584,60 +559,54 @@ main() {
   group("Referenceable", () {
     test("Serialize", () {
       Address addressManager = new Address()
-        ..id       = 1337
+        ..id = 1337
         ..location = "Somewhere";
 
       Address addressEmployee = new Address()
-        ..id       = 1338
+        ..id = 1338
         ..location = "Somewhere else";
 
       Employee manager = new Employee()
-        ..id      = 43
-        ..name    = "Alice Doo"
+        ..id = 43
+        ..name = "Alice Doo"
         ..address = addressManager;
       addressManager.owner = manager;
 
       Employee employee = new Employee()
-        ..id      = 42
-        ..name    = "Bob Smith"
+        ..id = 42
+        ..name = "Bob Smith"
         ..address = addressEmployee
         ..manager = manager;
       addressEmployee.owner = employee;
 
-      expect(serializer.encode(addressManager),  '{"id":1337,"location":"Somewhere","owner":{"id":43}}');
+      expect(serializer.encode(addressManager), '{"id":1337,"location":"Somewhere","owner":{"id":43}}');
       expect(serializer.encode(addressEmployee), '{"id":1338,"location":"Somewhere else","owner":{"id":42}}');
-      expect(serializer.encode(manager),         '{"id":43,"name":"Alice Doo","address":{"id":1337}}');
-      expect(serializer.encode(employee),        '{"id":42,"name":"Bob Smith","address":{"id":1338},"manager":{"id":43}}');
+      expect(serializer.encode(manager), '{"id":43,"name":"Alice Doo","address":{"id":1337}}');
+      expect(serializer.encode(employee), '{"id":42,"name":"Bob Smith","address":{"id":1338},"manager":{"id":43}}');
     });
   });
 
   group("Static", () {
     test("Serialize const", () {
-      WithStaticConst static = new WithStaticConst()
-        ..other = "42";
+      WithStaticConst static = new WithStaticConst()..other = "42";
 
       expect(serializer.encode(static), '{"other":"42"}');
     });
 
     test("Deserialize const", () {
-      WithStaticConst static = serializer.decode(
-          '{"other":"42"}',
-          WithStaticConst);
+      WithStaticConst static = serializer.decode('{"other":"42"}', WithStaticConst);
 
       expect(static.other, "42");
     });
 
     test("Serialize", () {
-      WithStatic static = new WithStatic()
-        ..other = "42";
+      WithStatic static = new WithStatic()..other = "42";
 
       expect(serializer.encode(static), '{"other":"42"}');
     });
 
     test("Deserialize", () {
-      WithStatic static = serializer.decode(
-          '{"other":"42"}',
-          WithStatic);
+      WithStatic static = serializer.decode('{"other":"42"}', WithStatic);
 
       expect(static.other, "42");
     });
