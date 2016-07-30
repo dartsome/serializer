@@ -1,4 +1,5 @@
 // Copyright (c) 2016, the Serializer project authors.  Please see the AUTHORS file
+
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -74,7 +75,6 @@ class Serializer {
   final Codec _codec;
   final Map<String, TypeCodec> _typeCodecs = <String, TypeCodec>{};
 
-
   /// Create a Serializer with a optional codec and type info key.
   /// The type info key is an added field (i.e. "@type") during the serialization,
   /// storing the type of the Dart Object
@@ -95,18 +95,18 @@ class Serializer {
 
   /// Registers a [typeCodec] for the specific [type]
   addTypeCodec(Type type, TypeCodec typeCodec) =>
-      _typeCodecs[type.toString()] = typeCodec;
+    _typeCodecs[type.toString()] = typeCodec;
 
   /// Checks if a TypeCodec is registered for the [type].
   bool hasTypeCodec(Type type) =>
-      _typeCodecs.containsKey(type.toString());
+    _typeCodecs.containsKey(type.toString());
 
   /// Get the TypeCodec for the specific [type]
   TypeCodec typeCodec(Type type) => _typeCodecs[type.toString()];
 
   /// Checks if a class is registered as a Serializable class.
   bool isSerializable(Type type) =>
-      _classes.containsKey(type.toString());
+    _classes.containsKey(type.toString());
 
   /// Convert the object to a Map
   Map toMap(Object input) => _toMap(input, true);
@@ -122,7 +122,6 @@ class Serializer {
 
   /// Convert a serialized object's [list] to a list of the given [type]
   List fromList(List list, [Type type]) => _fromList(list, type);
-
 
   ///////////////////
   // Private
@@ -191,6 +190,18 @@ class Serializer {
     return _decodeValue(value, type);
   }
 
+  //fixme: dirty
+  Type _getMethodMirrorReturnType(MethodMirror m) {
+    try {
+      return m.reflectedReturnType;
+    } catch (e) {
+      try {
+        return m.dynamicReflectedReturnType;
+      } catch (e) {}
+    }
+    return m.returnType.reflectedType;
+  }
+
   Object _fromMap(Map map, [Type type, List<Type> mapOf]) {
     if (map == null || map.isEmpty) {
       return null;
@@ -224,16 +235,17 @@ class Serializer {
 
     var visitedNames = [];
     while (cm != null
-        && cm.superclass != null
-        && isSerializableClassMirror(_classes, cm)) {
+      && cm.superclass != null
+      && isSerializableClassMirror(_classes, cm)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         var name = serializedName(dec);
-        if (   map.containsKey(name)
-            && !visitedNames.contains(name)
-            && !ignoreMetadataManager.hasMetadata(dec)
-            && (   (dec is VariableMirror && isSerializableVariable(dec))
-                || (dec is MethodMirror))) {
-          var value = _decodeValue(map[name], cm.instanceMembers[originalName].reflectedReturnType);
+        if (map.containsKey(name)
+          && !visitedNames.contains(name)
+          && !ignoreMetadataManager.hasMetadata(dec)
+          && ((dec is VariableMirror && isSerializableVariable(dec))
+            || (dec is MethodMirror))) {
+          Type internalType = _getMethodMirrorReturnType(cm.instanceMembers[originalName]);
+          var value = _decodeValue(map[name], internalType);
           if (value != null) {
             instance.invokeSetter(originalName, value);
             visitedNames.add(name);
@@ -253,6 +265,9 @@ class Serializer {
   }
 
   Object _decodeValue(Object value, Type type) {
+    if (value == null) {
+      return null;
+    }
     type ??= _decodeType(value.runtimeType.toString());
     if (hasTypeCodec(type)) {
       return typeCodec(type).decode(value);
@@ -283,7 +298,7 @@ class Serializer {
 
   List _encodeList(List list, [bool withReferenceable = false]) {
     return list.map((elem) => _encodeValue(elem, withReferenceable))
-        .toList(growable: false);
+      .toList(growable: false).where((Object obj) => obj != null).toList();
   }
 
   _encodeMap(Map data, key, value) {
@@ -311,16 +326,16 @@ class Serializer {
     }
 
     while (cm != null
-        && cm.superclass != null
-        && isSerializableClassMirror(_classes, cm)) {
+      && cm.superclass != null
+      && isSerializableClassMirror(_classes, cm)) {
       cm.declarations.forEach((String originalName, DeclarationMirror dec) {
         var name = serializedName(dec);
 
-        if (   !data.containsKey(name)
-            && !ignoreMetadataManager.hasMetadata(dec)
-            && (   (dec is VariableMirror && isSerializableVariable(dec))
-                || (dec is MethodMirror && dec.isGetter))
-            && isEncodeableField(_classes, cm, dec, withReferenceable)) {
+        if (!data.containsKey(name)
+          && !ignoreMetadataManager.hasMetadata(dec)
+          && ((dec is VariableMirror && isSerializableVariable(dec))
+            || (dec is MethodMirror && dec.isGetter))
+          && isEncodeableField(_classes, cm, dec, withReferenceable)) {
           _encodeMap(data, name, mir.invokeGetter(originalName));
         }
       });

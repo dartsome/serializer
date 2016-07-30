@@ -77,6 +77,16 @@ class ModelE extends ProxyA {
 }
 
 @serializable
+class NullTest extends ProxyA {
+  List<String> tests = null;
+  String test = null;
+  List<ModelA> testModel = null;
+
+  NullTest();
+}
+
+
+@serializable
 class ModelRenamed extends ModelE {
   @SerializedName("new")
   String original;
@@ -310,6 +320,13 @@ main() {
       ModelDouble d = new ModelDouble();
       expect({"bar": 42.42}, serializer.toMap(d));
     });
+
+    test("Null Test", () {
+      NullTest d = new NullTest();
+      d.testModel = [ null ];
+      d.test = "test";
+      expect(serializer.encode(d), '{"test":"test","testModel":[]}');
+    });
   });
 
   group("Deserialize", () {
@@ -456,6 +473,11 @@ main() {
       ModelDouble d = serializer.decode(
           '{"bar":42.1}', ModelDouble);
       expect(d.bar, 42.1);
+    });
+
+    test("Null Test", () {
+      ModelD d = serializer.decode('{"tests":null}', ModelD);
+      expect(d.tests, isNull);
     });
   });
 
