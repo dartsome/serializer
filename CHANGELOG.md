@@ -3,6 +3,7 @@
 ## 0.4.0+1
 
 - Minor fix when some value are Null.
+- Don't serialize static and const field
 
 ## 0.4.0
 
