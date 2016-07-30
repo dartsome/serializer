@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/walletek/serializer.svg?branch=master)](https://travis-ci.org/walletek/serializer?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/walletek/serializer/badge.svg?branch=master)](https://coveralls.io/github/walletek/serializer?branch=master)
+[![Build Status](https://travis-ci.org/dartsome/serializer.svg?branch=master)](https://travis-ci.org/dartsome/serializer?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dartsome/serializer/badge.svg?branch=master)](https://coveralls.io/github/dartsome/serializer?branch=master)
 [![Pub version](https://img.shields.io/pub/v/serializer.svg)](https://pub.dartlang.org/packages/serializer)
 
 # Serializer
