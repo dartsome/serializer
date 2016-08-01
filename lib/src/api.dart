@@ -272,9 +272,9 @@ class Serializer {
       return _fromMap(value, Map, _findGenericOfMap(type));
     } else if (type.toString().startsWith("List")) {
       return _fromList(value, _findGenericOfList(type));
-    } else if (isSerializable(type)) {
+    } else if (isSerializable(type) && value is Map) {
       return _fromMap(value, type);
-    } else if (type == null || isPrimaryType(type)) {
+    } else if (type == null || isPrimaryType(type) || isSerializable(type)) {
       return value;
     }
     return null;

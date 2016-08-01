@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1+1
+
+- fix decode when content is already decode.
+
 ## 0.4.1
 
 - Add `toPrimaryObject` method

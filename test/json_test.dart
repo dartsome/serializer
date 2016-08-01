@@ -610,5 +610,17 @@ main() {
 
       expect(static.other, "42");
     });
+
+    test("Already Decode", () {
+      List a = [new ModelA()];
+      List<ModelA> b = serializer.fromList(a, ModelA) as List<ModelA>;
+
+      expect(a, equals(b));
+
+      Map c = { "test": new ModelA()};
+      Map<String, ModelA> d = serializer.fromMap(c, Map, [String, ModelA]) as Map<String, ModelA>;
+
+      expect(c, equals(d));
+    });
   });
 }
