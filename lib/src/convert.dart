@@ -130,6 +130,7 @@ initSingletonClasses() {
           cm = cm?.superclass;
         }
 
+        singletonClasses[classMirror.reflectedType.toString()] = new ClassSerialiazerInfo(classMirror, isReferenceable);
         singletonClasses[classMirror.simpleName] = new ClassSerialiazerInfo(classMirror, isReferenceable);
       }
     }

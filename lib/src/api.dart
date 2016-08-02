@@ -268,12 +268,14 @@ class Serializer {
     type ??= _decodeType(value.runtimeType.toString());
     if (hasTypeCodec(type)) {
       return typeCodec(type).decode(value);
+    } else if (isSerializable(type) && value is Map) {
+      return _fromMap(value, type);
+    } else if (isSerializable(type) && value is List) {
+      return _fromList(value, type);
     } else if (type.toString().startsWith("Map")) {
       return _fromMap(value, Map, _findGenericOfMap(type));
     } else if (type.toString().startsWith("List")) {
       return _fromList(value, _findGenericOfList(type));
-    } else if (isSerializable(type) && value is Map) {
-      return _fromMap(value, type);
     } else if (type == null || isPrimaryType(type) || isSerializable(type)) {
       return value;
     }
