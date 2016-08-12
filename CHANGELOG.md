@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.2
+
+**Breaking changes:**
+
+- Add useTypeInfo boolean to Serializer constructor.
+- Replace optional parameters with named parameters into Serializer methods.
+- useTypeInfo flag into Serializer methods could overidde the global useTypeInfo from instance. 
+
 ## 0.4.1+1
 
 - fix decode when content is already decode.
