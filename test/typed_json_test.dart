@@ -288,7 +288,7 @@ main() {
 
     test("simple test - fromMap - without type field", () {
       TypedModelA a =
-      serializer.fromMap({"foo": "toto"}, TypedModelA);
+      serializer.fromMap({"foo": "toto"}, type: TypedModelA);
 
       expect(TypedModelA, a.runtimeType);
       expect("toto", a.foo);
@@ -434,37 +434,54 @@ main() {
           ..listInnerMap = { "test": ["123456"] };
       var json = serializer.encode(complex);
       expect(json, '{"@type":"TypedComplex","nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.1,"dblB":12.1},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},"B":{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
+
+      var noTypedJson;
+      noTypedJson = serializer.encode(complex, useTypeInfo: true);
+      expect(noTypedJson,
+          '{"@type":"TypedComplex","nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.1,"dblB":12.1},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},"B":{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
+      noTypedJson = serializer.encode(complex, useTypeInfo: false);
+      expect(noTypedJson,
+          '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.1,"dblB":12.1},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}');
     });
 
     test("Deserialize", () {
+      checkComplex(Complex complex) {
+        expect(complex.nums,    [ 1, 2.2, 3 ]);
+        expect(complex.strings, [ "1", "2", "3" ]);
+        expect(complex.bools,   [ true, false, true ]);
+        expect(complex.ints,    [ 1, 2, 3 ]);
+        expect(complex.doubles, [ 1.1, 2.2, 3.3 ]);
+        expect(complex.dates,   [ new DateTime(2016,12,24), new DateTime(2016,12,25), new DateTime(2016,12,26)]);
+        expect(complex.ignores[0].a,      "1337A");
+        expect(complex.ignores[0].b,      "42A");
+        expect(complex.ignores[0].secret, null);
+        expect(complex.ignores[1].a,      "1337B");
+        expect(complex.ignores[1].b,      "42B");
+        expect(complex.ignores[1].secret, null);
+        expect(complex.listInnerMap["test"], [ "123456"]);
+
+        expect(complex.numSet   , { "numA": 1, "numB": 12.2 });
+        expect(complex.stringSet, { "strA": "1", "strB": "3" });
+        expect(complex.boolSet  , { "ok": true, "nok": false });
+        expect(complex.intSet   , { "intA": 1, "intB": 12 });
+        expect(complex.doubleSet, { "dblA": 1, "dblB": 12 });
+        expect(complex.dateSet  , { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) });
+        expect(complex.ignoreSet["A"].a,      "1337A");
+        expect(complex.ignoreSet["A"].b,      "42A");
+        expect(complex.ignoreSet["A"].secret, null);
+        expect(complex.ignoreSet["B"].a,      "1337B");
+        expect(complex.ignoreSet["B"].b,      "42B");
+        expect(complex.ignoreSet["B"].secret, null);
+      }
+
       TypedComplex complex = serializer.decode('{"@type":"TypedComplex","listInnerMap":{"test":["123456"]},"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1,"dblB":12},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"@type":"TypedWithIgnore","a":"1337A","b":"42A"},"B":{"@type":"TypedWithIgnore","a":"1337B","b":"42B"}}}');
+      checkComplex(complex);
 
-      expect(complex.nums,    [ 1, 2.2, 3 ]);
-      expect(complex.strings, [ "1", "2", "3" ]);
-      expect(complex.bools,   [ true, false, true ]);
-      expect(complex.ints,    [ 1, 2, 3 ]);
-      expect(complex.doubles, [ 1.1, 2.2, 3.3 ]);
-      expect(complex.dates,   [ new DateTime(2016,12,24), new DateTime(2016,12,25), new DateTime(2016,12,26)]);
-      expect(complex.ignores[0].a,      "1337A");
-      expect(complex.ignores[0].b,      "42A");
-      expect(complex.ignores[0].secret, null);
-      expect(complex.ignores[1].a,      "1337B");
-      expect(complex.ignores[1].b,      "42B");
-      expect(complex.ignores[1].secret, null);
-      expect(complex.listInnerMap["test"], [ "123456"]);
-
-      expect(complex.numSet   , { "numA": 1, "numB": 12.2 });
-      expect(complex.stringSet, { "strA": "1", "strB": "3" });
-      expect(complex.boolSet  , { "ok": true, "nok": false });
-      expect(complex.intSet   , { "intA": 1, "intB": 12 });
-      expect(complex.doubleSet, { "dblA": 1, "dblB": 12 });
-      expect(complex.dateSet  , { "fiesta": new DateTime(2016,12,24), "christmas": new DateTime(2016,12,25) });
-      expect(complex.ignoreSet["A"].a,      "1337A");
-      expect(complex.ignoreSet["A"].b,      "42A");
-      expect(complex.ignoreSet["A"].secret, null);
-      expect(complex.ignoreSet["B"].a,      "1337B");
-      expect(complex.ignoreSet["B"].b,      "42B");
-      expect(complex.ignoreSet["B"].secret, null);
+      TypedComplex noTypedComplex = serializer.decode(
+          '{"nums":[1,2.2,3],"strings":["1","2","3"],"bools":[true,false,true],"ints":[1,2,3],"doubles":[1.1,2.2,3.3],"dates":["2016-12-24T00:00:00.000","2016-12-25T00:00:00.000","2016-12-26T00:00:00.000"],"ignores":[{"a":"1337A","b":"42A"},{"a":"1337B","b":"42B"}],"numSet":{"numA":1,"numB":12.2},"stringSet":{"strA":"1","strB":"3"},"boolSet":{"ok":true,"nok":false},"intSet":{"intA":1,"intB":12},"doubleSet":{"dblA":1.0,"dblB":12.0},"dateSet":{"fiesta":"2016-12-24T00:00:00.000","christmas":"2016-12-25T00:00:00.000"},"ignoreSet":{"A":{"a":"1337A","b":"42A"},"B":{"a":"1337B","b":"42B"}},"listInnerMap":{"test":["123456"]}}',
+          type: TypedComplex,
+          useTypeInfo: false);
+      checkComplex(noTypedComplex);
     });
   });
 

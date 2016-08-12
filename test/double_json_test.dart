@@ -13,8 +13,8 @@ class DoubleSimple extends JsonObject {
   double test = 1.1;
 
   DoubleSimple();
-  factory DoubleSimple.fromJson(String json) => _jsonSerializer.decode(json, DoubleSimple);
-  factory DoubleSimple.fromMap(Map map) => _jsonSerializer.fromMap(map, DoubleSimple);
+  factory DoubleSimple.fromJson(String json) => _jsonSerializer.decode(json, type: DoubleSimple);
+  factory DoubleSimple.fromMap(Map map) => _jsonSerializer.fromMap(map, type: DoubleSimple);
 }
 
 @serializable
@@ -23,8 +23,8 @@ class DoubleComplex extends JsonObject {
   List<double> list = [1.1, 2.2, 3.3];
 
   DoubleComplex();
-  factory DoubleComplex.fromJson(String json) => _typedDsonSerializer.decode(json, DoubleComplex);
-  factory DoubleComplex.fromMap(Map map) => _typedDsonSerializer.fromMap(map, DoubleComplex);
+  factory DoubleComplex.fromJson(String json) => _typedDsonSerializer.decode(json, type: DoubleComplex);
+  factory DoubleComplex.fromMap(Map map) => _typedDsonSerializer.fromMap(map, type: DoubleComplex);
 }
 
 main() {
