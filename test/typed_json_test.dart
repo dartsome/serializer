@@ -445,7 +445,7 @@ main() {
     });
 
     test("Deserialize", () {
-      checkComplex(Complex complex) {
+      checkComplex(TypedComplex complex) {
         expect(complex.nums,    [ 1, 2.2, 3 ]);
         expect(complex.strings, [ "1", "2", "3" ]);
         expect(complex.bools,   [ true, false, true ]);
