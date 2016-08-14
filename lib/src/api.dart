@@ -11,8 +11,8 @@ import 'package:serializer/codecs/type_codec.dart';
 import 'annotations.dart';
 import "convert.dart";
 
-final _serializerJson = new Serializer.Json();
-final _serializerTypedJson = new Serializer.TypedJson();
+final _serializerJson = new Serializer.json();
+final _serializerTypedJson = new Serializer.typedJson();
 
 /// Utility class for a Serializable object
 @serializable
@@ -85,13 +85,13 @@ class Serializer {
   }
 
   /// Create a default JSON serializer
-  factory Serializer.Json() {
+  factory Serializer.json() {
     return new Serializer(codec: JSON);
   }
 
   /// Create a default JSON serializer
   /// with '@type' added field
-  factory Serializer.TypedJson() {
+  factory Serializer.typedJson() {
     return new Serializer(codec: JSON, useTypeInfo: true);
   }
 

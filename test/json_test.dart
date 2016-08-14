@@ -103,7 +103,8 @@ class WithIgnore extends ProxyA {
   WithIgnore([this.a, this.b, this.secret]);
 }
 
-Serializer _dateSerializer = new Serializer.Json()..addTypeCodec(DateTime, new DateTimeCodec());
+Serializer _dateSerializer = new Serializer.json()
+  ..addTypeCodec(DateTime, new DateTimeCodec());
 
 @serializable
 class Date extends ProxyA {
@@ -190,7 +191,8 @@ Serializer serializer;
 
 main() {
   setUpAll(() {
-    serializer = new Serializer.Json()..addTypeCodec(DateTime, new DateTimeCodec());
+    serializer = new Serializer.json()
+      ..addTypeCodec(DateTime, new DateTimeCodec());
   });
 
   tearDownAll(() {

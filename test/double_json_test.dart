@@ -5,8 +5,8 @@
 import 'package:test/test.dart';
 import 'package:serializer/serializer.dart';
 
-final _jsonSerializer = new Serializer.Json();
-final _typedDsonSerializer = new Serializer.TypedJson();
+final _jsonSerializer = new Serializer.json();
+final _typedDsonSerializer = new Serializer.typedJson();
 
 @serializable
 class DoubleSimple extends JsonObject {

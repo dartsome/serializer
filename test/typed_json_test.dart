@@ -86,7 +86,7 @@ class TypedWithIgnore extends TypedProxyA {
   TypedWithIgnore([this.a, this.b, this.secret]);
 }
 
-Serializer _dateSerializer = new Serializer.TypedJson()
+Serializer _dateSerializer = new Serializer.typedJson()
     ..addTypeCodec(DateTime, new DateTimeCodec());
 @serializable
 class TypedDate extends TypedProxyA {
@@ -158,9 +158,8 @@ class Address {
 }
 
 main() {
-  var serializer = new Serializer.TypedJson()
+  var serializer = new Serializer.typedJson()
       ..addTypeCodec(DateTime, new DateTimeCodec());
-
 
   group("Serialize", () {
     test("simple test", () {
