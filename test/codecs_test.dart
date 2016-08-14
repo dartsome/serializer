@@ -19,16 +19,16 @@ main() {
 
     test("DateTimeMilliseconds", () {
       var codec = new DateTimeMillisecondsSinceEpochCodec();
-      var date = new DateTime(2015, 12, 24, 13, 37, 42, 789);
-      expect(codec.encode(date), 1450960662789);
-      expect(codec.decode(1450960662789).isAtSameMomentAs(date), isTrue);
+      var date = new DateTime.utc(2015, 12, 24, 13, 37, 42, 789);
+      expect(codec.encode(date), 1450964262789);
+      expect(codec.decode(1450964262789).isAtSameMomentAs(date), isTrue);
     });
 
     test("DateTimeSeconds", () {
       var codec = new DateTimeSecondsSinceEpochCodec();
-      var date = new DateTime(2015, 12, 24, 13, 37, 42);
-      expect(codec.encode(date), 1450960662);
-      expect(codec.decode(1450960662).isAtSameMomentAs(date), isTrue);
+      var date = new DateTime.utc(2015, 12, 24, 13, 37, 42);
+      expect(codec.encode(date), 1450964262);
+      expect(codec.decode(1450964262).isAtSameMomentAs(date), isTrue);
     });
 
     test("DateTimeUtc", () {
