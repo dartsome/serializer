@@ -10,11 +10,20 @@ import 'package:serializer/codecs.dart';
 main() {
   group("Codecs", ()
   {
-    test("DateTime", () {
+    test("DateTime microseconds", () {
       var codec = new DateTimeCodec();
       var date = new DateTime(2015, 12, 24, 13, 37, 42, 789, 23);
       expect(codec.encode(date), "2015-12-24T13:37:42.789023");
       expect(codec.decode("2015-12-24T13:37:42.789023").isAtSameMomentAs(date), isTrue);
+    }, onPlatform: {
+      "browser": new Skip("microseconds not supported on browser"),
+    });
+
+    test("DateTime", () {
+      var codec = new DateTimeCodec();
+      var date = new DateTime(2015, 12, 24, 13, 37, 42, 789);
+      expect(codec.encode(date), "2015-12-24T13:37:42.789");
+      expect(codec.decode("2015-12-24T13:37:42.789").isAtSameMomentAs(date), isTrue);
     });
 
     test("DateTimeMilliseconds", () {
@@ -31,11 +40,20 @@ main() {
       expect(codec.decode(1450964262).isAtSameMomentAs(date), isTrue);
     });
 
-    test("DateTimeUtc", () {
+    test("DateTimeUtc microsecond", () {
       var codec = new DateTimeUtcCodec();
       var date = new DateTime.utc(2015, 12, 24, 13, 37, 42, 789, 23);
       expect(codec.encode(date), "2015-12-24T13:37:42.789023Z");
       expect(codec.decode("2015-12-24T13:37:42.789023Z").isAtSameMomentAs(date), isTrue);
+    }, onPlatform: {
+      "browser": new Skip("microseconds not supported on browser"),
+    });
+
+    test("DateTimeUtc microsecond", () {
+      var codec = new DateTimeUtcCodec();
+      var date = new DateTime.utc(2015, 12, 24, 13, 37, 42, 789);
+      expect(codec.encode(date), "2015-12-24T13:37:42.789Z");
+      expect(codec.decode("2015-12-24T13:37:42.789Z").isAtSameMomentAs(date), isTrue);
     });
 
     test("ObjectId", () {
