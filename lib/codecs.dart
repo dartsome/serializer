@@ -6,5 +6,7 @@ library serializer.codecs;
 
 export 'codecs/type_codec.dart';
 export 'codecs/date_time.dart';
+export 'codecs/date_time_milliseconds.dart';
+export 'codecs/date_time_seconds.dart';
 export 'codecs/date_time_utc.dart';
 export 'codecs/object_id.dart';
