@@ -157,6 +157,24 @@ class Address {
   Employee owner;
 }
 
+@serializable
+class Pet {
+  String  name;
+  dynamic animal;
+}
+
+@serializable
+class Dog {
+  String name;
+  bool bark;
+}
+
+@serializable
+class Cat {
+  String name;
+  bool mew;
+}
+
 main() {
   var serializer = new Serializer.typedJson()
       ..addTypeCodec(DateTime, new DateTimeCodec());
@@ -273,6 +291,26 @@ main() {
           ..tests = ["A", "B", "C"];
       expect('{"@type":"TypedModelRenamed","new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
       expect({"@type":"TypedModelRenamed", "new":"Hello","tests":["A","B","C"]}, serializer.toMap(_model));
+    });
+
+    test("dynamic", () {
+      Cat cat = new Cat()
+        ..name = "Felix"
+        ..mew  = false;
+      Dog dog = new Dog()
+        ..name = "Medor"
+        ..bark = true;
+      Pet pet;
+
+      pet = new Pet()
+        ..name = "Pet"
+        ..animal = cat;
+      expect('{"@type":"Pet","name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', serializer.encode(pet));
+
+      pet = new Pet()
+        ..name = "Pet"
+        ..animal = dog;
+      expect('{"@type":"Pet","name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', serializer.encode(pet));
     });
   });
 
@@ -410,6 +448,24 @@ main() {
         expect(true, e is String);
         // expect("Cannot instantiate abstract class DontWantToBeSerialize: _url 'null' line null", e);
       }
+    });
+
+    test("dynamic", () {
+      Pet pet;
+
+      pet = serializer.decode('{"@type":"Pet","name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}');
+      expect(pet.name, "Pet");
+      expect(pet.animal is Cat, isTrue);
+      var cat = pet.animal as Cat;
+      expect(cat.name, "Felix");
+      expect(cat.mew, false);
+
+      pet = serializer.decode('{"@type":"Pet","name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}');
+      expect(pet.name, "Pet");
+      expect(pet.animal is Dog, isTrue);
+      var dog = pet.animal as Dog;
+      expect(dog.name, "Medor");
+      expect(dog.bark, true);
     });
   });
 

@@ -187,6 +187,24 @@ class WithStatic {
   String other;
 }
 
+@serializable
+class Pet {
+  String  name;
+  dynamic animal;
+}
+
+@serializable
+class Dog {
+  String name;
+  bool bark;
+}
+
+@serializable
+class Cat {
+  String name;
+  bool mew;
+}
+
 Serializer serializer;
 
 main() {
@@ -341,6 +359,25 @@ main() {
           ]));
     });
 
+    test("dynamic", () {
+      Cat cat = new Cat()
+        ..name = "Felix"
+        ..mew  = false;
+      Dog dog = new Dog()
+        ..name = "Medor"
+        ..bark = true;
+      Pet pet;
+
+      pet = new Pet()
+        ..name = "Pet"
+        ..animal = cat;
+      expect('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', serializer.encode(pet));
+
+      pet = new Pet()
+        ..name = "Pet"
+        ..animal = dog;
+      expect('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', serializer.encode(pet));
+    });
   });
 
   group("Deserialize", () {
@@ -487,6 +524,24 @@ main() {
       Map<String, ModelA> d = serializer.fromMap(c, type: Map, mapOf: [String, ModelA]) as Map<String, ModelA>;
 
       expect(c, equals(d));
+    });
+
+    test("dynamic", () {
+      Pet pet;
+
+      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', type: Pet);
+      expect(pet.name, "Pet");
+      expect(pet.animal is Cat, isTrue);
+      var cat = pet.animal as Cat;
+      expect(cat.name, "Felix");
+      expect(cat.mew, false);
+
+      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', type: Pet);
+      expect(pet.name, "Pet");
+      expect(pet.animal is Dog, isTrue);
+      var dog = pet.animal as Dog;
+      expect(dog.name, "Medor");
+      expect(dog.bark, true);
     });
   });
 

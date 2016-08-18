@@ -211,7 +211,7 @@ class Serializer {
       return null;
     }
 
-    if (_enableTypeInfo(useTypeInfo) && map.containsKey(_typeInfoKey)) {
+    if ((_enableTypeInfo(useTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
       type = _decodeType(map.remove(_typeInfoKey));
     } else {
       type ??= Map;
@@ -272,25 +272,25 @@ class Serializer {
     type ??= _decodeType(value.runtimeType.toString());
     if (hasTypeCodec(type)) {
       return typeCodec(type).decode(value);
-    } else if (isSerializable(type) && value is Map) {
+    } else if ((isSerializable(type) || type == dynamic) && value is Map) {
       return _fromMap(value, type: type, useTypeInfo: useTypeInfo);
-    } else if (isSerializable(type) && value is List) {
+    } else if ((isSerializable(type) || type == dynamic) && value is List) {
       return _fromList(value, type: type, useTypeInfo: useTypeInfo);
     } else if (type.toString().startsWith("Map")) {
       return _fromMap(value, type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo);
     } else if (type.toString().startsWith("List")) {
       return _fromList(value, type: _findGenericOfList(type), useTypeInfo: useTypeInfo);
-    } else if (type == null || isPrimaryType(type) || isSerializable(type)) {
+    } else if (type == null || isPrimaryType(type) || isSerializable(type) || type == dynamic) {
       return value;
     }
     return null;
   }
 
-  Object _encodeValue(value, {bool withReferenceable: false, bool useTypeInfo}) {
+  Object _encodeValue(value, {bool withReferenceable: false, Type type, bool useTypeInfo}) {
     if (hasTypeCodec(value.runtimeType)) {
       return typeCodec(value.runtimeType).encode(value);
     } else if (value is Map || isSerializable(value.runtimeType)) {
-      return _toMap(value, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo);
+      return _toMap(value, withReferenceable: withReferenceable, type: type, useTypeInfo: useTypeInfo);
     } else if (value is List) {
       return _encodeList(value, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo);
     } else if (isPrimaryType(value.runtimeType)) {
@@ -299,18 +299,18 @@ class Serializer {
     return null;
   }
 
-  List _encodeList(List list, {bool withReferenceable: false, bool useTypeInfo}) {
+  List _encodeList(List list, {bool withReferenceable: false, Type type, bool useTypeInfo}) {
     return list.map((elem) => _encodeValue(elem, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo)).toList(growable: false);
   }
 
-  _encodeMap(Map data, key, value, {bool useTypeInfo}) {
-    value = _encodeValue(value, useTypeInfo: useTypeInfo);
+  _encodeMap(Map data, key, value, {Type type, bool useTypeInfo}) {
+    value = _encodeValue(value, type: type, useTypeInfo: useTypeInfo);
     if (value != null) {
       data[key] = value;
     }
   }
 
-  Map _toMap(Object obj, {bool withReferenceable: false, bool useTypeInfo}) {
+  Map _toMap(Object obj, {bool withReferenceable: false, Type type, bool useTypeInfo}) {
     if (obj == null || obj is List) {
       return null;
     }
@@ -323,7 +323,7 @@ class Serializer {
     ClassMirror cm = mir.type;
     Map data = new Map();
 
-    if (_enableTypeInfo(useTypeInfo)) {
+    if (_enableTypeInfo(useTypeInfo) || type == dynamic) {
       data[_typeInfoKey] = obj.runtimeType.toString();
     }
 
@@ -335,7 +335,8 @@ class Serializer {
             !ignoreMetadataManager.hasMetadata(dec) &&
             ((dec is VariableMirror && isSerializableVariable(dec)) || (dec is MethodMirror && dec.isGetter)) &&
             isEncodeableField(_classes, cm, dec, withReferenceable)) {
-          _encodeMap(data, name, mir.invokeGetter(originalName), useTypeInfo: useTypeInfo);
+          Type internalType = _getMethodMirrorReturnType(cm.instanceMembers[originalName]);
+          _encodeMap(data, name, mir.invokeGetter(originalName), type: internalType, useTypeInfo: useTypeInfo);
         }
       });
       cm = cm?.superclass;
