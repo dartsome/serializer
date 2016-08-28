@@ -247,7 +247,8 @@ class Serializer {
             !ignoreMetadataManager.hasMetadata(dec) &&
             ((dec is VariableMirror && isSerializableVariable(dec)) || (dec is MethodMirror))) {
           Type internalType = _getMethodMirrorReturnType(cm.instanceMembers[originalName]);
-          var value = _decodeValue(map[name], internalType, useTypeInfo: useTypeInfo);
+          var value = _decodeValue(map[name], internalType,
+              useTypeInfo: useTypeInfo, withTypeInfo: serializedWithTypeInfoMetadataManager.hasMetadata(dec));
           if (value != null) {
             instance.invokeSetter(originalName, value);
             visitedNames.add(name);
@@ -304,8 +305,8 @@ class Serializer {
     return list.map((elem) => _encodeValue(elem, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo)).toList(growable: false);
   }
 
-  _encodeMap(Map data, key, value, {Type type, bool useTypeInfo}) {
-    value = _encodeValue(value, type: type, useTypeInfo: useTypeInfo);
+  _encodeMap(Map data, key, value, {Type type, bool useTypeInfo, bool withTypeInfo}) {
+    value = _encodeValue(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     if (value != null) {
       data[key] = value;
     }
@@ -337,7 +338,8 @@ class Serializer {
             ((dec is VariableMirror && isSerializableVariable(dec)) || (dec is MethodMirror && dec.isGetter)) &&
             isEncodeableField(_classes, cm, dec, withReferenceable)) {
           Type internalType = _getMethodMirrorReturnType(cm.instanceMembers[originalName]);
-          _encodeMap(data, name, mir.invokeGetter(originalName), type: internalType, useTypeInfo: useTypeInfo);
+          _encodeMap(data, name, mir.invokeGetter(originalName), type: internalType,
+              useTypeInfo: useTypeInfo, withTypeInfo: serializedWithTypeInfoMetadataManager.hasMetadata(dec));
         }
       });
       cm = cm?.superclass;

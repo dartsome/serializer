@@ -194,15 +194,25 @@ class Pet {
 }
 
 @serializable
-class Dog {
+abstract class Animal {}
+
+@serializable
+class Dog extends Animal {
   String name;
   bool bark;
 }
 
 @serializable
-class Cat {
+class Cat extends Animal {
   String name;
   bool mew;
+}
+
+@serializable
+class PetWithTypeInfo {
+  String name;
+  @serializedWithTypeInfo
+  Animal animal;
 }
 
 Serializer serializer;
@@ -378,6 +388,26 @@ main() {
         ..animal = dog;
       expect('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', serializer.encode(pet));
     });
+
+    test("with typeInfo", () {
+      Cat cat = new Cat()
+        ..name = "Felix"
+        ..mew  = false;
+      Dog dog = new Dog()
+        ..name = "Medor"
+        ..bark = true;
+      var pet;
+
+      pet = new PetWithTypeInfo()
+        ..name = "Pet"
+        ..animal = cat;
+      expect('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', serializer.encode(pet));
+
+      pet = new PetWithTypeInfo()
+        ..name = "Pet"
+        ..animal = dog;
+      expect('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', serializer.encode(pet));
+    });
   });
 
   group("Deserialize", () {
@@ -537,6 +567,24 @@ main() {
       expect(cat.mew, false);
 
       pet = serializer.decode('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', type: Pet);
+      expect(pet.name, "Pet");
+      expect(pet.animal is Dog, isTrue);
+      var dog = pet.animal as Dog;
+      expect(dog.name, "Medor");
+      expect(dog.bark, true);
+    });
+
+    test("with typeInfo", () {
+      PetWithTypeInfo pet;
+
+      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', type: PetWithTypeInfo);
+      expect(pet.name, "Pet");
+      expect(pet.animal is Cat, isTrue);
+      var cat = pet.animal as Cat;
+      expect(cat.name, "Felix");
+      expect(cat.mew, false);
+
+      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', type: PetWithTypeInfo);
       expect(pet.name, "Pet");
       expect(pet.animal is Dog, isTrue);
       var dog = pet.animal as Dog;

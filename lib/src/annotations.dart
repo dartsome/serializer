@@ -41,6 +41,12 @@ class SerializedName {
   const SerializedName(this.name);
 }
 
+class SerializedWithTypeInfo {
+  const SerializedWithTypeInfo();
+}
+
+const serializedWithTypeInfo = const SerializedWithTypeInfo();
+
 class _MetadataManager<T> {
   const _MetadataManager();
 
@@ -58,7 +64,8 @@ class _MetadataManager<T> {
   }
 }
 
-const _MetadataManager<SerializedName> serializedNameMetadataManager = const _MetadataManager<SerializedName>();
-const _MetadataManager<Referenceable>  referenceableMetadataManager  = const _MetadataManager<Referenceable>();
-const _MetadataManager<Reference>      referenceMetadataManager      = const _MetadataManager<Reference>();
-const _MetadataManager<Ignore>         ignoreMetadataManager         = const _MetadataManager<Ignore>();
+const _MetadataManager<SerializedName>         serializedNameMetadataManager         = const _MetadataManager<SerializedName>();
+const _MetadataManager<Referenceable>          referenceableMetadataManager          = const _MetadataManager<Referenceable>();
+const _MetadataManager<Reference>              referenceMetadataManager              = const _MetadataManager<Reference>();
+const _MetadataManager<Ignore>                 ignoreMetadataManager                 = const _MetadataManager<Ignore>();
+const _MetadataManager<SerializedWithTypeInfo> serializedWithTypeInfoMetadataManager = const _MetadataManager<SerializedWithTypeInfo>();
