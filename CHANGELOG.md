@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.3
+
+- Add DateTime codecs for seconds and milliseconds since epoch.
+- Add dynamic type serialization.
+- Add SerializedWithTypeInfo annotation to set typeInfo at the object's root.
+- withTypeInfo flag into Serializer methods only sets typeInfo at the object's root. 
+
+**Breaking changes:**
+
+- Fix coding style for Serializer factories.
+
 ## 0.4.2
 
 **Breaking changes:**
