@@ -108,7 +108,7 @@ class Serializer {
   TypeCodec typeCodec(Type type) => _typeCodecs[type.toString()];
 
   /// Checks if a class is registered as a Serializable class.
-  bool isSerializable(Type type) => _classes.containsKey(type.toString());
+  bool isSerializable(Type type) => _classes.containsKey(_getCorrectType(type.toString()));
 
   /// Convert the object to a Map
   Map toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
