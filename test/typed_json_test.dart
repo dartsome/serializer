@@ -5,7 +5,7 @@
 import 'package:test/test.dart';
 import 'package:serializer/codecs.dart';
 import 'package:serializer/serializer.dart';
-import 'models.dart';
+import 'models_test.dart';
 
 
 abstract class TypedDontWantToBeSerialize {

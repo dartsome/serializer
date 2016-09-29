@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 import 'package:serializer/codecs.dart';
 import 'package:serializer/serializer.dart';
 import "package:serializer/src/convert.dart";
-import 'models.dart';
+import 'models_test.dart';
 
 abstract class DontWantToBeSerialize {
   String foo = "bar";
