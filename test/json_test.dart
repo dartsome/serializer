@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 import 'package:serializer/codecs.dart';
 import 'package:serializer/serializer.dart';
 import "package:serializer/src/convert.dart";
+import 'models.dart';
 
 abstract class DontWantToBeSerialize {
   String foo = "bar";
@@ -144,75 +145,6 @@ class Complex extends ProxyA {
 class Mixin extends ProxyA with M1, M2 {
   String a;
   String b;
-}
-
-@serializable
-class M1 {
-  String m1;
-}
-
-@serializable
-class M2 {
-  String m2;
-}
-
-@referenceable
-@serializable
-class Employee {
-  @reference
-  int id;
-  String name;
-  Address address;
-  Employee manager;
-}
-
-@referenceable
-@serializable
-class Address {
-  @reference
-  int id;
-  String location;
-  Employee owner;
-}
-
-@serializable
-class WithStaticConst {
-  static const String GLOBAL = "GLOBAL";
-  String other;
-}
-
-@serializable
-class WithStatic {
-  static String global = "GLOBAL";
-  String other;
-}
-
-@serializable
-class Pet {
-  String  name;
-  dynamic animal;
-}
-
-@serializable
-abstract class Animal {}
-
-@serializable
-class Dog extends Animal {
-  String name;
-  bool bark;
-}
-
-@serializable
-class Cat extends Animal {
-  String name;
-  bool mew;
-}
-
-@serializable
-class PetWithTypeInfo {
-  String name;
-  @serializedWithTypeInfo
-  Animal animal;
 }
 
 Serializer serializer;
@@ -561,6 +493,7 @@ main() {
 
       pet = serializer.decode('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', type: Pet);
       expect(pet.name, "Pet");
+      print((pet.animal as Cat));
       expect(pet.animal is Cat, isTrue);
       var cat = pet.animal as Cat;
       expect(cat.name, "Felix");
