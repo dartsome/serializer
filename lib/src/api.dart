@@ -79,8 +79,11 @@ class Serializer {
   /// Create a Serializer with a optional codec and type info key.
   /// The type info key is an added field (i.e. "@type") during the serialization,
   /// storing the type of the Dart Object
-  Serializer({Codec codec: JSON, String typeInfoKey: "@type", useTypeInfo: false}):
-      _codec = codec, _typeInfoKey = typeInfoKey, _useTypeInfo = useTypeInfo {
+  Serializer({Codec codec: JSON, String typeInfoKey: "@type", useTypeInfo: false})
+      :
+        _codec = codec,
+        _typeInfoKey = typeInfoKey,
+        _useTypeInfo = useTypeInfo {
     initSingletonClasses();
   }
 
@@ -108,22 +111,28 @@ class Serializer {
   bool isSerializable(Type type) => _classes.containsKey(type.toString());
 
   /// Convert the object to a Map
-  Map toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) => _toMap(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  Map toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
+      _toMap(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert to a Map or a List recursively
-  Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo}) => _encodeValue(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
+      _encodeValue(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Encode the object to serialized string
-  String encode(Object input, {bool useTypeInfo, bool withTypeInfo}) => _encode(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  String encode(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
+      _encode(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Decode the object from a seriablized string
-  Object decode(String encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) => _decode(encoded, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  Object decode(String encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
+      _decode(encoded, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object to map
-  Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) => _fromMap(map, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
+      _fromMap(map, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) => _fromList(list, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  List fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
+      _fromList(list, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   ///////////////////
   // Private
@@ -151,7 +160,16 @@ class Serializer {
     return _decodeType(matches.first.group(1));
   }
 
+  String _getCorrectType(String name) {
+    String type = correspondingMinifiedTypes[name];
+    if (type != null && _classes.containsKey(type)) {
+      return type;
+    }
+    return name;
+  }
+
   Type _decodeType(String name) {
+    name = _getCorrectType(name);
     switch (name) {
       case "num":
         return num;
@@ -279,7 +297,8 @@ class Serializer {
     } else if ((isSerializable(type) || type == dynamic) && value is List) {
       return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (type.toString().startsWith("Map")) {
-      return _fromMap(value, type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      return _fromMap(
+          value, type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (type.toString().startsWith("List")) {
       return _fromList(value, type: _findGenericOfList(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (type == null || isPrimaryType(type) || isSerializable(type) || type == dynamic) {
@@ -292,9 +311,13 @@ class Serializer {
     if (hasTypeCodec(value.runtimeType)) {
       return typeCodec(value.runtimeType).encode(value);
     } else if (value is Map || isSerializable(value.runtimeType)) {
-      return _toMap(value, withReferenceable: withReferenceable, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      return _toMap(value, withReferenceable: withReferenceable,
+          type: type,
+          useTypeInfo: useTypeInfo,
+          withTypeInfo: withTypeInfo);
     } else if (value is List) {
-      return _encodeList(value, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      return _encodeList(
+          value, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (isPrimaryType(value.runtimeType)) {
       return value;
     }
@@ -302,7 +325,9 @@ class Serializer {
   }
 
   List _encodeList(List list, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
-    return list.map((elem) => _encodeValue(elem, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo)).toList(growable: false);
+    return list.map((elem) =>
+        _encodeValue(elem, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo))
+        .toList(growable: false);
   }
 
   _encodeMap(Map data, key, value, {Type type, bool useTypeInfo, bool withTypeInfo}) {
@@ -326,7 +351,7 @@ class Serializer {
     Map data = new Map();
 
     if (_enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) {
-      data[_typeInfoKey] = obj.runtimeType.toString();
+      data[_typeInfoKey] = _getCorrectType(obj.runtimeType.toString());
     }
 
     while (cm != null && cm.superclass != null && isSerializableClassMirror(_classes, cm)) {
@@ -352,8 +377,10 @@ class Serializer {
       return null;
     }
     if (obj is List) {
-      return _codec.encode(_encodeList(obj, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo));
+      return _codec.encode(
+          _encodeList(obj, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo));
     }
-    return _codec.encode(_toMap(obj, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo));
+    return _codec.encode(
+        _toMap(obj, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo));
   }
 }

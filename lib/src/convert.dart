@@ -114,7 +114,9 @@ class ClassSerialiazerInfo {
   ClassSerialiazerInfo(this.classMirror, this.isReferenceable);
 }
 
+
 final singletonClasses = <String, ClassSerialiazerInfo>{};
+final correspondingMinifiedTypes = <String, String>{};
 initSingletonClasses() {
   if (singletonClasses.isEmpty) {
     for (ClassMirror classMirror in serializable.annotatedClasses) {
@@ -130,8 +132,9 @@ initSingletonClasses() {
           cm = cm?.superclass;
         }
 
-        singletonClasses[classMirror.reflectedType.toString()] = new ClassSerialiazerInfo(classMirror, isReferenceable);
+       // singletonClasses[classMirror.reflectedType.toString()] = new ClassSerialiazerInfo(classMirror, isReferenceable);
         singletonClasses[classMirror.simpleName] = new ClassSerialiazerInfo(classMirror, isReferenceable);
+        correspondingMinifiedTypes[classMirror.reflectedType.toString()] = classMirror.simpleName;
       }
     }
   }
