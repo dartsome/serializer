@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Kill jobs
+trap 'kill $(jobs -pr)' SIGINT SIGTERM EXIT
+
 # Fast fail the script on failures.
 set -e
 
@@ -18,9 +21,11 @@ TESTS="test/codecs_test.dart test/json_test.dart test/typed_json_test.dart test/
 pub run test -p vm ${TESTS}
 
 # Run browser tests
-export DISPLAY=:99.0
-sh -e /etc/init.d/xvfb start
-pub serve &
+if [ "${TRAVIS}" == "true" ]; then
+  export DISPLAY=:99.0
+  sh -e /etc/init.d/xvfb start
+fi
+pub serve test &
 while ! nc -z localhost 8080; do sleep 1; done; echo 'pub serve is up!'
 pub run test --pub-serve=8080 -p firefox ${TESTS}
 
