@@ -4,53 +4,47 @@
 
 library serializer.example;
 
-import 'package:serializer/serializer.dart';
+import 'package:bson/bson.dart';
+import 'serializer.dart';
+import 'model.dart';
+import 'model.codec.dart';
 
-@serializable
-class ModelA {
-  @Id()
-  int id;
+//Map<String, TypeCodec> _codecs = {"ModelA": new ModelACodec()};
 
-  String name;
-  num age;
+Serializer sz = new CodegenSerializer.typedJson()..addTypeCodec(ModelA, new ModelACodec())
+  ..addTypeCodec(ModelB, new ModelBCodec());
+//Serializer sz = new ReflectableSerializer.typedJson();
 
-  ModelA([this.id, this.name, this.age]);
-}
+/*class ModelACodec extends TypeCodec<ModelA> {
+  @override
+  ModelA decode(dynamic value) {
+    ModelA obj = new ModelA();
+    obj.id = value["_id"];
+    obj.age = value['age'];
+    obj.name = value['name'];
+    return obj;
+  }
 
-@serializable
-class ModelB extends JsonObject {
-  String city, country;
+  @override
+  dynamic encode(ModelA value) => {"_id": value.id, "name": value.name, "age": value.age};
+}*/
 
-  ModelB([this.city, this.country]);
-}
-
-@serializable
-class ModelC extends JsonObject {
-  String name, password;
-
-  @ignore
-  int age;
-
-  ModelC([this.name, this.password, this.age]);
-}
-
-class Id extends SerializedName {
-  const Id(): super("_id");
-}
 
 main() {
-  ModelA a = new ModelA(42, "toto", 15);
-  ModelB b = new ModelB("Paris", "France");
-  ModelC c = new ModelC("Alice", "ThereIsNone", 42);
+  sz.addTypeCodec(ObjectId, new ObjectIdCodec());
+  ModelA a = new ModelA(new ObjectId(), "toto", 15);
+  ModelB b = new ModelB(a);
 
-  print(b.toJson());
-  print(b.toMap());
-  print(c.toJson());
 
-  var sz = new Serializer.typedJson();
   print(sz.toMap(a));
   print(sz.encode(a));
 
+  print(sz.toMap(b));
+  print(sz.encode(b));
+
   ModelA A = sz.decode(sz.encode(a));
   print(sz.encode(A));
+
+  ModelB B = sz.decode(sz.encode(b));
+  print(sz.encode(B));
 }

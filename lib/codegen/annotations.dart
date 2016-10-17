@@ -2,9 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library serializer.base;
+class Serializable {
+  const Serializable();
+}
 
-export "annotations.dart";
-export 'api.dart';
-
-
+const serializable = const Serializable();

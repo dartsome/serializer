@@ -3,10 +3,10 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:test/test.dart';
-import 'package:serializer/serializer.dart';
+import 'package:serializer/serializer_reflectable.dart';
 
-final _jsonSerializer = new Serializer.json();
-final _typedDsonSerializer = new Serializer.typedJson();
+final _jsonSerializer = new ReflectableSerializer.json();
+final _typedDsonSerializer = new ReflectableSerializer.typedJson();
 
 @serializable
 class DoubleSimple extends JsonObject {

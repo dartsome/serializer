@@ -4,11 +4,8 @@
 
 import 'package:reflectable/reflectable.dart';
 
+import '../core.dart';
 import 'annotations.dart';
-
-
-final String MapTypeString  = {}.runtimeType.toString();
-final String ListTypeString = [].runtimeType.toString();
 
 bool isSerializableClassMirror(Map<String, ClassSerialiazerInfo> serializables, ClassMirror cm) {
   return serializables.containsKey(cm.mixin.simpleName);
@@ -17,10 +14,6 @@ bool isSerializableClassMirror(Map<String, ClassSerialiazerInfo> serializables, 
 bool isSerializableVariable(VariableMirror vm) {
   return !vm.isPrivate && !vm.isConst && !vm.isStatic;
 }
-
-bool isPrimaryType(Type obj) =>
-    obj == num || obj == String || obj == bool || obj == int || obj == double;
-
 
 String serializedName(DeclarationMirror dec) {
   SerializedName serializedName = serializedNameMetadataManager.metadata(dec);
@@ -106,6 +99,7 @@ String printAndDumpSerializables() {
   });
   return output;
 }
+
 
 // Singleton that maps every class annotated with @serializable
 class ClassSerialiazerInfo {

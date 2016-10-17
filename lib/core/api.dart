@@ -1,0 +1,48 @@
+// Copyright (c) 2016, the Serializer project authors.  Please see the AUTHORS file
+
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+library serializer.api;
+
+import '../codecs.dart';
+
+bool isPrimaryType(Type obj) =>
+    obj == num || obj == String || obj == bool || obj == int || obj == double;
+
+final String MapTypeString  = {}.runtimeType.toString();
+final String ListTypeString = [].runtimeType.toString();
+
+abstract class Serializer {
+  /// Registers a [typeCodec] for the specific [type]
+  addTypeCodec(Type type, TypeCodec typeCodec);
+
+  addAllTypeCodecs(Map<String, TypeCodec> typesCodecs);
+
+  /// Checks if a TypeCodec is registered for the [type].
+  bool hasTypeCodec(Type type);
+
+  /// Get the TypeCodec for the specific [type]
+  TypeCodec typeCodec(Type type);
+
+  /// Checks if a class is registered as a Serializable class.
+  bool isSerializable(Type type);
+
+  /// Convert the object to a Map
+  Map toMap(Object input, {bool useTypeInfo, bool withTypeInfo});
+
+  /// Convert to a Map or a List recursively
+  Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo});
+
+  /// Encode the object to serialized string
+  String encode(Object input, {bool useTypeInfo, bool withTypeInfo});
+
+  /// Decode the object from a seriablized string
+  Object decode(String encoded, {Type type, bool useTypeInfo, bool withTypeInfo});
+
+  /// Convert a serialized object to map
+  Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
+
+  /// Convert a serialized object's [list] to a list of the given [type]
+  List fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo});
+}

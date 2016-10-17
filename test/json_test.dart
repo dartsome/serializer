@@ -5,8 +5,8 @@
 
 import 'package:test/test.dart';
 import 'package:serializer/codecs.dart';
-import 'package:serializer/serializer.dart';
-import "package:serializer/src/convert.dart";
+import 'package:serializer/serializer_reflectable.dart';
+import "package:serializer/reflectable/convert.dart";
 import 'models_test.dart';
 
 abstract class DontWantToBeSerialize {
@@ -104,7 +104,7 @@ class WithIgnore extends ProxyA {
   WithIgnore([this.a, this.b, this.secret]);
 }
 
-Serializer _dateSerializer = new Serializer.json()
+Serializer _dateSerializer = new ReflectableSerializer.json()
   ..addTypeCodec(DateTime, new DateTimeCodec());
 
 @serializable
@@ -151,7 +151,7 @@ Serializer serializer;
 
 main() {
   setUpAll(() {
-    serializer = new Serializer.json()
+    serializer = new ReflectableSerializer.json()
       ..addTypeCodec(DateTime, new DateTimeCodec());
   });
 

@@ -4,7 +4,7 @@
 
 import 'package:test/test.dart';
 import 'package:serializer/codecs.dart';
-import 'package:serializer/serializer.dart';
+import 'package:serializer/serializer_reflectable.dart';
 import 'models_test.dart';
 
 
@@ -87,7 +87,7 @@ class TypedWithIgnore extends TypedProxyA {
   TypedWithIgnore([this.a, this.b, this.secret]);
 }
 
-Serializer _dateSerializer = new Serializer.typedJson()
+Serializer _dateSerializer = new ReflectableSerializer.typedJson()
     ..addTypeCodec(DateTime, new DateTimeCodec());
 @serializable
 class TypedDate extends TypedProxyA {
@@ -132,7 +132,7 @@ class Mixin extends TypedProxyA with M1, M2 {
 
 
 main() {
-  var serializer = new Serializer.typedJson()
+  var serializer = new ReflectableSerializer.typedJson()
       ..addTypeCodec(DateTime, new DateTimeCodec());
 
   group("Serialize", () {

@@ -5,7 +5,9 @@
 /// The serializer library.
 ///
 /// This is an awesome library. More dartdocs go here.
-library serializer;
+library serializer.reflectable;
 
-export 'src/serializer_base.dart';
-export 'codecs/type_codec.dart';
+export 'core.dart';
+export 'reflectable/api.dart';
+export 'reflectable/annotations.dart';
+export 'reflectable/convert.dart';

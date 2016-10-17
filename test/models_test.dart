@@ -1,4 +1,4 @@
-import 'package:serializer/serializer.dart';
+import 'package:serializer/serializer_reflectable.dart';
 
 @serializable
 class M1 {

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:serializer/serializer.dart';
+import 'package:serializer/serializer_reflectable.dart';
 
 
 @serializable
@@ -11,7 +11,7 @@ class Model extends TypedJsonObject {
 
 //Test type with minified javascript
 Future<Null> main() async {
-  Serializer serializer = new Serializer.typedJson();
+  Serializer serializer = new ReflectableSerializer.typedJson();
 
   print((new Model()).toJson());
   print(serializer.fromMap({'@type': 'Model', 'foo': 'test'}));

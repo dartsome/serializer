@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:reflectable/reflectable.dart';
-
+import '../core.dart';
 
 class Serializable extends Reflectable {
   const Serializable()
@@ -17,35 +17,6 @@ class Serializable extends Reflectable {
 }
 
 const serializable = const Serializable();
-
-class Ignore {
-  const Ignore();
-}
-
-const ignore = const Ignore();
-
-class Referenceable {
-  const Referenceable();
-}
-
-const referenceable = const Referenceable();
-
-class Reference {
-  const Reference();
-}
-
-const reference = const Reference();
-
-class SerializedName {
-  final String name;
-  const SerializedName(this.name);
-}
-
-class SerializedWithTypeInfo {
-  const SerializedWithTypeInfo();
-}
-
-const serializedWithTypeInfo = const SerializedWithTypeInfo();
 
 class _MetadataManager<T> {
   const _MetadataManager();
