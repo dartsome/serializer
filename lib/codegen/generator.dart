@@ -33,7 +33,10 @@ void generateClass(StringBuffer buffer, String classType, String name, [String e
 }
 
 class SerializerGenerator extends Generator {
-  const SerializerGenerator();
+  SerializerGenerator();
+
+  StringBuffer _codecsBuffer = new StringBuffer("<String,TypeCodec>{");
+  String get codescMapAsString => (_codecsBuffer..writeln("};")).toString();
 
   @override
   Future<String> generate(Element element, BuildStep buildStep) async {
@@ -59,6 +62,8 @@ class SerializerGenerator extends Generator {
       _generateUtils(buffer, element);
 
       closeBrace(buffer);
+
+      _codecsBuffer.writeln("'${element.displayName}': new ${element.displayName}Codec(),");
     }
     return buffer.toString();
   }
@@ -78,8 +83,7 @@ class SerializerGenerator extends Generator {
       if (_isSerializable(field)) {
         buffer.write("map['${_getSerializedName(field)}'] = ");
         buffer.write("serializer?.isSerializable(${field.type.name}) == true ? ");
-        buffer.write(
-            "serializer?.encode(value.$name, useTypeInfo: typeInfoKey?.isNotEmpty == true) ");
+        buffer.write("serializer?.encode(value.$name, useTypeInfo: typeInfoKey?.isNotEmpty == true) ");
         buffer.write(": value.$name; ");
       }
     });
@@ -127,3 +131,4 @@ class SerializerGenerator extends Generator {
     return field.name;
   }
 }
+

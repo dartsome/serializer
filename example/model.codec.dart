@@ -94,3 +94,8 @@ class ModelBCodec extends TypeCodec<ModelB> {
 
   String get typeInfo => 'ModelB';
 }
+
+Map<String, TypeCodec> modelCodecs = <String, TypeCodec>{
+  'ModelA': new ModelACodec(),
+  'ModelB': new ModelBCodec(),
+};

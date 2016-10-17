@@ -11,23 +11,8 @@ import 'model.codec.dart';
 
 //Map<String, TypeCodec> _codecs = {"ModelA": new ModelACodec()};
 
-Serializer sz = new CodegenSerializer.typedJson()..addTypeCodec(ModelA, new ModelACodec())
-  ..addTypeCodec(ModelB, new ModelBCodec());
+Serializer sz = new CodegenSerializer.typedJson()..addAllTypeCodecs(modelCodecs);
 //Serializer sz = new ReflectableSerializer.typedJson();
-
-/*class ModelACodec extends TypeCodec<ModelA> {
-  @override
-  ModelA decode(dynamic value) {
-    ModelA obj = new ModelA();
-    obj.id = value["_id"];
-    obj.age = value['age'];
-    obj.name = value['name'];
-    return obj;
-  }
-
-  @override
-  dynamic encode(ModelA value) => {"_id": value.id, "name": value.name, "age": value.age};
-}*/
 
 
 main() {
