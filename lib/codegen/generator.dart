@@ -35,8 +35,12 @@ void generateClass(StringBuffer buffer, String classType, String name, [String e
 class SerializerGenerator extends Generator {
   SerializerGenerator();
 
-  StringBuffer _codecsBuffer = new StringBuffer("<String,TypeCodec>{");
+  StringBuffer _codecsBuffer;
   String get codescMapAsString => (_codecsBuffer..writeln("};")).toString();
+
+  initCodecsMap() {
+    _codecsBuffer = new StringBuffer("<String,TypeCodec>{");
+  }
 
   @override
   Future<String> generate(Element element, BuildStep buildStep) async {

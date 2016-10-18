@@ -37,28 +37,31 @@ class SerializerGeneratorBuilder extends _build.Builder {
       LibraryElement library, _build.BuildStep buildStep) async {
     buildStep.logger.fine('Running $_gen for ${buildStep.input.id}');
 
+    _gen.initCodecsMap();
     var generatedOutputs =
     await _generate(library, buildStep).toList();
 
     // Don't outputs useless files.
-    if (generatedOutputs.isEmpty) return;
+    if (generatedOutputs.isEmpty == true) return;
 
     var contentBuffer = new StringBuffer();
 
 
     for (GeneratedOutput output in generatedOutputs) {
-      contentBuffer.writeln('');
-      contentBuffer.writeln(_headerLine);
-      contentBuffer.writeln('// Generator: ${output.generator}');
-      contentBuffer
-          .writeln('// Target: ${friendlyNameForElement(output.sourceMember)}');
-      contentBuffer.writeln(_headerLine);
-      contentBuffer.writeln('');
+      if (output.output.isEmpty == false) {
+        contentBuffer.writeln('');
+        contentBuffer.writeln(_headerLine);
+        contentBuffer.writeln('// Generator: ${output.generator}');
+        contentBuffer
+            .writeln('// Target: ${friendlyNameForElement(output.sourceMember)}');
+        contentBuffer.writeln(_headerLine);
+        contentBuffer.writeln('');
 
-      contentBuffer.writeln(output.output);
+        contentBuffer.writeln(output.output);
+      }
     }
     String fileName = buildStep.input.id.path.split("/").last.split(".").first;
-    contentBuffer.writeln("Map<String, TypeCodec> ${fileName}Codecs = ${_gen.codescMapAsString}");
+    contentBuffer.writeln("Map<String, TypeCodec> ${fileName}_codecs = ${_gen.codescMapAsString}");
 
     var genPartContent = contentBuffer.toString();
 

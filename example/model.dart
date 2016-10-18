@@ -24,23 +24,3 @@ class ModelA {
 
     ModelA([this.id, this.name, this._age]);
 }
-
-@serializable
-class ModelB {
-
-    Map<String, ModelC> C;
-    List<ModelA> A;
-    ModelA a;
-
-    ModelB();
-}
-
-@serializable
-abstract class ModelD {
-    String foo;
-}
-
-@serializable
-class ModelC extends ModelB with ModelD {
-    ModelC([ModelA a]);
-}
