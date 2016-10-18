@@ -46,19 +46,19 @@ class ModelACodec extends TypeCodec<ModelA> {
       map[typeInfoKey] = typeInfo;
     }
     map['_id'] = serializer?.isSerializable(ObjectId) == true
-        ? serializer?.encode(value.id,
+        ? serializer?.toPrimaryObject(value.id,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.id;
     map['name'] = serializer?.isSerializable(String) == true
-        ? serializer?.encode(value.name,
+        ? serializer?.toPrimaryObject(value.name,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.name;
     map['plop'] = serializer?.isSerializable(String) == true
-        ? serializer?.encode(value.plop,
+        ? serializer?.toPrimaryObject(value.plop,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.plop;
     map['age'] = serializer?.isSerializable(num) == true
-        ? serializer?.encode(value.age,
+        ? serializer?.toPrimaryObject(value.age,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.age;
     return map;
@@ -68,6 +68,7 @@ class ModelACodec extends TypeCodec<ModelA> {
   String get typeInfo => 'ModelA';
 }
 
-Map<String, TypeCodec> model_codecs = <String, TypeCodec>{
+Map<String, TypeCodec<dynamic>> example_model_codecs =
+    <String, TypeCodec<dynamic>>{
   'ModelA': new ModelACodec(),
 };

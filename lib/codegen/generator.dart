@@ -3,21 +3,18 @@ import 'dart:async';
 import 'package:build/build.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/src/generated/utilities_dart.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:source_gen/src/annotation.dart';
 import 'package:source_gen/src/utils.dart';
-import 'package:source_gen/src/generated_output.dart';
+
 import "annotations.dart";
 import '../core.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:build/build.dart';
-import 'package:dart_style/src/dart_formatter.dart';
+
 
 void closeBrace(StringBuffer buffer) => buffer.writeln("}");
 void semiColumn(StringBuffer buffer) => buffer.writeln(";");
-void import(StringBuffer buffer, String import, {List<String> show}) =>
-    buffer.writeln("import '$import' ${show?.isNotEmpty == true ? "show ${show.join(",")}" : ""};");
+void import(StringBuffer buffer, String import, {List<String> show, String as}) =>
+    buffer.writeln("import '$import' ${show?.isNotEmpty == true ? "show ${show.join(",")}" : as?.isNotEmpty == true ? "as $as" : ""};");
 void generateFunction(
     StringBuffer buffer, String returnType, String name, List<String> parameters, List<String> optionnal) {
   buffer.writeln(
@@ -39,7 +36,7 @@ class SerializerGenerator extends Generator {
   String get codescMapAsString => (_codecsBuffer..writeln("};")).toString();
 
   initCodecsMap() {
-    _codecsBuffer = new StringBuffer("<String,TypeCodec>{");
+    _codecsBuffer = new StringBuffer("<String,TypeCodec<dynamic>>{");
   }
 
   @override
@@ -101,7 +98,7 @@ class SerializerGenerator extends Generator {
       if (element.getGetter(name) != null) {
         buffer.write("map['${_getSerializedName(field)}'] = ");
         buffer.write("serializer?.isSerializable(${_getType(element.getGetter(name).returnType)}) == true ? ");
-        buffer.write("serializer?.encode(value.$name, useTypeInfo: typeInfoKey?.isNotEmpty == true) ");
+        buffer.write("serializer?.toPrimaryObject(value.$name, useTypeInfo: typeInfoKey?.isNotEmpty == true) ");
         buffer.write(": value.$name; ");
       }
     });
@@ -126,9 +123,10 @@ class SerializerGenerator extends Generator {
     buffer.writeln("${element.displayName} obj = new ${element.displayName}();");
     fields.forEach((String name, FieldElement field) {
       if (element.getSetter(name) != null) {
+        String genericType = element.getGetter(name).returnType.displayName.split("<").first;
         buffer.write("obj.$name = ");
         buffer.write("(serializer?.isSerializable(${_getType(element.getGetter(name).returnType)}) == true ? ");
-        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], type: ${_getType(element.getGetter(name).returnType)}) ");
+        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], type: $genericType) ");
         buffer.write(": value['${_getSerializedName(field)}'])  as ${element.getGetter(name).returnType} ");
         buffer.writeln("?? obj.$name;");
       }

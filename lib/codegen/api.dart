@@ -110,7 +110,10 @@ class CodegenSerializer implements Serializer {
   bool isSerializable(Type type) => hasTypeCodec(type);
 
   Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) => _encodeValue(input,
-      type: input.runtimeType, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo) as Map<String, dynamic>;
+      type: input.runtimeType,
+      withReferenceable: true,
+      useTypeInfo: useTypeInfo,
+      withTypeInfo: withTypeInfo) as Map<String, dynamic>;
 
   /// Convert to a Map or a List recursively
   Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
@@ -200,7 +203,12 @@ class CodegenSerializer implements Serializer {
     if (encoded == null || encoded.isEmpty) {
       return null;
     }
-    var value = _codec.decode(encoded);
+    dynamic value;
+    if ((encoded.startsWith("{") && encoded.endsWith("}")) || (encoded.startsWith("[") && encoded.endsWith("]"))) {
+      value = _codec.decode(encoded);
+    } else {
+      value = num.parse(encoded, (_) => null) ?? encoded;
+    }
     if (value is Map) {
       return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (value is List) {
@@ -264,7 +272,8 @@ class CodegenSerializer implements Serializer {
   Object _encodeValue(value, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
     useTypeInfo ??= _useTypeInfo;
     if (hasTypeCodec(value.runtimeType) == true) {
-      return typeCodec(value.runtimeType).encode(value, serializer: this, typeInfoKey: useTypeInfo == true ? _typeInfoKey : null);
+      return typeCodec(value.runtimeType)
+          .encode(value, serializer: this, typeInfoKey: useTypeInfo == true ? _typeInfoKey : null);
     } else if (value is Map) {
       return _encodeMap(value,
           withReferenceable: withReferenceable, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
@@ -294,7 +303,6 @@ class CodegenSerializer implements Serializer {
             withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo))
         .toList(growable: false);
   }
-
 
   String _encode(Object obj, {bool withReferenceable: false, bool useTypeInfo, bool withTypeInfo: false}) {
     if (obj == null) {

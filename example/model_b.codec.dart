@@ -21,11 +21,11 @@ class ModelBCodec extends TypeCodec<ModelB> {
   ModelB decode(dynamic value, {Serializer serializer}) {
     ModelB obj = new ModelB();
     obj.C = (serializer?.isSerializable(ModelC) == true
-            ? serializer?.decode(value['C'], type: ModelC)
+            ? serializer?.decode(value['C'], type: Map)
             : value['C']) as Map<String, ModelC> ??
         obj.C;
     obj.A = (serializer?.isSerializable(ModelA) == true
-            ? serializer?.decode(value['A'], type: ModelA)
+            ? serializer?.decode(value['A'], type: List)
             : value['A']) as List<ModelA> ??
         obj.A;
     obj.a = (serializer?.isSerializable(ModelA) == true
@@ -42,15 +42,15 @@ class ModelBCodec extends TypeCodec<ModelB> {
       map[typeInfoKey] = typeInfo;
     }
     map['C'] = serializer?.isSerializable(ModelC) == true
-        ? serializer?.encode(value.C,
+        ? serializer?.toPrimaryObject(value.C,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.C;
     map['A'] = serializer?.isSerializable(ModelA) == true
-        ? serializer?.encode(value.A,
+        ? serializer?.toPrimaryObject(value.A,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.A;
     map['a'] = serializer?.isSerializable(ModelA) == true
-        ? serializer?.encode(value.a,
+        ? serializer?.toPrimaryObject(value.a,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.a;
     return map;
@@ -85,7 +85,8 @@ class ModelCCodec extends TypeCodec<ModelC> {
   String get typeInfo => 'ModelC';
 }
 
-Map<String, TypeCodec> model_b_codecs = <String, TypeCodec>{
+Map<String, TypeCodec<dynamic>> example_model_b_codecs =
+    <String, TypeCodec<dynamic>>{
   'ModelB': new ModelBCodec(),
   'ModelC': new ModelCCodec(),
 };

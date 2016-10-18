@@ -60,8 +60,8 @@ class SerializerGeneratorBuilder extends _build.Builder {
         contentBuffer.writeln(output.output);
       }
     }
-    String fileName = buildStep.input.id.path.split("/").last.split(".").first;
-    contentBuffer.writeln("Map<String, TypeCodec> ${fileName}_codecs = ${_gen.codescMapAsString}");
+    String codecMapName = buildStep.input.id.path.split(".").first.replaceAll("/", "_");
+    contentBuffer.writeln("Map<String, TypeCodec<dynamic>> ${codecMapName}_codecs = ${_gen.codescMapAsString}");
 
     var genPartContent = contentBuffer.toString();
 
