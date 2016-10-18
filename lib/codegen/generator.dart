@@ -87,6 +87,7 @@ class SerializerGenerator extends Generator {
       generateClass(buffer, "class", "${className}Codec", "TypeCodec<$className>");
 
   void _generateEncode(StringBuffer buffer, ClassElement element, Map<String, FieldElement> fields) {
+    buffer.writeln("@override");
     generateFunction(
         buffer, "dynamic", "encode", ["${element.displayName} value"], ["Serializer serializer", "String typeInfoKey"]);
 
@@ -109,6 +110,7 @@ class SerializerGenerator extends Generator {
   }
 
   void _generateDecode(StringBuffer buffer, ClassElement element, Map<String, FieldElement> fields) {
+    buffer.writeln("@override");
     generateFunction(buffer, "${element.displayName}", "decode", ["dynamic value"], ["Serializer serializer"]);
 
     buffer.writeln("${element.displayName} obj = new ${element.displayName}();");
@@ -116,7 +118,7 @@ class SerializerGenerator extends Generator {
       if (element.getSetter(name) != null) {
         buffer.write("obj.$name = ");
         buffer.write("(serializer?.isSerializable(${field.type.name}) == true ? ");
-        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], type: ${field.type.name}) ");
+        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], type: ${field.type.name}) as ${field.type.name}");
         buffer.write(": value['${_getSerializedName(field)}']) ");
         buffer.writeln("?? obj.$name;");
       }
@@ -128,6 +130,7 @@ class SerializerGenerator extends Generator {
   }
 
   void _generateUtils(StringBuffer buffer, Element element) {
+    buffer.writeln("@override");
     generateGetter(buffer, "String", "typeInfo", "'${element.displayName}'");
   }
 
