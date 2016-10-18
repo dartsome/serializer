@@ -68,8 +68,6 @@ class SerializerGenerator extends Generator {
         }
       });
 
-      print(fields);
-
       _classCodec(buffer, element.displayName);
 
       _generateDecode(buffer, element, fields);
@@ -98,7 +96,7 @@ class SerializerGenerator extends Generator {
     fields.forEach((String name, FieldElement field) {
       if (element.getGetter(name) != null) {
         buffer.write("map['${_getSerializedName(field)}'] = ");
-        buffer.write("serializer?.isSerializable(${field.type.name}) == true ? ");
+        buffer.write("serializer?.isSerializable(${_getType(element.getGetter(name).returnType)}) == true ? ");
         buffer.write("serializer?.encode(value.$name, useTypeInfo: typeInfoKey?.isNotEmpty == true) ");
         buffer.write(": value.$name; ");
       }
@@ -109,6 +107,14 @@ class SerializerGenerator extends Generator {
     closeBrace(buffer);
   }
 
+  String _getType(DartType type) {
+    String t = _findGenericOfMap(type.toString());
+    if (t == null) {
+      t = _findGenericOfList(type.toString());
+    }
+    return t ?? type.toString();
+  }
+
   void _generateDecode(StringBuffer buffer, ClassElement element, Map<String, FieldElement> fields) {
     buffer.writeln("@override");
     generateFunction(buffer, "${element.displayName}", "decode", ["dynamic value"], ["Serializer serializer"]);
@@ -117,9 +123,9 @@ class SerializerGenerator extends Generator {
     fields.forEach((String name, FieldElement field) {
       if (element.getSetter(name) != null) {
         buffer.write("obj.$name = ");
-        buffer.write("(serializer?.isSerializable(${field.type.name}) == true ? ");
-        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], type: ${field.type.name}) as ${field.type.name}");
-        buffer.write(": value['${_getSerializedName(field)}']) ");
+        buffer.write("(serializer?.isSerializable(${_getType(element.getGetter(name).returnType)}) == true ? ");
+        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], type: ${_getType(element.getGetter(name).returnType)}) ");
+        buffer.write(": value['${_getSerializedName(field)}'])  as ${element.getGetter(name).returnType} ");
         buffer.writeln("?? obj.$name;");
       }
     });
@@ -132,6 +138,24 @@ class SerializerGenerator extends Generator {
   void _generateUtils(StringBuffer buffer, Element element) {
     buffer.writeln("@override");
     generateGetter(buffer, "String", "typeInfo", "'${element.displayName}'");
+  }
+
+  String _findGenericOfMap(String type) {
+    RegExp reg = new RegExp(r"^Map<(.*)\ *,\ *(.*)>$");
+    Iterable<Match> matches = reg.allMatches(type);
+    if (matches == null || matches.isEmpty) {
+      return null;
+    }
+    return matches.first.group(2);
+  }
+
+  String _findGenericOfList(String type) {
+    RegExp reg = new RegExp(r"^List<(.*)>$");
+    Iterable<Match> matches = reg.allMatches(type);
+    if (matches == null || matches.isEmpty) {
+      return null;
+    }
+    return matches.first.group(1);
   }
 
   bool _isSerializable(FieldElement field) =>

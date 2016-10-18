@@ -17,27 +17,29 @@ import 'model.dart';
 // **************************************************************************
 
 class ModelACodec extends TypeCodec<ModelA> {
+  @override
   ModelA decode(dynamic value, {Serializer serializer}) {
     ModelA obj = new ModelA();
     obj.id = (serializer?.isSerializable(ObjectId) == true
             ? serializer?.decode(value['_id'], type: ObjectId)
-            : value['_id']) ??
+            : value['_id']) as ObjectId ??
         obj.id;
     obj.name = (serializer?.isSerializable(String) == true
             ? serializer?.decode(value['name'], type: String)
-            : value['name']) ??
+            : value['name']) as String ??
         obj.name;
     obj.plop = (serializer?.isSerializable(String) == true
             ? serializer?.decode(value['plop'], type: String)
-            : value['plop']) ??
+            : value['plop']) as String ??
         obj.plop;
     obj.age = (serializer?.isSerializable(num) == true
             ? serializer?.decode(value['age'], type: num)
-            : value['age']) ??
+            : value['age']) as num ??
         obj.age;
     return obj;
   }
 
+  @override
   dynamic encode(ModelA value, {Serializer serializer, String typeInfoKey}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
     if (typeInfoKey != null) {
@@ -62,6 +64,7 @@ class ModelACodec extends TypeCodec<ModelA> {
     return map;
   }
 
+  @override
   String get typeInfo => 'ModelA';
 }
 
@@ -71,20 +74,38 @@ class ModelACodec extends TypeCodec<ModelA> {
 // **************************************************************************
 
 class ModelBCodec extends TypeCodec<ModelB> {
+  @override
   ModelB decode(dynamic value, {Serializer serializer}) {
     ModelB obj = new ModelB();
+    obj.C = (serializer?.isSerializable(ModelC) == true
+            ? serializer?.decode(value['C'], type: ModelC)
+            : value['C']) as Map<String, ModelC> ??
+        obj.C;
+    obj.A = (serializer?.isSerializable(ModelA) == true
+            ? serializer?.decode(value['A'], type: ModelA)
+            : value['A']) as List<ModelA> ??
+        obj.A;
     obj.a = (serializer?.isSerializable(ModelA) == true
             ? serializer?.decode(value['a'], type: ModelA)
-            : value['a']) ??
+            : value['a']) as ModelA ??
         obj.a;
     return obj;
   }
 
+  @override
   dynamic encode(ModelB value, {Serializer serializer, String typeInfoKey}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
     if (typeInfoKey != null) {
       map[typeInfoKey] = typeInfo;
     }
+    map['C'] = serializer?.isSerializable(ModelC) == true
+        ? serializer?.encode(value.C,
+            useTypeInfo: typeInfoKey?.isNotEmpty == true)
+        : value.C;
+    map['A'] = serializer?.isSerializable(ModelA) == true
+        ? serializer?.encode(value.A,
+            useTypeInfo: typeInfoKey?.isNotEmpty == true)
+        : value.A;
     map['a'] = serializer?.isSerializable(ModelA) == true
         ? serializer?.encode(value.a,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
@@ -92,6 +113,7 @@ class ModelBCodec extends TypeCodec<ModelB> {
     return map;
   }
 
+  @override
   String get typeInfo => 'ModelB';
 }
 
@@ -106,11 +128,13 @@ class ModelBCodec extends TypeCodec<ModelB> {
 // **************************************************************************
 
 class ModelCCodec extends TypeCodec<ModelC> {
+  @override
   ModelC decode(dynamic value, {Serializer serializer}) {
     ModelC obj = new ModelC();
     return obj;
   }
 
+  @override
   dynamic encode(ModelC value, {Serializer serializer, String typeInfoKey}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
     if (typeInfoKey != null) {
@@ -119,6 +143,7 @@ class ModelCCodec extends TypeCodec<ModelC> {
     return map;
   }
 
+  @override
   String get typeInfo => 'ModelC';
 }
 

@@ -28,6 +28,8 @@ class ModelA {
 @serializable
 class ModelB {
 
+    Map<String, ModelC> C;
+    List<ModelA> A;
     ModelA a;
 
     ModelB();
