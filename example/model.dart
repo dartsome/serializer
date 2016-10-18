@@ -8,14 +8,21 @@ class ModelA {
     ObjectId id;
 
     String name;
-    num age;
+
+
+    num _age;
+
+    num get age => _age;
+    set age(val) {
+        _age = val;
+    }
 
     @ignore
     String toto = "bidule";
 
     String plop = null;
 
-    ModelA([this.id, this.name, this.age]);
+    ModelA([this.id, this.name, this._age]);
 }
 
 @serializable
@@ -23,5 +30,15 @@ class ModelB {
 
     ModelA a;
 
-    ModelB([this.a]);
+    ModelB();
+}
+
+@serializable
+abstract class ModelD {
+    String foo;
+}
+
+@serializable
+class ModelC extends ModelB with ModelD {
+    ModelC([ModelA a]);
 }

@@ -29,7 +29,7 @@ abstract class Serializer {
   bool isSerializable(Type type);
 
   /// Convert the object to a Map
-  Map toMap(Object input, {bool useTypeInfo, bool withTypeInfo});
+  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo});
 
   /// Convert to a Map or a List recursively
   Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo});
@@ -41,8 +41,8 @@ abstract class Serializer {
   Object decode(String encoded, {Type type, bool useTypeInfo, bool withTypeInfo});
 
   /// Convert a serialized object to map
-  Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
+  Object fromMap(Map<String, dynamic> map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo});
+  List fromList(List<dynamic> list, {Type type, bool useTypeInfo, bool withTypeInfo});
 }

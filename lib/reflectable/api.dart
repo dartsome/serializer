@@ -121,8 +121,8 @@ class ReflectableSerializer implements Serializer {
   bool isSerializable(Type type) => _classes.containsKey(_getCorrectType(type.toString()));
 
   /// Convert the object to a Map
-  Map toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
-      _toMap(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
+      _toMap(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo) as Map<String, dynamic>;
 
   /// Convert to a Map or a List recursively
   Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
@@ -141,7 +141,7 @@ class ReflectableSerializer implements Serializer {
       _fromMap(map, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
+  List<dynamic> fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
       _fromList(list, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   ///////////////////

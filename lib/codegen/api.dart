@@ -109,8 +109,8 @@ class CodegenSerializer implements Serializer {
 
   bool isSerializable(Type type) => hasTypeCodec(type);
 
-  Map toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) => _encodeValue(input,
-      type: input.runtimeType, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) => _encodeValue(input,
+      type: input.runtimeType, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo) as Map<String, dynamic>;
 
   /// Convert to a Map or a List recursively
   Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
@@ -129,7 +129,7 @@ class CodegenSerializer implements Serializer {
       _fromMap(map, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
+  List<dynamic> fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
       _fromList(list, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   ///////////////////
@@ -233,8 +233,8 @@ class CodegenSerializer implements Serializer {
     return _decodeValue(map, type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
   }
 
-  List _fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) {
-    List data = new List();
+  List<dynamic> _fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) {
+    List<dynamic> data = new List<dynamic>();
     list.forEach((value) => data.add(_decodeValue(value, type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo)));
     return data;
   }

@@ -27,14 +27,14 @@ class ModelACodec extends TypeCodec<ModelA> {
             ? serializer?.decode(value['name'], type: String)
             : value['name']) ??
         obj.name;
-    obj.age = (serializer?.isSerializable(num) == true
-            ? serializer?.decode(value['age'], type: num)
-            : value['age']) ??
-        obj.age;
     obj.plop = (serializer?.isSerializable(String) == true
             ? serializer?.decode(value['plop'], type: String)
             : value['plop']) ??
         obj.plop;
+    obj.age = (serializer?.isSerializable(num) == true
+            ? serializer?.decode(value['age'], type: num)
+            : value['age']) ??
+        obj.age;
     return obj;
   }
 
@@ -51,14 +51,14 @@ class ModelACodec extends TypeCodec<ModelA> {
         ? serializer?.encode(value.name,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.name;
-    map['age'] = serializer?.isSerializable(num) == true
-        ? serializer?.encode(value.age,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.age;
     map['plop'] = serializer?.isSerializable(String) == true
         ? serializer?.encode(value.plop,
             useTypeInfo: typeInfoKey?.isNotEmpty == true)
         : value.plop;
+    map['age'] = serializer?.isSerializable(num) == true
+        ? serializer?.encode(value.age,
+            useTypeInfo: typeInfoKey?.isNotEmpty == true)
+        : value.age;
     return map;
   }
 
@@ -95,7 +95,35 @@ class ModelBCodec extends TypeCodec<ModelB> {
   String get typeInfo => 'ModelB';
 }
 
+// **************************************************************************
+// Generator: SerializerGenerator
+// Target: abstract class ModelD
+// **************************************************************************
+
+// **************************************************************************
+// Generator: SerializerGenerator
+// Target: class ModelC
+// **************************************************************************
+
+class ModelCCodec extends TypeCodec<ModelC> {
+  ModelC decode(dynamic value, {Serializer serializer}) {
+    ModelC obj = new ModelC();
+    return obj;
+  }
+
+  dynamic encode(ModelC value, {Serializer serializer, String typeInfoKey}) {
+    Map<String, dynamic> map = new Map<String, dynamic>();
+    if (typeInfoKey != null) {
+      map[typeInfoKey] = typeInfo;
+    }
+    return map;
+  }
+
+  String get typeInfo => 'ModelC';
+}
+
 Map<String, TypeCodec> modelCodecs = <String, TypeCodec>{
   'ModelA': new ModelACodec(),
   'ModelB': new ModelBCodec(),
+  'ModelC': new ModelCCodec(),
 };
