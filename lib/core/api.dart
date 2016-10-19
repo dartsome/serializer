@@ -38,7 +38,7 @@ abstract class Serializer {
   String encode(Object input, {bool useTypeInfo, bool withTypeInfo});
 
   /// Decode the object from a seriablized string
-  Object decode(String encoded, {Type type, bool useTypeInfo, bool withTypeInfo});
+  Object decode(dynamic encoded, {Type type, bool useTypeInfo, bool withTypeInfo});
 
   /// Convert a serialized object to map
   Object fromMap(Map<String, dynamic> map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});

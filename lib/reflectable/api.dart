@@ -133,7 +133,7 @@ class ReflectableSerializer implements Serializer {
       _encode(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Decode the object from a seriablized string
-  Object decode(String encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
+  Object decode(dynamic encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
       _decode(encoded, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object to map
@@ -210,11 +210,18 @@ class ReflectableSerializer implements Serializer {
     }
   }
 
-  Object _decode(String encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) {
-    if (encoded == null || encoded.isEmpty) {
+  Object _decode(dynamic encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) {
+    if (encoded == null) {
       return null;
     }
-    var value = _codec.decode(encoded);
+    dynamic value = encoded;
+    if (value is String) {
+      if ((value.startsWith("{") && value.endsWith("}")) || (value.startsWith("[") && value.endsWith("]"))) {
+        value = _codec.decode(encoded);
+      } else {
+        value = num.parse(encoded, (_) => null) ?? encoded;
+      }
+    }
     if (value is Map) {
       return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (value is List) {
