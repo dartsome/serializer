@@ -10,58 +10,6 @@ import 'dart:convert';
 import 'package:serializer/codecs/type_codec.dart';
 import '../core.dart';
 
-import 'annotations.dart';
-
-final _serializerJson = new CodegenSerializer.json();
-final _serializerTypedJson = new CodegenSerializer.typedJson();
-
-/// Utility class for a Serializable object
-
-@serializable
-abstract class Serialize {
-  /// Get the serializer instance
-  @ignore
-  Serializer get serializer;
-
-  /// Convert the object to a map
-  Map toMap() => serializer?.toPrimaryObject(this) as Map;
-
-  /// Override the toString method to show a stringify map of the object
-  String toString() => toMap().toString();
-
-  String encode() => serializer?.encode(this);
-}
-
-/// Utility class for a JSON object
-@serializable
-abstract class JsonObject extends Serialize {
-  /// Get the JSON serializer instance
-  @ignore
-  Serializer get serializer => _serializerJson;
-
-  /// Convert the object to JSON string
-  String toJson() => encode();
-
-  /// Convert the object to a map
-  Map toMap() => serializer.toPrimaryObject(this) as Map;
-
-  String encode() => serializer.encode(this);
-}
-
-/// Utility class for a typed JSON object
-@serializable
-abstract class TypedJsonObject extends Serialize {
-  /// Get the typed JSON serializer instance
-  @ignore
-  Serializer get serializer => _serializerTypedJson;
-
-  /// Convert the object to a map
-  Map toMap() => serializer.toMap(this);
-
-  /// Convert the object to JSON string
-  String toJson() => serializer.encode(this);
-}
-
 /// Utility class to access to the serializer api
 class CodegenSerializer implements Serializer {
   ///////////////////
@@ -125,7 +73,7 @@ class CodegenSerializer implements Serializer {
 
   /// Decode the object from a seriablized string
   Object decode(dynamic encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
-      _decode(dynamic, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      _decode(encoded, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object to map
   Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
@@ -208,7 +156,7 @@ class CodegenSerializer implements Serializer {
       if ((value.startsWith("{") && value.endsWith("}")) || (value.startsWith("[") && value.endsWith("]"))) {
         value = _codec.decode(encoded);
       } else {
-        value = num.parse(encoded, (_) => null) ?? encoded;
+        value = num.parse(encoded, (_) => null) ?? value;
       }
     }
     if (value is Map) {
@@ -216,7 +164,7 @@ class CodegenSerializer implements Serializer {
     } else if (value is List) {
       return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     }
-    return _decodeValue(value, type, useTypeInfo: useTypeInfo);
+    return _decodeValue(value, type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
   }
 
   Object _fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) {
@@ -229,9 +177,6 @@ class CodegenSerializer implements Serializer {
     } else {
       type ??= Map;
     }
-
-    print(map);
-    print(type);
 
     // Only Map
     if (type == Map) {
@@ -254,36 +199,42 @@ class CodegenSerializer implements Serializer {
       return null;
     }
     type ??= _decodeType(value.runtimeType.toString());
-    if (hasTypeCodec(type) == true) {
-      return typeCodec(type).decode(value, serializer: this);
-    } else if ((isSerializable(type) || type == dynamic) && value is Map) {
-      return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-    } else if ((isSerializable(type) || type == dynamic) && value is List) {
-      return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-    } else if (type.toString().startsWith("Map")) {
-      return _fromMap(value,
-          type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-    } else if (type.toString().startsWith("List")) {
-      return _fromList(value, type: _findGenericOfList(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-    } else if (type == null || isPrimaryType(type) || isSerializable(type) || type == dynamic) {
+    if (isPrimaryType(type) || value.runtimeType == type) {
       return value;
+    } else if (hasTypeCodec(type) == true) {
+      TypeCodec codec = typeCodec(type);
+      dynamic val = codec.decode(value, serializer: this);
+      return val;
+    } else if (type.toString().startsWith("Map") || type.toString().startsWith("List")) {
+      if (value is Map) {
+        return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      } else if (value is List) {
+        return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      } else if (type.toString().startsWith("Map")) {
+        return _fromMap(value,
+            type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      } else if (type.toString().startsWith("List")) {
+        return _fromList(value, type: _findGenericOfList(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      }
     }
+
     return null;
   }
 
-  Object _encodeValue(value, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
+  Object _encodeValue(Object value, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
     useTypeInfo ??= _useTypeInfo;
-    if (hasTypeCodec(value.runtimeType) == true) {
-      return typeCodec(value.runtimeType)
-          .encode(value, serializer: this, typeInfoKey: useTypeInfo == true ? _typeInfoKey : null);
+    if (isPrimaryType(value.runtimeType) == true) {
+      return value;
+    } else if (hasTypeCodec(value.runtimeType) == true) {
+      TypeCodec codec = typeCodec(value.runtimeType);
+      return
+          codec.encode(value, serializer: this, typeInfoKey: useTypeInfo == true ? _typeInfoKey : null);
     } else if (value is Map) {
       return _encodeMap(value,
           withReferenceable: withReferenceable, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (value is List) {
       return _encodeList(value,
           withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-    } else if (isPrimaryType(value.runtimeType)) {
-      return value;
     }
     return null;
   }
@@ -292,8 +243,7 @@ class CodegenSerializer implements Serializer {
     Map<String, dynamic> map = new Map<String, dynamic>();
 
     value.forEach((dynamic key, dynamic val) {
-      map[key.toString()] =
-          _encode(val, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo, withReferenceable: withReferenceable);
+      map[key.toString()] = toPrimaryObject(val, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     });
 
     return map;
@@ -307,17 +257,7 @@ class CodegenSerializer implements Serializer {
   }
 
   String _encode(Object obj, {bool withReferenceable: false, bool useTypeInfo, bool withTypeInfo: false}) {
-    if (obj == null) {
-      return null;
-    }
-    if (obj is List) {
-      return _codec.encode(
-          _encodeList(obj, withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo));
-    }
-    return _codec.encode(_encodeValue(obj,
-        type: obj.runtimeType,
-        withReferenceable: withReferenceable,
-        useTypeInfo: useTypeInfo,
-        withTypeInfo: withTypeInfo));
+    Object val = toPrimaryObject(obj, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+    return _codec.encode(val);
   }
 }

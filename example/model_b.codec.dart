@@ -7,7 +7,7 @@
 
 library model_b.codec;
 
-import 'package:serializer/core.dart' show Serializer;
+import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
 import 'package:serializer/codecs.dart';
 import 'model_b.dart';
 
@@ -20,18 +20,12 @@ class ModelBCodec extends TypeCodec<ModelB> {
   @override
   ModelB decode(dynamic value, {Serializer serializer}) {
     ModelB obj = new ModelB();
-    obj.C = (serializer?.isSerializable(ModelC) == true
-            ? serializer?.decode(value['C'], type: Map)
-            : value['C']) as Map<String, ModelC> ??
-        obj.C;
-    obj.A = (serializer?.isSerializable(ModelA) == true
-            ? serializer?.decode(value['A'], type: List)
-            : value['A']) as List<ModelA> ??
-        obj.A;
-    obj.a = (serializer?.isSerializable(ModelA) == true
-            ? serializer?.decode(value['a'], type: ModelA)
-            : value['a']) as ModelA ??
-        obj.a;
+    obj.C = (serializer?.decode(value['C'], type: ModelC, useTypeInfo: false) ??
+        obj.C) as Map<String, ModelC>;
+    obj.A = (serializer?.decode(value['A'], type: ModelA, useTypeInfo: false) ??
+        obj.A) as List<ModelA>;
+    obj.a = (serializer?.decode(value['a'], type: ModelA, useTypeInfo: false) ??
+        obj.a) as ModelA;
     return obj;
   }
 
@@ -41,19 +35,13 @@ class ModelBCodec extends TypeCodec<ModelB> {
     if (typeInfoKey != null) {
       map[typeInfoKey] = typeInfo;
     }
-    map['C'] = serializer?.isSerializable(ModelC) == true
-        ? serializer?.toPrimaryObject(value.C,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.C;
-    map['A'] = serializer?.isSerializable(ModelA) == true
-        ? serializer?.toPrimaryObject(value.A,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.A;
-    map['a'] = serializer?.isSerializable(ModelA) == true
-        ? serializer?.toPrimaryObject(value.a,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.a;
-    return map;
+    map['C'] = serializer?.toPrimaryObject(value.C,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    map['A'] = serializer?.toPrimaryObject(value.A,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    map['a'] = serializer?.toPrimaryObject(value.a,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    return cleanNullInMap(map);
   }
 
   @override
@@ -69,6 +57,13 @@ class ModelCCodec extends TypeCodec<ModelC> {
   @override
   ModelC decode(dynamic value, {Serializer serializer}) {
     ModelC obj = new ModelC();
+    obj.foo = (value['foo'] ?? obj.foo) as String;
+    obj.C = (serializer?.decode(value['C'], type: ModelC, useTypeInfo: false) ??
+        obj.C) as Map<String, ModelC>;
+    obj.A = (serializer?.decode(value['A'], type: ModelA, useTypeInfo: false) ??
+        obj.A) as List<ModelA>;
+    obj.a = (serializer?.decode(value['a'], type: ModelA, useTypeInfo: false) ??
+        obj.a) as ModelA;
     return obj;
   }
 
@@ -78,7 +73,14 @@ class ModelCCodec extends TypeCodec<ModelC> {
     if (typeInfoKey != null) {
       map[typeInfoKey] = typeInfo;
     }
-    return map;
+    map['foo'] = value.foo;
+    map['C'] = serializer?.toPrimaryObject(value.C,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    map['A'] = serializer?.toPrimaryObject(value.A,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    map['a'] = serializer?.toPrimaryObject(value.a,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    return cleanNullInMap(map);
   }
 
   @override

@@ -10,8 +10,21 @@ import '../codecs.dart';
 bool isPrimaryType(Type obj) =>
     obj == num || obj == String || obj == bool || obj == int || obj == double;
 
+bool isPrimaryTypeString(String obj) =>
+    obj == "num" || obj == "String" || obj == "bool" || obj == "int" || obj == "double";
+
 final String MapTypeString  = {}.runtimeType.toString();
 final String ListTypeString = [].runtimeType.toString();
+
+Map cleanNullInMap(Map<String, dynamic> map) {
+  Iterable<String> keys = new List.from(map.keys);
+  keys.forEach((String k){
+    if (map[k] == null) {
+      map.remove(k);
+    }
+  });
+  return map;
+}
 
 abstract class Serializer {
   /// Registers a [typeCodec] for the specific [type]

@@ -11,9 +11,12 @@ import 'generator.dart';
 import 'dart:async';
 
 class SerializerGeneratorBuilder extends _build.Builder {
+  final String library;
   final String generatedExtension;
-  static SerializerGenerator _gen = new SerializerGenerator();
-  SerializerGeneratorBuilder({this.generatedExtension: '.codec.dart'});
+  static SerializerGenerator _gen;
+  SerializerGeneratorBuilder(this.library, {this.generatedExtension: '.codec.dart'}) {
+    _gen = new SerializerGenerator(library);
+  }
 
   @override
   Future build(_build.BuildStep buildStep) async {
@@ -116,7 +119,7 @@ final _headerLine = '// '.padRight(77, '*');
 
 
 _build.PhaseGroup _phases(String library, final List<String> files) =>
-    new _build.PhaseGroup.singleAction(new SerializerGeneratorBuilder(), new _build.InputSet(library, files));
+    new _build.PhaseGroup.singleAction(new SerializerGeneratorBuilder(library), new _build.InputSet(library, files));
 
 build(String library, final List<String> files) async =>
     _build.build(_phases(library, files), deleteFilesByDefault: true);

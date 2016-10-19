@@ -1,0 +1,76 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+// **************************************************************************
+// Generator: SerializerGenerator
+// Target: library
+// **************************************************************************
+
+library double_json_test.codec;
+
+import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
+import 'package:serializer/codecs.dart';
+import 'double_json_test.dart';
+
+// **************************************************************************
+// Generator: SerializerGenerator
+// Target: class DoubleSimple
+// **************************************************************************
+
+class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
+  @override
+  DoubleSimple decode(dynamic value, {Serializer serializer}) {
+    DoubleSimple obj = new DoubleSimple();
+    obj.test = (value['test'] ?? obj.test) as double;
+    return obj;
+  }
+
+  @override
+  dynamic encode(DoubleSimple value,
+      {Serializer serializer, String typeInfoKey}) {
+    Map<String, dynamic> map = new Map<String, dynamic>();
+    if (typeInfoKey != null) {
+      map[typeInfoKey] = typeInfo;
+    }
+    map['test'] = value.test;
+    return cleanNullInMap(map);
+  }
+
+  @override
+  String get typeInfo => 'DoubleSimple';
+}
+
+// **************************************************************************
+// Generator: SerializerGenerator
+// Target: class DoubleComplex
+// **************************************************************************
+
+class DoubleComplexCodec extends TypeCodec<DoubleComplex> {
+  @override
+  DoubleComplex decode(dynamic value, {Serializer serializer}) {
+    DoubleComplex obj = new DoubleComplex();
+    obj.map = (value['map'] ?? obj.map) as Map<String, double>;
+    obj.list = (value['list'] ?? obj.list) as List<double>;
+    return obj;
+  }
+
+  @override
+  dynamic encode(DoubleComplex value,
+      {Serializer serializer, String typeInfoKey}) {
+    Map<String, dynamic> map = new Map<String, dynamic>();
+    if (typeInfoKey != null) {
+      map[typeInfoKey] = typeInfo;
+    }
+    map['map'] = value.map;
+    map['list'] = value.list;
+    return cleanNullInMap(map);
+  }
+
+  @override
+  String get typeInfo => 'DoubleComplex';
+}
+
+Map<String, TypeCodec<dynamic>> test_codegen_double_json_test_codecs =
+    <String, TypeCodec<dynamic>>{
+  'DoubleSimple': new DoubleSimpleCodec(),
+  'DoubleComplex': new DoubleComplexCodec(),
+};

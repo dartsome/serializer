@@ -7,7 +7,7 @@
 
 library model.codec;
 
-import 'package:serializer/core.dart' show Serializer;
+import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
 import 'package:serializer/codecs.dart';
 import 'model.dart';
 
@@ -20,22 +20,12 @@ class ModelACodec extends TypeCodec<ModelA> {
   @override
   ModelA decode(dynamic value, {Serializer serializer}) {
     ModelA obj = new ModelA();
-    obj.id = (serializer?.isSerializable(ObjectId) == true
-            ? serializer?.decode(value['_id'], type: ObjectId)
-            : value['_id']) as ObjectId ??
-        obj.id;
-    obj.name = (serializer?.isSerializable(String) == true
-            ? serializer?.decode(value['name'], type: String)
-            : value['name']) as String ??
-        obj.name;
-    obj.plop = (serializer?.isSerializable(String) == true
-            ? serializer?.decode(value['plop'], type: String)
-            : value['plop']) as String ??
-        obj.plop;
-    obj.age = (serializer?.isSerializable(num) == true
-            ? serializer?.decode(value['age'], type: num)
-            : value['age']) as num ??
-        obj.age;
+    obj.id =
+        (serializer?.decode(value['_id'], type: ObjectId, useTypeInfo: false) ??
+            obj.id) as ObjectId;
+    obj.name = (value['name'] ?? obj.name) as String;
+    obj.plop = (value['plop'] ?? obj.plop) as String;
+    obj.age = (value['age'] ?? obj.age) as num;
     return obj;
   }
 
@@ -45,23 +35,12 @@ class ModelACodec extends TypeCodec<ModelA> {
     if (typeInfoKey != null) {
       map[typeInfoKey] = typeInfo;
     }
-    map['_id'] = serializer?.isSerializable(ObjectId) == true
-        ? serializer?.toPrimaryObject(value.id,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.id;
-    map['name'] = serializer?.isSerializable(String) == true
-        ? serializer?.toPrimaryObject(value.name,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.name;
-    map['plop'] = serializer?.isSerializable(String) == true
-        ? serializer?.toPrimaryObject(value.plop,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.plop;
-    map['age'] = serializer?.isSerializable(num) == true
-        ? serializer?.toPrimaryObject(value.age,
-            useTypeInfo: typeInfoKey?.isNotEmpty == true)
-        : value.age;
-    return map;
+    map['_id'] = serializer?.toPrimaryObject(value.id,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    map['name'] = value.name;
+    map['plop'] = value.plop;
+    map['age'] = value.age;
+    return cleanNullInMap(map);
   }
 
   @override

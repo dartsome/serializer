@@ -1,5 +1,4 @@
 import 'serializer.dart';
-import 'package:bson/bson.dart';
 export 'package:bson/bson.dart';
 export 'model.dart';
 
