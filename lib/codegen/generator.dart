@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:mirrors';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -56,13 +57,13 @@ class SerializerGenerator extends Generator {
       import(buffer, "package:serializer/codecs.dart");
       import(buffer, buildStep.input.id.path.split("/").last);
     } else if (element is ClassElement &&
+        _isClassSerializable(element) == true &&
         element.isAbstract == false &&
-        element.metadata.firstWhere((ElementAnnotation a) => matchAnnotation(Serializable, a), orElse: () => null) !=
-            null) {
+        element.isPrivate == false) {
       _classCodec(buffer, element.displayName);
 
-      _generateDecode(buffer, element, _setters(element));
-      _generateEncode(buffer, element, _getters(element));
+      _generateDecode(buffer, element);
+      _generateEncode(buffer, element);
       _generateUtils(buffer, element);
 
       closeBrace(buffer);
@@ -77,7 +78,7 @@ class SerializerGenerator extends Generator {
   }
 
   String withTypeInfoKey(FieldElement field, [bool decode = false]) {
-    if (field.metadata.any((ElementAnnotation a) => matchAnnotation(SerializedWithTypeInfo, a)) ||
+    if (field.metadata.any((ElementAnnotation a) => _matchAnnotation(SerializedWithTypeInfo, a)) ||
         field.type.toString() == "dynamic") {
       return "true";
     }
@@ -108,33 +109,46 @@ class SerializerGenerator extends Generator {
     return matches.first.group(2);
   }
 
-  void _generateDecode(StringBuffer buffer, ClassElement element, Map<String, FieldElement> fields) {
+  bool _matchAnnotation(Type annotationType, ElementAnnotation annotation) {
+    try {
+      return matchAnnotation(annotationType, annotation);
+    } catch (e, s) {
+      //print(e);
+      //print(s);
+    }
+    return false;
+  }
+
+  bool _decodeWithTypeInfo(Element element) =>
+      (_isClassSerializable(element) == true && (element as ClassElement).isAbstract == true) ||
+      element.displayName == "dynamic" ||
+      (element as ClassElement).metadata.any((ElementAnnotation a) => _matchAnnotation(SerializedWithTypeInfo, a)) ==
+          true;
+
+  bool _decodeWithType(Element element) =>
+      _isClassSerializable(element) == true && (element as ClassElement).isAbstract == false;
+
+  bool _encodeWithTypeInfo(Element element) =>
+      _isClassSerializable(element) == true && (element as ClassElement).isAbstract == true;
+
+  void _generateDecode(StringBuffer buffer, ClassElement element) {
+    Map<String, FieldElement> fields = _setters(element);
     buffer.writeln("@override");
     generateFunction(buffer, "${element.displayName}", "decode", ["dynamic value"], ["Serializer serializer"]);
 
-    bool superTypeAnnoted =
-        element.supertype.element.metadata.any((ElementAnnotation a) => matchAnnotation(Serializable, a));
-
     buffer.writeln("${element.displayName} obj = new ${element.displayName}();");
-
-    if (superTypeAnnoted == true) {
-      element.supertype.element.fields.forEach((FieldElement field) {
-        if (_isSerializable(field) == true && element.supertype.element.getSetter(field.name) != null) {
-          fields[field.name] = field;
-        }
-      });
-    }
 
     fields.forEach((String name, FieldElement field) {
       String genericType = _getType(field).split("<").first;
       buffer.write("obj.$name = (");
-      if (isPrimaryTypeString(_getType(field)) == false) {
-        buffer.write(
-            "serializer?.decode(value['${_getSerializedName(field)}'], type: $genericType, useTypeInfo: ${_useTypeInfoKey(field, true)}) ");
+      if (isPrimaryTypeString(genericType) && genericType == "${field.type}") {
+        buffer.write("value['${_getSerializedName(field)}']");
+      } else if (_decodeWithTypeInfo(field.type.element)) {
+        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], useTypeInfo: true) ");
       } else {
-        buffer.write("value['${_getSerializedName(field)}'] ");
+        buffer.write("serializer?.decode(value['${_getSerializedName(field)}'], type: $genericType) ");
       }
-      buffer.writeln("?? obj.$name) as ${field.type} ;");
+      buffer.writeln("?? obj.$name) as ${field.type};");
     });
 
     buffer.writeln("return obj;");
@@ -142,23 +156,14 @@ class SerializerGenerator extends Generator {
     closeBrace(buffer);
   }
 
-  void _generateEncode(StringBuffer buffer, ClassElement element, Map<String, FieldElement> fields) {
+  void _generateEncode(StringBuffer buffer, ClassElement element) {
+    Map<String, FieldElement> fields = _getters(element);
+
     buffer.writeln("@override");
     generateFunction(
         buffer, "dynamic", "encode", ["${element.displayName} value"], ["Serializer serializer", "String typeInfoKey"]);
 
-    bool superTypeAnnoted =
-        element.supertype.element.metadata.any((ElementAnnotation a) => matchAnnotation(Serializable, a));
-
     buffer.writeln("Map<String, dynamic> map = new Map<String, dynamic>();");
-
-    if (superTypeAnnoted == true) {
-      element.supertype.element.fields.forEach((FieldElement field) {
-        if (_isSerializable(field) == true && element.supertype.element.getGetter(field.name) != null) {
-          fields[field.name] = field;
-        }
-      });
-    }
 
     buffer.writeln("if (typeInfoKey != null) {");
     buffer.writeln("map[typeInfoKey] = typeInfo;");
@@ -184,30 +189,11 @@ class SerializerGenerator extends Generator {
 
   String _getSerializedName(FieldElement field) {
     ElementAnnotation nameAnnotation =
-        field.metadata.firstWhere((ElementAnnotation a) => matchAnnotation(SerializedName, a), orElse: () => null);
+        field.metadata.firstWhere((ElementAnnotation a) => _matchAnnotation(SerializedName, a), orElse: () => null);
     if (nameAnnotation != null) {
       return nameAnnotation.constantValue.getField("name").toStringValue();
     }
     return field.name;
-  }
-
-  Map<String, FieldElement> _getters(ClassElement element) {
-    Map<String, FieldElement> getterFields =
-        element.fields.fold(<String, FieldElement>{}, (Map<String, FieldElement> map, field) {
-      if (_isSerializable(field) == true && element.getSetter(field.name) != null) {
-        map[field.name] = field;
-      }
-      return map;
-    });
-    element.mixins.forEach((InterfaceType t) {
-      t.element.fields.forEach((FieldElement field) {
-        if (_isSerializable(field) == true && t.getGetter(field.name) != null) {
-          getterFields[field.name] = field;
-        }
-      });
-    });
-
-    return getterFields;
   }
 
   String _getType(FieldElement field) {
@@ -222,34 +208,54 @@ class SerializerGenerator extends Generator {
     return t;
   }
 
-  bool _isSerializable(FieldElement field) =>
+  bool _isFieldSerializable(Element field) =>
+      field is FieldElement &&
       field.isStatic == false &&
       field.isConst == false &&
       field.isPrivate == false &&
-      field.metadata.any((ElementAnnotation a) => matchAnnotation(Ignore, a)) == false;
+      field.metadata.any((ElementAnnotation a) => _matchAnnotation(Ignore, a)) == false;
 
-  Map<String, FieldElement> _setters(ClassElement element) {
-    Map<String, FieldElement> setterFields =
-        element.fields.fold(<String, FieldElement>{}, (Map<String, FieldElement> map, field) {
-      if (_isSerializable(field) == true && element.getSetter(field.name) != null) {
-        map[field.name] = field;
+  bool _isClassSerializable(Element elem) =>
+      elem is ClassElement && elem.metadata.any((ElementAnnotation a) => _matchAnnotation(Serializable, a)) == true;
+
+  Map<String, FieldElement> _getters(ClassElement element) => _getMatchingFields(
+      element, (FieldElement field, t) => _isFieldSerializable(field) == true && t.getGetter(field.name) != null);
+  Map<String, FieldElement> _setters(ClassElement element) => _getMatchingFields(
+      element, (FieldElement field, t) => _isFieldSerializable(field) == true && t.getSetter(field.name) != null);
+
+  Map<String, FieldElement> _getMatchingFields(ClassElement element, Function matcher) {
+    Map<String, FieldElement> fields = <String, FieldElement>{};
+    element.allSupertypes.forEach((InterfaceType t) {
+      if (_isClassSerializable(t.element)) {
+        t.element.fields.forEach((FieldElement field) {
+          if (matcher(field, t) == true) {
+            fields[field.name] = field;
+          }
+        });
       }
-      return map;
     });
+
     element.mixins.forEach((InterfaceType t) {
+      //  if (_isClassSerializable(t.element)) {
       t.element.fields.forEach((FieldElement field) {
-        if (_isSerializable(field) == true && t.getSetter(field.name) != null) {
-          setterFields[field.name] = field;
+        if (matcher(field, t) == true) {
+          fields[field.name] = field;
         }
       });
+      // }
     });
 
-    return setterFields;
+    element.fields.forEach((FieldElement field) {
+      if (matcher(field, element) == true) {
+        fields[field.name] = field;
+      }
+    });
+    return fields;
   }
 
   String _useTypeInfoKey(FieldElement field, [bool decode = false]) {
     String type = _getType(field).split("<").first;
-    if (type == "null") {
+    if (type == "null" || _encodeWithTypeInfo(field.type.element)) {
       return "true";
     }
     return "${withTypeInfoKey(field, decode)}";

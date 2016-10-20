@@ -20,9 +20,8 @@ class ModelACodec extends TypeCodec<ModelA> {
   @override
   ModelA decode(dynamic value, {Serializer serializer}) {
     ModelA obj = new ModelA();
-    obj.id =
-        (serializer?.decode(value['_id'], type: ObjectId, useTypeInfo: false) ??
-            obj.id) as ObjectId;
+    obj.id = (serializer?.decode(value['_id'], type: ObjectId) ?? obj.id)
+        as ObjectId;
     obj.name = (value['name'] ?? obj.name) as String;
     obj.plop = (value['plop'] ?? obj.plop) as String;
     obj.age = (value['age'] ?? obj.age) as num;

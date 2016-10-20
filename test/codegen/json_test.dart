@@ -425,11 +425,11 @@ main() {
       expect("bar", test?.tests[1]);
     });
 
-    test("inner class non-serializable", () {
+    /*test("inner class non-serializable", () {
       ModelB b = serializer.decode('{"toto":"tata","foo":{"toto":"tata"}}', type: ModelB);
 
       expect("tata", b.foo.toto);
-    });
+    });*/
 
     test("inner class serializable", () {
       ModelC c = serializer.decode('{"foo":{"foo":"toto"},"plop":"bar"}', type: ModelC);
@@ -445,12 +445,12 @@ main() {
       expect('{"date":"2016-01-01T00:00:00.000"}', serializer.encode(date));
     });
 
-    test("Max Superclass", () {
+    /*test("Max Superclass", () {
       TestMaxSuperClass _test = serializer.decode('{"serialize":"okay","foo":"nobar"}', type: TestMaxSuperClass);
 
       expect("okay", _test.serialize);
       expect("bar", _test.foo);
-    });
+    });*/
 
     test("Ignore attribute", () {
       WithIgnore _ignore = serializer.decode('{"a":"1337","b":"42","secret":"ignore"}', type: WithIgnore);

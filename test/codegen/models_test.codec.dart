@@ -76,11 +76,9 @@ class EmployeeCodec extends TypeCodec<Employee> {
     Employee obj = new Employee();
     obj.id = (value['id'] ?? obj.id) as int;
     obj.name = (value['name'] ?? obj.name) as String;
-    obj.address = (serializer?.decode(value['address'],
-            type: Address, useTypeInfo: false) ??
+    obj.address = (serializer?.decode(value['address'], type: Address) ??
         obj.address) as Address;
-    obj.manager = (serializer?.decode(value['manager'],
-            type: Employee, useTypeInfo: false) ??
+    obj.manager = (serializer?.decode(value['manager'], type: Employee) ??
         obj.manager) as Employee;
     return obj;
   }
@@ -115,8 +113,7 @@ class AddressCodec extends TypeCodec<Address> {
     Address obj = new Address();
     obj.id = (value['id'] ?? obj.id) as int;
     obj.location = (value['location'] ?? obj.location) as String;
-    obj.owner = (serializer?.decode(value['owner'],
-            type: Employee, useTypeInfo: false) ??
+    obj.owner = (serializer?.decode(value['owner'], type: Employee) ??
         obj.owner) as Employee;
     return obj;
   }
@@ -204,9 +201,8 @@ class PetCodec extends TypeCodec<Pet> {
   Pet decode(dynamic value, {Serializer serializer}) {
     Pet obj = new Pet();
     obj.name = (value['name'] ?? obj.name) as String;
-    obj.animal =
-        (serializer?.decode(value['animal'], type: null, useTypeInfo: true) ??
-            obj.animal) as dynamic;
+    obj.animal = (serializer?.decode(value['animal'], useTypeInfo: true) ??
+        obj.animal) as dynamic;
     return obj;
   }
 
@@ -294,9 +290,8 @@ class PetWithTypeInfoCodec extends TypeCodec<PetWithTypeInfo> {
   PetWithTypeInfo decode(dynamic value, {Serializer serializer}) {
     PetWithTypeInfo obj = new PetWithTypeInfo();
     obj.name = (value['name'] ?? obj.name) as String;
-    obj.animal =
-        (serializer?.decode(value['animal'], type: Animal, useTypeInfo: true) ??
-            obj.animal) as Animal;
+    obj.animal = (serializer?.decode(value['animal'], useTypeInfo: true) ??
+        obj.animal) as Animal;
     return obj;
   }
 

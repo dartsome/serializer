@@ -140,10 +140,8 @@ class CodegenSerializer implements Serializer {
           return Map;
         } else if (name == ListTypeString) {
           return List;
-        } else if (_typeCodecs.containsKey(name)) {
-          return _typeCodecs[name].type;
         }
-        return null;
+        return typeCodecFromString(name)?.type;
     }
   }
 
@@ -173,7 +171,7 @@ class CodegenSerializer implements Serializer {
     }
 
     if ((_enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
-      type = _decodeType(map.remove(_typeInfoKey));
+      type = _decodeType(map[_typeInfoKey]);
     } else {
       type ??= Map;
     }
@@ -199,7 +197,9 @@ class CodegenSerializer implements Serializer {
       return null;
     }
     type ??= _decodeType(value.runtimeType.toString());
-    if (isPrimaryType(type) || value.runtimeType == type) {
+    if (isPrimaryType(type) ||
+        value.runtimeType == type ||
+        (isPrimaryType(value.runtimeType) && hasTypeCodec(type) == false)) {
       return value;
     } else if (hasTypeCodec(type) == true) {
       TypeCodec codec = typeCodec(type);
@@ -207,14 +207,16 @@ class CodegenSerializer implements Serializer {
       return val;
     } else if (type.toString().startsWith("Map") || type.toString().startsWith("List")) {
       if (value is Map) {
+        if (type.toString().startsWith("Map")) {
+          return _fromMap(value,
+              type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+        }
         return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
       } else if (value is List) {
+        if (type.toString().startsWith("List") && value is List) {
+          return _fromList(value, type: _findGenericOfList(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+        }
         return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-      } else if (type.toString().startsWith("Map")) {
-        return _fromMap(value,
-            type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-      } else if (type.toString().startsWith("List")) {
-        return _fromList(value, type: _findGenericOfList(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
       }
     }
 
@@ -227,8 +229,7 @@ class CodegenSerializer implements Serializer {
       return value;
     } else if (hasTypeCodec(value.runtimeType) == true) {
       TypeCodec codec = typeCodec(value.runtimeType);
-      return
-          codec.encode(value, serializer: this, typeInfoKey: useTypeInfo == true ? _typeInfoKey : null);
+      return codec.encode(value, serializer: this, typeInfoKey: useTypeInfo == true ? _typeInfoKey : null);
     } else if (value is Map) {
       return _encodeMap(value,
           withReferenceable: withReferenceable, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);

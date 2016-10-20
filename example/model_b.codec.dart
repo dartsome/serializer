@@ -20,12 +20,11 @@ class ModelBCodec extends TypeCodec<ModelB> {
   @override
   ModelB decode(dynamic value, {Serializer serializer}) {
     ModelB obj = new ModelB();
-    obj.C = (serializer?.decode(value['C'], type: ModelC, useTypeInfo: false) ??
-        obj.C) as Map<String, ModelC>;
-    obj.A = (serializer?.decode(value['A'], type: ModelA, useTypeInfo: false) ??
-        obj.A) as List<ModelA>;
-    obj.a = (serializer?.decode(value['a'], type: ModelA, useTypeInfo: false) ??
-        obj.a) as ModelA;
+    obj.C = (serializer?.decode(value['C'], type: ModelC) ?? obj.C)
+        as Map<String, ModelC>;
+    obj.A =
+        (serializer?.decode(value['A'], type: ModelA) ?? obj.A) as List<ModelA>;
+    obj.a = (serializer?.decode(value['a'], type: ModelA) ?? obj.a) as ModelA;
     return obj;
   }
 
@@ -58,12 +57,11 @@ class ModelCCodec extends TypeCodec<ModelC> {
   ModelC decode(dynamic value, {Serializer serializer}) {
     ModelC obj = new ModelC();
     obj.foo = (value['foo'] ?? obj.foo) as String;
-    obj.C = (serializer?.decode(value['C'], type: ModelC, useTypeInfo: false) ??
-        obj.C) as Map<String, ModelC>;
-    obj.A = (serializer?.decode(value['A'], type: ModelA, useTypeInfo: false) ??
-        obj.A) as List<ModelA>;
-    obj.a = (serializer?.decode(value['a'], type: ModelA, useTypeInfo: false) ??
-        obj.a) as ModelA;
+    obj.C = (serializer?.decode(value['C'], type: ModelC) ?? obj.C)
+        as Map<String, ModelC>;
+    obj.A =
+        (serializer?.decode(value['A'], type: ModelA) ?? obj.A) as List<ModelA>;
+    obj.a = (serializer?.decode(value['a'], type: ModelA) ?? obj.a) as ModelA;
     return obj;
   }
 
