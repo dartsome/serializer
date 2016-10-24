@@ -5,7 +5,7 @@
 import 'codegen/all_test.dart' as _codegen;
 import 'reflectable/all_test.dart' as _reflectable;
 
-main() async {
-  await _codegen.main();
+main() {
+  _codegen.main();
   _reflectable.main();
 }

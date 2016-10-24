@@ -272,8 +272,6 @@ class TypedDateCodec extends TypeCodec<TypedDate> {
     }
     map['date'] = serializer?.toPrimaryObject(value.date,
         useTypeInfo: typeInfoKey?.isNotEmpty == true);
-    map['serializer'] = serializer?.toPrimaryObject(value.serializer,
-        useTypeInfo: typeInfoKey?.isNotEmpty == true);
     return cleanNullInMap(map);
   }
 
@@ -290,6 +288,7 @@ class TypedTestMaxSuperClassCodec extends TypeCodec<TypedTestMaxSuperClass> {
   @override
   TypedTestMaxSuperClass decode(dynamic value, {Serializer serializer}) {
     TypedTestMaxSuperClass obj = new TypedTestMaxSuperClass();
+    obj.foo = (value['foo'] ?? obj.foo) as String;
     obj.serialize = (value['serialize'] ?? obj.serialize) as String;
     return obj;
   }
@@ -301,6 +300,7 @@ class TypedTestMaxSuperClassCodec extends TypeCodec<TypedTestMaxSuperClass> {
     if (typeInfoKey != null) {
       map[typeInfoKey] = typeInfo;
     }
+    map['foo'] = value.foo;
     map['serialize'] = value.serialize;
     return cleanNullInMap(map);
   }

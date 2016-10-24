@@ -133,7 +133,7 @@ class ReflectableSerializer implements Serializer {
       _encode(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Decode the object from a seriablized string
-  Object decode(dynamic encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
+  Object decode(dynamic encoded, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
       _decode(encoded, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object to map

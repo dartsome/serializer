@@ -57,9 +57,7 @@ class CodegenSerializer implements Serializer {
 
   bool isSerializable(Type type) => hasTypeCodec(type);
 
-  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) => _encodeValue(input,
-      type: input.runtimeType,
-      withReferenceable: true,
+  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) => toPrimaryObject(input,
       useTypeInfo: useTypeInfo,
       withTypeInfo: withTypeInfo) as Map<String, dynamic>;
 
@@ -72,12 +70,12 @@ class CodegenSerializer implements Serializer {
       _encode(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Decode the object from a seriablized string
-  Object decode(dynamic encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
-      _decode(encoded, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  Object decode(dynamic encoded, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
+      _decode(encoded, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object to map
   Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
-      _fromMap(map, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      _fromMap(map, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object's [list] to a list of the given [type]
   List<dynamic> fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
@@ -145,7 +143,7 @@ class CodegenSerializer implements Serializer {
     }
   }
 
-  Object _decode(dynamic encoded, {Type type, bool useTypeInfo, bool withTypeInfo}) {
+  Object _decode(dynamic encoded, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) {
     if (encoded == null) {
       return null;
     }
@@ -158,7 +156,7 @@ class CodegenSerializer implements Serializer {
       }
     }
     if (value is Map) {
-      return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo, mapOf: mapOf);
     } else if (value is List) {
       return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     }
@@ -178,9 +176,9 @@ class CodegenSerializer implements Serializer {
 
     // Only Map
     if (type == Map) {
-      Type embedType = mapOf != null ? mapOf[1] : null;
+      Type embedType = mapOf != null && mapOf.length >= 2 ? mapOf[1] : null;
       Map data = new Map();
-      map.forEach((key, value) => data[key] = _decodeValue(value, embedType, useTypeInfo: useTypeInfo));
+      map.forEach((key, value) => data[key.toString()] = _decodeValue(value, embedType, useTypeInfo: useTypeInfo));
       return data;
     }
     return _decodeValue(map, type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);

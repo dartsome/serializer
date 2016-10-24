@@ -344,6 +344,7 @@ class TestMaxSuperClassCodec extends TypeCodec<TestMaxSuperClass> {
   @override
   TestMaxSuperClass decode(dynamic value, {Serializer serializer}) {
     TestMaxSuperClass obj = new TestMaxSuperClass();
+    obj.foo = (value['foo'] ?? obj.foo) as String;
     obj.serialize = (value['serialize'] ?? obj.serialize) as String;
     return obj;
   }
@@ -355,6 +356,7 @@ class TestMaxSuperClassCodec extends TypeCodec<TestMaxSuperClass> {
     if (typeInfoKey != null) {
       map[typeInfoKey] = typeInfo;
     }
+    map['foo'] = value.foo;
     map['serialize'] = value.serialize;
     return cleanNullInMap(map);
   }
