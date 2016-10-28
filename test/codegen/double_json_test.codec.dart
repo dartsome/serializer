@@ -48,8 +48,9 @@ class DoubleComplexCodec extends TypeCodec<DoubleComplex> {
   @override
   DoubleComplex decode(dynamic value, {Serializer serializer}) {
     DoubleComplex obj = new DoubleComplex();
-    obj.map = (serializer?.decode(value['map'], type: double) ?? obj.map)
-        as Map<String, double>;
+    obj.map =
+        (serializer?.decode(value['map'], mapOf: const [String, double]) ??
+            obj.map) as Map<String, double>;
     obj.list = (serializer?.decode(value['list'], type: double) ?? obj.list)
         as List<double>;
     return obj;

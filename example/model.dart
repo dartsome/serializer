@@ -90,6 +90,14 @@ abstract class CustomUserEntity extends CustomEntity {
 }
 
 @serializable
+class Model {
+  String foo = "bar";
+}
+
+@serializable
 class CustomUser extends CustomUserEntity with User {
   String test;
+  Map<String, Model> models;
+
+
 }

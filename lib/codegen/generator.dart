@@ -134,6 +134,8 @@ class SerializerGenerator extends Generator {
           buffer.write("value['${field.key}']");
         } else if (_decodeWithTypeInfo(field.type.element)) {
           buffer.write("serializer?.decode(value['${field.key}'], useTypeInfo: true) ");
+        } else if (field.type.toString().split("<").first == "Map") {
+          buffer.write("serializer?.decode(value['${field.key}'], mapOf: const [String, $genericType]) ");
         } else {
           buffer.write("serializer?.decode(value['${field.key}'], type: $genericType) ");
         }

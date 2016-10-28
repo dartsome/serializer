@@ -388,21 +388,29 @@ class ComplexCodec extends TypeCodec<Complex> {
         obj.dates) as List<DateTime>;
     obj.ignores = (serializer?.decode(value['ignores'], type: WithIgnore) ??
         obj.ignores) as List<WithIgnore>;
-    obj.numSet = (serializer?.decode(value['numSet'], type: num) ?? obj.numSet)
-        as Map<String, num>;
-    obj.stringSet = (serializer?.decode(value['stringSet'], type: String) ??
+    obj.numSet =
+        (serializer?.decode(value['numSet'], mapOf: const [String, num]) ??
+            obj.numSet) as Map<String, num>;
+    obj.stringSet = (serializer
+            ?.decode(value['stringSet'], mapOf: const [String, String]) ??
         obj.stringSet) as Map<String, String>;
-    obj.boolSet = (serializer?.decode(value['boolSet'], type: bool) ??
-        obj.boolSet) as Map<String, bool>;
-    obj.intSet = (serializer?.decode(value['intSet'], type: int) ?? obj.intSet)
-        as Map<String, int>;
-    obj.doubleSet = (serializer?.decode(value['doubleSet'], type: double) ??
+    obj.boolSet =
+        (serializer?.decode(value['boolSet'], mapOf: const [String, bool]) ??
+            obj.boolSet) as Map<String, bool>;
+    obj.intSet =
+        (serializer?.decode(value['intSet'], mapOf: const [String, int]) ??
+            obj.intSet) as Map<String, int>;
+    obj.doubleSet = (serializer
+            ?.decode(value['doubleSet'], mapOf: const [String, double]) ??
         obj.doubleSet) as Map<String, double>;
-    obj.dateSet = (serializer?.decode(value['dateSet'], type: DateTime) ??
+    obj.dateSet = (serializer
+            ?.decode(value['dateSet'], mapOf: const [String, DateTime]) ??
         obj.dateSet) as Map<String, DateTime>;
-    obj.ignoreSet = (serializer?.decode(value['ignoreSet'], type: WithIgnore) ??
+    obj.ignoreSet = (serializer
+            ?.decode(value['ignoreSet'], mapOf: const [String, WithIgnore]) ??
         obj.ignoreSet) as Map<String, WithIgnore>;
-    obj.listInnerMap = (serializer?.decode(value['listInnerMap'], type: List) ??
+    obj.listInnerMap = (serializer
+            ?.decode(value['listInnerMap'], mapOf: const [String, List]) ??
         obj.listInnerMap) as Map<String, List<dynamic>>;
     return obj;
   }

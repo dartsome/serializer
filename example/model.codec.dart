@@ -70,6 +70,33 @@ class IdCodec extends TypeCodec<Id> {
 
 // **************************************************************************
 // Generator: SerializerGenerator
+// Target: class Model
+// **************************************************************************
+
+class ModelCodec extends TypeCodec<Model> {
+  @override
+  Model decode(dynamic value, {Serializer serializer}) {
+    Model obj = new Model();
+    obj.foo = (value['foo'] ?? obj.foo) as String;
+    return obj;
+  }
+
+  @override
+  dynamic encode(Model value, {Serializer serializer, String typeInfoKey}) {
+    Map<String, dynamic> map = new Map<String, dynamic>();
+    if (typeInfoKey != null) {
+      map[typeInfoKey] = typeInfo;
+    }
+    map['foo'] = value.foo;
+    return cleanNullInMap(map);
+  }
+
+  @override
+  String get typeInfo => 'Model';
+}
+
+// **************************************************************************
+// Generator: SerializerGenerator
 // Target: class CustomUser
 // **************************************************************************
 
@@ -87,6 +114,9 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
     obj.creationDate = (serializer?.decode(value['d'], type: DateTime) ??
         obj.creationDate) as DateTime;
     obj.test = (value['test'] ?? obj.test) as String;
+    obj.models =
+        (serializer?.decode(value['models'], mapOf: const [String, Model]) ??
+            obj.models) as Map<String, Model>;
     return obj;
   }
 
@@ -107,6 +137,8 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
     map['d'] = serializer?.toPrimaryObject(value.creationDate,
         useTypeInfo: typeInfoKey?.isNotEmpty == true);
     map['test'] = value.test;
+    map['models'] = serializer?.toPrimaryObject(value.models,
+        useTypeInfo: typeInfoKey?.isNotEmpty == true);
     return cleanNullInMap(map);
   }
 
@@ -118,5 +150,6 @@ Map<String, TypeCodec<dynamic>> example_model_codecs =
     <String, TypeCodec<dynamic>>{
   'User': new UserCodec(),
   'Id': new IdCodec(),
+  'Model': new ModelCodec(),
   'CustomUser': new CustomUserCodec(),
 };
