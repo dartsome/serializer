@@ -75,7 +75,7 @@ class CodegenSerializer implements Serializer {
 
   /// Convert a serialized object to map
   Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
-      _fromMap(map, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      _fromMap(map, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object's [list] to a list of the given [type]
   List<dynamic> fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
