@@ -77,14 +77,11 @@ class SerializerGenerator extends Generator {
     _codecsBuffer = new StringBuffer("<String,TypeCodec<dynamic>>{");
   }
 
-  String withTypeInfoKey(Field field, [bool decode = false]) {
+  String _withTypeInfo(Field field) {
     if (field.serializeWithTypeInfo || field.type.toString() == "dynamic") {
       return "true";
     }
-    if (decode == true) {
-      return "false";
-    }
-    return "typeInfoKey?.isNotEmpty == true";
+    return "false";
   }
 
   void _classCodec(StringBuffer buffer, String className) =>
@@ -113,12 +110,6 @@ class SerializerGenerator extends Generator {
       element.displayName == "dynamic" ||
       (element as ClassElement).metadata.any((ElementAnnotation a) => _matchAnnotation(SerializedWithTypeInfo, a)) ==
           true;
-
-  bool _decodeWithType(Element element) =>
-      _isClassSerializable(element) == true && (element as ClassElement).isAbstract == false;
-
-  bool _encodeWithTypeInfo(Element element) =>
-      _isClassSerializable(element) == true && (element as ClassElement).isAbstract == true;
 
   void _generateDecode(StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
     buffer.writeln("@override");
@@ -162,7 +153,7 @@ class SerializerGenerator extends Generator {
       if (field.isGetter && field.ignore == false) {
         buffer.write("map['${field.key}'] = ");
         if (isPrimaryTypeString(_getType(field)) == false) {
-          buffer.write("serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo);");
+          buffer.write("serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo, withTypeInfo: ${_withTypeInfo(field)} );");
         } else {
           buffer.write("value.$name;");
         }
@@ -245,14 +236,6 @@ class SerializerGenerator extends Generator {
     });
 
     return fields;
-  }
-
-  String _useTypeInfoKey(Field field, [bool decode = false]) {
-    String type = _getType(field).split("<").first;
-    if (type == "null" || _encodeWithTypeInfo(field.type.element)) {
-      return "true";
-    }
-    return "${withTypeInfoKey(field, decode)}";
   }
 }
 

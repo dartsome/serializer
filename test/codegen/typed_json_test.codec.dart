@@ -88,8 +88,8 @@ class TypedModelBCodec extends TypeCodec<TypedModelB> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['foo'] =
-        serializer?.toPrimaryObject(value.foo, useTypeInfo: useTypeInfo);
+    map['foo'] = serializer?.toPrimaryObject(value.foo,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['toto'] = value.toto;
     return cleanNullInMap(map);
   }
@@ -120,8 +120,8 @@ class TypedModelCCodec extends TypeCodec<TypedModelC> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['foo'] =
-        serializer?.toPrimaryObject(value.foo, useTypeInfo: useTypeInfo);
+    map['foo'] = serializer?.toPrimaryObject(value.foo,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['plop'] = value.plop;
     return cleanNullInMap(map);
   }
@@ -151,8 +151,8 @@ class TypedModelDCodec extends TypeCodec<TypedModelD> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['tests'] =
-        serializer?.toPrimaryObject(value.tests, useTypeInfo: useTypeInfo);
+    map['tests'] = serializer?.toPrimaryObject(value.tests,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
   }
 
@@ -271,8 +271,8 @@ class TypedDateCodec extends TypeCodec<TypedDate> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['date'] =
-        serializer?.toPrimaryObject(value.date, useTypeInfo: useTypeInfo);
+    map['date'] = serializer?.toPrimaryObject(value.date,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
   }
 
@@ -373,21 +373,21 @@ class TypedComplexCodec extends TypeCodec<TypedComplex> {
     map['bools'] = value.bools;
     map['ints'] = value.ints;
     map['doubles'] = value.doubles;
-    map['dates'] =
-        serializer?.toPrimaryObject(value.dates, useTypeInfo: useTypeInfo);
-    map['ignores'] =
-        serializer?.toPrimaryObject(value.ignores, useTypeInfo: useTypeInfo);
+    map['dates'] = serializer?.toPrimaryObject(value.dates,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
+    map['ignores'] = serializer?.toPrimaryObject(value.ignores,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['numSet'] = value.numSet;
     map['stringSet'] = value.stringSet;
     map['boolSet'] = value.boolSet;
     map['intSet'] = value.intSet;
     map['doubleSet'] = value.doubleSet;
-    map['dateSet'] =
-        serializer?.toPrimaryObject(value.dateSet, useTypeInfo: useTypeInfo);
-    map['ignoreSet'] =
-        serializer?.toPrimaryObject(value.ignoreSet, useTypeInfo: useTypeInfo);
+    map['dateSet'] = serializer?.toPrimaryObject(value.dateSet,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
+    map['ignoreSet'] = serializer?.toPrimaryObject(value.ignoreSet,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['listInnerMap'] = serializer?.toPrimaryObject(value.listInnerMap,
-        useTypeInfo: useTypeInfo);
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
   }
 

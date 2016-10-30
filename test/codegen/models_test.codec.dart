@@ -94,10 +94,10 @@ class EmployeeCodec extends TypeCodec<Employee> {
     }
     map['id'] = value.id;
     map['name'] = value.name;
-    map['address'] =
-        serializer?.toPrimaryObject(value.address, useTypeInfo: useTypeInfo);
-    map['manager'] =
-        serializer?.toPrimaryObject(value.manager, useTypeInfo: useTypeInfo);
+    map['address'] = serializer?.toPrimaryObject(value.address,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
+    map['manager'] = serializer?.toPrimaryObject(value.manager,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
   }
 
@@ -130,8 +130,8 @@ class AddressCodec extends TypeCodec<Address> {
     }
     map['id'] = value.id;
     map['location'] = value.location;
-    map['owner'] =
-        serializer?.toPrimaryObject(value.owner, useTypeInfo: useTypeInfo);
+    map['owner'] = serializer?.toPrimaryObject(value.owner,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
   }
 
@@ -218,8 +218,8 @@ class PetCodec extends TypeCodec<Pet> {
       map[serializer.typeInfoKey] = typeInfo;
     }
     map['name'] = value.name;
-    map['animal'] =
-        serializer?.toPrimaryObject(value.animal, useTypeInfo: useTypeInfo);
+    map['animal'] = serializer?.toPrimaryObject(value.animal,
+        useTypeInfo: useTypeInfo, withTypeInfo: true);
     return cleanNullInMap(map);
   }
 
@@ -310,8 +310,8 @@ class PetWithTypeInfoCodec extends TypeCodec<PetWithTypeInfo> {
       map[serializer.typeInfoKey] = typeInfo;
     }
     map['name'] = value.name;
-    map['animal'] =
-        serializer?.toPrimaryObject(value.animal, useTypeInfo: useTypeInfo);
+    map['animal'] = serializer?.toPrimaryObject(value.animal,
+        useTypeInfo: useTypeInfo, withTypeInfo: true);
     return cleanNullInMap(map);
   }
 

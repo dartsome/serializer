@@ -61,8 +61,8 @@ class IdCodec extends TypeCodec<Id> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['_id'] =
-        serializer?.toPrimaryObject(value.id, useTypeInfo: useTypeInfo);
+    map['_id'] = serializer?.toPrimaryObject(value.id,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
   }
 
@@ -134,14 +134,14 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
     map['toto'] = value.toto;
     map['n'] = value.name;
     map['entity'] = value.entity;
-    map['_id'] =
-        serializer?.toPrimaryObject(value.id, useTypeInfo: useTypeInfo);
+    map['_id'] = serializer?.toPrimaryObject(value.id,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['titi'] = value.titi;
     map['d'] = serializer?.toPrimaryObject(value.creationDate,
-        useTypeInfo: useTypeInfo);
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['test'] = value.test;
-    map['models'] =
-        serializer?.toPrimaryObject(value.models, useTypeInfo: useTypeInfo);
+    map['models'] = serializer?.toPrimaryObject(value.models,
+        useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
   }
 
