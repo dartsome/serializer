@@ -217,6 +217,9 @@ class ReflectableSerializer extends Serializer {
     }
     dynamic value = encoded;
     if (value is String) {
+      if (value.isEmpty) {
+        return null;
+      }
       if ((value.startsWith("{") && value.endsWith("}")) || (value.startsWith("[") && value.endsWith("]"))) {
         value = _codec.decode(encoded);
       } else {
