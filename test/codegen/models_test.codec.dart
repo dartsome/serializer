@@ -25,10 +25,11 @@ class M1Codec extends TypeCodec<M1> {
   }
 
   @override
-  dynamic encode(M1 value, {Serializer serializer, String typeInfoKey}) {
+  dynamic encode(M1 value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['m1'] = value.m1;
     return cleanNullInMap(map);
@@ -52,10 +53,11 @@ class M2Codec extends TypeCodec<M2> {
   }
 
   @override
-  dynamic encode(M2 value, {Serializer serializer, String typeInfoKey}) {
+  dynamic encode(M2 value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['m2'] = value.m2;
     return cleanNullInMap(map);
@@ -84,17 +86,18 @@ class EmployeeCodec extends TypeCodec<Employee> {
   }
 
   @override
-  dynamic encode(Employee value, {Serializer serializer, String typeInfoKey}) {
+  dynamic encode(Employee value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['id'] = value.id;
     map['name'] = value.name;
-    map['address'] = serializer?.toPrimaryObject(value.address,
-        useTypeInfo: typeInfoKey?.isNotEmpty == true);
-    map['manager'] = serializer?.toPrimaryObject(value.manager,
-        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    map['address'] =
+        serializer?.toPrimaryObject(value.address, useTypeInfo: useTypeInfo);
+    map['manager'] =
+        serializer?.toPrimaryObject(value.manager, useTypeInfo: useTypeInfo);
     return cleanNullInMap(map);
   }
 
@@ -119,15 +122,16 @@ class AddressCodec extends TypeCodec<Address> {
   }
 
   @override
-  dynamic encode(Address value, {Serializer serializer, String typeInfoKey}) {
+  dynamic encode(Address value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['id'] = value.id;
     map['location'] = value.location;
-    map['owner'] = serializer?.toPrimaryObject(value.owner,
-        useTypeInfo: typeInfoKey?.isNotEmpty == true);
+    map['owner'] =
+        serializer?.toPrimaryObject(value.owner, useTypeInfo: useTypeInfo);
     return cleanNullInMap(map);
   }
 
@@ -150,10 +154,10 @@ class WithStaticConstCodec extends TypeCodec<WithStaticConst> {
 
   @override
   dynamic encode(WithStaticConst value,
-      {Serializer serializer, String typeInfoKey}) {
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['other'] = value.other;
     return cleanNullInMap(map);
@@ -178,10 +182,10 @@ class WithStaticCodec extends TypeCodec<WithStatic> {
 
   @override
   dynamic encode(WithStatic value,
-      {Serializer serializer, String typeInfoKey}) {
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['other'] = value.other;
     return cleanNullInMap(map);
@@ -207,14 +211,15 @@ class PetCodec extends TypeCodec<Pet> {
   }
 
   @override
-  dynamic encode(Pet value, {Serializer serializer, String typeInfoKey}) {
+  dynamic encode(Pet value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['name'] = value.name;
     map['animal'] =
-        serializer?.toPrimaryObject(value.animal, useTypeInfo: true);
+        serializer?.toPrimaryObject(value.animal, useTypeInfo: useTypeInfo);
     return cleanNullInMap(map);
   }
 
@@ -237,10 +242,11 @@ class DogCodec extends TypeCodec<Dog> {
   }
 
   @override
-  dynamic encode(Dog value, {Serializer serializer, String typeInfoKey}) {
+  dynamic encode(Dog value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['name'] = value.name;
     map['bark'] = value.bark;
@@ -266,10 +272,11 @@ class CatCodec extends TypeCodec<Cat> {
   }
 
   @override
-  dynamic encode(Cat value, {Serializer serializer, String typeInfoKey}) {
+  dynamic encode(Cat value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['name'] = value.name;
     map['mew'] = value.mew;
@@ -297,14 +304,14 @@ class PetWithTypeInfoCodec extends TypeCodec<PetWithTypeInfo> {
 
   @override
   dynamic encode(PetWithTypeInfo value,
-      {Serializer serializer, String typeInfoKey}) {
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['name'] = value.name;
     map['animal'] =
-        serializer?.toPrimaryObject(value.animal, useTypeInfo: true);
+        serializer?.toPrimaryObject(value.animal, useTypeInfo: useTypeInfo);
     return cleanNullInMap(map);
   }
 

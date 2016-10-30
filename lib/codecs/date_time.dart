@@ -7,5 +7,5 @@ import 'type_codec.dart';
 /// A simple DateTime codec.
 class DateTimeCodec extends TypeCodec<DateTime> {
   DateTime decode(dynamic value, {Serializer serializer}) => DateTime.parse(value);
-  dynamic encode(DateTime value, {Serializer serializer, String typeInfoKey}) => value.toIso8601String();
+  dynamic encode(DateTime value, {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) => value.toIso8601String();
 }

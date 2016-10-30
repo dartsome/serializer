@@ -11,7 +11,7 @@ import 'package:serializer/codecs/type_codec.dart';
 import '../core.dart';
 
 /// Utility class to access to the serializer api
-class CodegenSerializer implements Serializer {
+class CodegenSerializer extends Serializer {
   ///////////////////
   // Public
   /////////////////////////////////////////////////////////////////////////////
@@ -23,6 +23,9 @@ class CodegenSerializer implements Serializer {
   final String _typeInfoKey;
   final bool _useTypeInfo;
   final Map<String, TypeCodec> _typeCodecs = <String, TypeCodec>{};
+
+  String get typeInfoKey => _typeInfoKey;
+  bool get useTypeInfo => _useTypeInfo;
 
   CodegenSerializer(
       {Map<String, TypeCodec> typesCodecs, Codec codec: JSON, String typeInfoKey: "@type", useTypeInfo: false})
@@ -84,9 +87,6 @@ class CodegenSerializer implements Serializer {
   ///////////////////
   // Private
   /////////////////////////////////////////////////////////////////////////////
-  bool _enableTypeInfo(bool useTypeInfo, bool withTypeInfo) =>
-      useTypeInfo != null ? useTypeInfo || (withTypeInfo ?? false) : _useTypeInfo || (withTypeInfo ?? false);
-
   List<Type> _findGenericOfMap(Type type) {
     String str = type.toString();
     RegExp reg = new RegExp(r"^Map<(.*)\ *,\ *(.*)>$");
@@ -168,7 +168,7 @@ class CodegenSerializer implements Serializer {
       return null;
     }
 
-    if ((_enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
+    if ((enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
       type = _decodeType(map[_typeInfoKey]);
     } else {
       type ??= Map;
@@ -222,12 +222,11 @@ class CodegenSerializer implements Serializer {
   }
 
   Object _encodeValue(Object value, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
-    useTypeInfo ??= _useTypeInfo;
     if (isPrimaryType(value.runtimeType) == true) {
       return value;
     } else if (hasTypeCodec(value.runtimeType) == true) {
       TypeCodec codec = typeCodec(value.runtimeType);
-      return codec.encode(value, serializer: this, typeInfoKey: useTypeInfo == true ? _typeInfoKey : null);
+      return codec.encode(value, serializer: this, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (value is Map) {
       return _encodeMap(value,
           withReferenceable: withReferenceable, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);

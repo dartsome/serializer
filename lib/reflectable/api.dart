@@ -65,7 +65,7 @@ abstract class TypedJsonObject extends Serialize {
 
 
 /// Utility class to access to the serializer api
-class ReflectableSerializer implements Serializer {
+class ReflectableSerializer extends Serializer {
   static final Map<String, ClassSerialiazerInfo> _classes = singletonClasses;
 
   ///////////////////
@@ -80,10 +80,14 @@ class ReflectableSerializer implements Serializer {
   final bool _useTypeInfo;
   final Map<String, TypeCodec> _typeCodecs = <String, TypeCodec>{};
 
+  String get typeInfoKey => _typeInfoKey;
+  bool get useTypeInfo => _useTypeInfo;
+
   /// Create a Serializer with a optional codec and type info key.
   /// The type info key is an added field (i.e. "@type") during the serialization,
   /// storing the type of the Dart Object
-  ReflectableSerializer({Codec codec: JSON, String typeInfoKey: "@type", useTypeInfo: false})
+  ReflectableSerializer(
+      {Map<String, TypeCodec> typesCodecs, Codec codec: JSON, String typeInfoKey: "@type", useTypeInfo: false})
       :
         _codec = codec,
         _typeInfoKey = typeInfoKey,
@@ -147,9 +151,6 @@ class ReflectableSerializer implements Serializer {
   ///////////////////
   // Private
   /////////////////////////////////////////////////////////////////////////////
-  bool _enableTypeInfo(bool useTypeInfo, bool withTypeInfo) =>
-      useTypeInfo != null ? useTypeInfo || (withTypeInfo ?? false) : _useTypeInfo || (withTypeInfo ?? false);
-
   List<Type> _findGenericOfMap(Type type) {
     String str = type.toString();
     RegExp reg = new RegExp(r"^Map<(.*)\ *,\ *(.*)>$");
@@ -247,7 +248,7 @@ class ReflectableSerializer implements Serializer {
       return null;
     }
 
-    if ((_enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
+    if ((enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
       type = _decodeType(map.remove(_typeInfoKey));
     } else {
       type ??= Map;
@@ -367,7 +368,7 @@ class ReflectableSerializer implements Serializer {
     ClassMirror cm = mir.type;
     Map data = new Map();
 
-    if (_enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) {
+    if (enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) {
       data[_typeInfoKey] = _getCorrectType(obj.runtimeType.toString());
     }
 

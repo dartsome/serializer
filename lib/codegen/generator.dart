@@ -18,9 +18,9 @@ void generateClass(StringBuffer buffer, String classType, String name, [String e
 }
 
 void generateFunction(
-    StringBuffer buffer, String returnType, String name, List<String> parameters, List<String> optionnal) {
-  buffer.writeln("$returnType $name(${parameters.join((", "))}${ optionnal?.isNotEmpty == true
-          ? ",{${optionnal.join(", ")}}"
+    StringBuffer buffer, String returnType, String name, List<String> parameters, List<String> namedParameters) {
+  buffer.writeln("$returnType $name(${parameters.join((", "))}${ namedParameters?.isNotEmpty == true
+          ? ",{${namedParameters.join(", ")}}"
           : ''}) {");
 }
 
@@ -151,18 +151,18 @@ class SerializerGenerator extends Generator {
   void _generateEncode(StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
     buffer.writeln("@override");
     generateFunction(
-        buffer, "dynamic", "encode", ["${element.displayName} value"], ["Serializer serializer", "String typeInfoKey"]);
+        buffer, "dynamic", "encode", ["${element.displayName} value"], ["Serializer serializer", "bool useTypeInfo", "bool withTypeInfo"]);
 
     buffer.writeln("Map<String, dynamic> map = new Map<String, dynamic>();");
 
-    buffer.writeln("if (typeInfoKey != null) {");
-    buffer.writeln("map[typeInfoKey] = typeInfo;");
+    buffer.writeln("if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {");
+    buffer.writeln("map[serializer.typeInfoKey] = typeInfo;");
     closeBrace(buffer);
     fields.forEach((String name, Field field) {
       if (field.isGetter && field.ignore == false) {
         buffer.write("map['${field.key}'] = ");
         if (isPrimaryTypeString(_getType(field)) == false) {
-          buffer.write("serializer?.toPrimaryObject(value.$name, useTypeInfo: ${_useTypeInfoKey(field)});");
+          buffer.write("serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo);");
         } else {
           buffer.write("value.$name;");
         }

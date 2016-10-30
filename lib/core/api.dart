@@ -27,9 +27,20 @@ Map cleanNullInMap(Map<String, dynamic> map) {
 }
 
 abstract class Serializer {
-  /// Registers a [typeCodec] for the specific [type]
+  /// Return typeInfoKey value.
+  String get typeInfoKey;
+
+  /// Return useTypeInfo value.
+  bool get useTypeInfo;
+
+  /// Return if typeInfoKey must be enabled
+  bool enableTypeInfo(bool useTypeInfo, bool withTypeInfo) =>
+      useTypeInfo != null ? useTypeInfo || (withTypeInfo ?? false) : this.useTypeInfo || (withTypeInfo ?? false);
+
+  /// Registers a [typeCodec] for the specific [type].
   addTypeCodec(Type type, TypeCodec typeCodec);
 
+  /// Registers a map of [typeCodec].
   addAllTypeCodecs(Map<String, TypeCodec> typesCodecs);
 
   /// Checks if a TypeCodec is registered for the [type].

@@ -11,7 +11,7 @@ abstract class TypeCodec<T> {
   T decode(dynamic value, {Serializer serializer}) => value as T;
 
   /// Convert a [value] of type [T] to serializabled value
-  dynamic encode(T value, {Serializer serializer, String typeInfoKey}) => value;
+  dynamic encode(T value, {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) => value;
 
   /// Get [T] type
   Type get type => T;

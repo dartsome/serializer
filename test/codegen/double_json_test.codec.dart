@@ -26,10 +26,10 @@ class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
 
   @override
   dynamic encode(DoubleSimple value,
-      {Serializer serializer, String typeInfoKey}) {
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['test'] = value.test;
     return cleanNullInMap(map);
@@ -58,10 +58,10 @@ class DoubleComplexCodec extends TypeCodec<DoubleComplex> {
 
   @override
   dynamic encode(DoubleComplex value,
-      {Serializer serializer, String typeInfoKey}) {
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
-    if (typeInfoKey != null) {
-      map[typeInfoKey] = typeInfo;
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
     }
     map['map'] = value.map;
     map['list'] = value.list;
