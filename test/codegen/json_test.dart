@@ -235,11 +235,12 @@ main() {
       expect('{"date":"2016-01-01T00:00:00.000"}', serializer.encode(date));
     });
 
-    /*test("Max Superclass", () { //fixme issue to find @serializble on all supertype and all mixins
+    // fixme issue to find @serializble on all supertype and all mixins
+    test("Max Superclass", () {
       TestMaxSuperClass _test = new TestMaxSuperClass();
       expect('{"serialize":"okay"}', serializer.encode(_test));
       expect({"serialize": "okay"}, serializer.toMap(_test));
-    });*/
+    }, skip: "Not supported");
 
     test("Ignore attribute", () {
       WithIgnore _ignore = new WithIgnore("1337", "42", "ThisIsASecret");
@@ -425,11 +426,11 @@ main() {
       expect("bar", test?.tests[1]);
     });
 
-    /*test("inner class non-serializable", () {
+    test("inner class non-serializable", () {
       ModelB b = serializer.decode('{"toto":"tata","foo":{"toto":"tata"}}', type: ModelB);
 
       expect("tata", b.foo.toto);
-    });*/
+    }, skip: "Not supported");
 
     test("inner class serializable", () {
       ModelC c = serializer.decode('{"foo":{"foo":"toto"},"plop":"bar"}', type: ModelC);
@@ -445,12 +446,12 @@ main() {
       expect('{"date":"2016-01-01T00:00:00.000"}', serializer.encode(date));
     });
 
-    /*test("Max Superclass", () {
+    test("Max Superclass", () {
       TestMaxSuperClass _test = serializer.decode('{"serialize":"okay","foo":"nobar"}', type: TestMaxSuperClass);
 
       expect("okay", _test.serialize);
       expect("bar", _test.foo);
-    });*/
+    }, skip: "Not supported");
 
     test("Ignore attribute", () {
       WithIgnore _ignore = serializer.decode('{"a":"1337","b":"42","secret":"ignore"}', type: WithIgnore);
@@ -656,7 +657,7 @@ main() {
     });
   });
 
-  /*group("Referenceable", () {
+  group("Referenceable", () {
     test("Serialize", () {
       Address addressManager = new Address()
         ..id = 1337
@@ -684,7 +685,7 @@ main() {
       expect(serializer.encode(manager), '{"id":43,"name":"Alice Doo","address":{"id":1337}}');
       expect(serializer.encode(employee), '{"id":42,"name":"Bob Smith","address":{"id":1338},"manager":{"id":43}}');
     });
-  });*/
+  }, skip: "Not implemented");
 
   group("Static", () {
     test("Serialize const", () {
