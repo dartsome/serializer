@@ -30,3 +30,8 @@ class SerializedWithTypeInfo {
 }
 
 const serializedWithTypeInfo = const SerializedWithTypeInfo();
+
+class UseType {
+  final Type type;
+  const UseType(this.type);
+}

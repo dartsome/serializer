@@ -39,36 +39,23 @@ class User {
 @serializable
 class Id implements Identifiable {
   @SerializedName("_id")
-  ObjectId id;
+  @UseType(ObjectId)
+  dynamic id;
 
   @override
   ObjectId getId() => id;
 
   @override
-  void setId(dynamic id) {
-    if (id is String) {
-      this.id = ObjectId.parse(id);
-    } else {
-      this.id = id;
-    }
+  void setId(ObjectId id) {
+    this.id = id;
   }
 }
 
 @serializable
 abstract class Identifiable {
   dynamic id;
-  dynamic getId();
-  void setId(dynamic id);
-}
-
-@serializable
-abstract class Titi {
-  String titi;
-}
-
-@serializable
-abstract class Toto extends Titi with Id {
-  String toto;
+  ObjectId getId();
+  void setId(ObjectId id);
 }
 
 @serializable
@@ -77,16 +64,15 @@ abstract class Entity {
   DateTime creationDate;
 }
 
-
 @serializable
-abstract class CustomEntity extends Entity with Toto {
+abstract class CustomEntity extends Entity with Id {
   String entity;
 }
 
 @serializable
 abstract class CustomUserEntity extends CustomEntity {
   @SerializedName("n")
-    String name;
+  String name;
 }
 
 @serializable
@@ -98,6 +84,4 @@ class Model {
 class CustomUser extends CustomUserEntity with User {
   String test;
   Map<String, Model> models;
-
-
 }

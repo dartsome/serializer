@@ -108,12 +108,10 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
   CustomUser decode(dynamic value, {Serializer serializer}) {
     CustomUser obj = new CustomUser();
     obj.login = (value['login'] ?? obj.login) as String;
-    obj.toto = (value['toto'] ?? obj.toto) as String;
     obj.name = (value['n'] ?? obj.name) as String;
     obj.entity = (value['entity'] ?? obj.entity) as String;
     obj.id = (serializer?.decode(value['_id'], type: ObjectId) ?? obj.id)
         as ObjectId;
-    obj.titi = (value['titi'] ?? obj.titi) as String;
     obj.creationDate = (serializer?.decode(value['d'], type: DateTime) ??
         obj.creationDate) as DateTime;
     obj.test = (value['test'] ?? obj.test) as String;
@@ -136,7 +134,6 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
     map['entity'] = value.entity;
     map['_id'] = serializer?.toPrimaryObject(value.id,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
-    map['titi'] = value.titi;
     map['d'] = serializer?.toPrimaryObject(value.creationDate,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['test'] = value.test;
