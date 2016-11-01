@@ -197,7 +197,11 @@ class CodegenSerializer extends Serializer {
     if (value == null) {
       return null;
     }
-    type ??= _decodeType(value.runtimeType.toString());
+    String t = value.runtimeType.toString();
+    if (value is Map && (_useTypeInfo == true || useTypeInfo == true) && value[typeInfoKey] != null) {
+      t = value[typeInfoKey];
+    }
+    type ??= _decodeType(t);
     if (isPrimaryType(type) ||
         value.runtimeType == type ||
         (isPrimaryType(value.runtimeType) && hasTypeCodec(type) == false)) {

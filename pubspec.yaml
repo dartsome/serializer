@@ -23,10 +23,12 @@ transformers:
   - reflectable:
       entry_points:
         - example/**_example.dart
-        - test/**_test.dart
+        - test/reflectable/*_test.dart
         - web/index.dart
   - test/pub_serve:
-      $include: test/**_test{.*,}.dart
+      $include:
+        - test/reflectable/*_test{.*,}.dart
+        - test/codegen/*_test{.*,}.dart
   - $dart2js:
-      minify: true
+      minify: false
 

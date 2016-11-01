@@ -9,17 +9,24 @@ set -e
 
 if  [ "${TRAVIS_DART_VERSION}" != "1.15.0" ]; then
 # Verify that the libraries are error free
-dartanalyzer --fatal-warnings \
+dartanalyzer --strong --fatal-warnings \
   lib/*.dart \
-  lib/src/*.dart \
+  lib/core/*.dart \
+  lib/codegen/*.dart \
+  lib/reflectable/*.dart \
   lib/codecs/*.dart \
   test/*_test.dart
 fi
 
 #Generate Codecs
-pub run tools/build.dart
+pub run tool/build.dart
 
-TESTS="test/all_test.dart"
+TESTS="test/reflectable/codecs_test.dart \
+           test/reflectable/double_json_test.dart \
+           test/reflectable/json_test.dart \
+           test/reflectable/typed_json_test.dart \
+           test/codegen/all_test.dart"
+
 # Run vm tests
 pub run test -p vm ${TESTS}
 
@@ -39,5 +46,9 @@ if [ "${COVERALLS_TOKEN}" ] && [ "${TRAVIS_DART_VERSION}" = "1.15.0" ]; then
   pub global activate dart_coveralls
   pub global run dart_coveralls report \
     --exclude-test-files \
-    test/all_test.dart
+    test/reflectable/codecs_test.dart \
+    test/reflectable/double_json_test.dart \
+    test/reflectable/json_test.dart \
+    test/reflectable/typed_json_test.dart \
+    test/codegen/all_test.dart
 fi
