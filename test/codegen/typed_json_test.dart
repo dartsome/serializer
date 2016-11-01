@@ -316,7 +316,7 @@ main() {
     });
 
     test("Map fromMap Map", () {
-      Map a = {"titi": serializer.toMap(new TypedModelA(), useTypeInfo: true), "foo": "bar"} as Map;
+      Map a = {"titi": serializer.toMap(new TypedModelA(), useTypeInfo: true), "foo": "bar"};
       // ignore: strong_mode_down_cast_composite
       Map b = serializer.fromMap(a, useTypeInfo: true);
 

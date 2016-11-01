@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:mirrors';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
@@ -405,7 +404,7 @@ String _getUseType(Element field) {
 bool _matchAnnotation(Type annotationType, ElementAnnotation annotation) {
   try {
     return matchAnnotation(annotationType, annotation);
-  } catch (e, s) {
+  } catch (e, _) {
     //print(e);
     //print(s);
   }

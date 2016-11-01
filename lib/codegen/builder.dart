@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'dart:io';
 import 'package:dart_style/dart_style.dart';
 import 'package:build/build.dart' as _build;
-import 'package:source_gen/source_gen.dart';
 import 'package:source_gen/src/utils.dart';
 import 'package:source_gen/src/generated_output.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'generator.dart';
-import 'dart:async';
 
 class SerializerGeneratorBuilder extends _build.Builder {
   final String library;
