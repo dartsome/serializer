@@ -113,15 +113,17 @@ class SerializerGenerator extends Generator {
     return matches.first.group(2);
   }
 
-  bool _decodeWithTypeInfo(Field field) =>
-      field.useType == null &&
-      ((_isClassSerializable(field.type.element) == true &&
-              (field.type.element as ClassElement).isAbstract == true) ||
-          field.type.element.displayName == "dynamic" ||
-          (field.type.element as ClassElement).metadata.any(
-                  (ElementAnnotation a) =>
-                      _matchAnnotation(SerializedWithTypeInfo, a)) ==
-              true);
+  bool _decodeWithTypeInfo(Field field) {
+    if (field.useType == null) {
+      Element elem = field.type.element;
+
+      return field.type.element.displayName == "dynamic" ||
+          field.serializeWithTypeInfo == true ||
+          (_isClassSerializable(elem) == true &&
+              (elem as ClassElement).isAbstract == true);
+    }
+    return false;
+  }
 
   void _generateDecode(
       StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
