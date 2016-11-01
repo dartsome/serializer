@@ -9,28 +9,18 @@ import 'serializer.dart';
 import 'model.dart';
 import 'model.codec.dart';
 
-//Map<String, TypeCodec> _codecs = {"ModelA": new ModelACodec()};
-
-Serializer sz = new CodegenSerializer.typedJson()/*..addAllTypeCodecs(example_model_b_codecs)*/..addAllTypeCodecs(example_model_codecs);
-//Serializer sz = new ReflectableSerializer.typedJson();
-
 main() {
-  sz.addTypeCodec(ObjectId, new ObjectIdCodec());
-//  ModelA a = new ModelA(new ObjectId(), "toto", 15);
-/*  ModelB b = new ModelB()
-    ..a = a
-    ..A = [a]
-    ..C = {"test": new ModelC()};*/
+  Serializer sz = new ReflectableSerializer.typedJson();
+    ..addAllTypeCodecs(example_model_codecs)
+    ..addTypeCodec(ObjectId, new ObjectIdCodec());
 
- // print(sz.toMap(a));
- // print(sz.encode(a));
+  Model m = new Model()..foo = "test";
 
- /* print(sz.toMap(b));
-  print(sz.encode(b));*/
+  String json = sz.encode(m);
+  Map<String, dynamic> map = sz.toMap(m);
+  print(json);
+  print(map);
 
-  //ModelA A = sz.decode(sz.encode(a));
-  //print(sz.encode(A));
-
-/*  ModelB B = sz.decode(sz.encode(b));
-  print(sz.encode(B));*/
+  Model M = sz.decode(json);
+  print(M.foo);
 }

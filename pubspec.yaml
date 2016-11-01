@@ -1,5 +1,5 @@
 name: serializer
-description: Serialization to JSON using reflectable
+description: Serialization to JSON using reflectable or codegen
 version: 0.5.0
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>

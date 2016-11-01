@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.5.0
+
+- Update `reflectable` to 1.0.0
+
+**Breaking changes:**
+
+- Split the serializer in 2 versions:
+    + codegen
+    + reflectable
+- Add `@UseType` annotation only for codegen
+- Same API, change import to switch mode
+
+### Example
+```dart
+    import "package:serializer/serializer_codegen.dart";
+    Serializer ser = new CodegenSerializer.json();
+```
+or
+```dart
+    import "package:serializer/serializer_reflectable.dart";
+    Serializer ser = new ReflectableSerializer.json();
+```
+- [Example](https://github.com/walletek/serializer/tree/master/example/serializer_example.dart)
+
 ## 0.4.3
 
 - Add DateTime codecs for seconds and milliseconds since epoch.

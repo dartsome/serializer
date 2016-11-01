@@ -4,7 +4,7 @@
 
 # Serializer
 
-Serialize and Deserialize Dart Object with reflectable
+Serialize and Deserialize Dart Object with reflectable or codegen
 
 ## Codecs supported:
 - Json
@@ -12,7 +12,7 @@ Serialize and Deserialize Dart Object with reflectable
 ## [Example](https://github.com/walletek/serializer/tree/master/example)
 
 ```dart
-import 'package:serializer/serializer.dart';
+import 'package:serializer/serializer_reflectable.dart';
 
 @serializable
 class MyModel {
@@ -23,7 +23,7 @@ class MyModel {
 }
 
 main() {
-    Serializer serializer = new Serializer.Json();
+    Serializer serializer = new ReflectableSerializer.Json();
     
     //serialize
     MyModel model = new MyModel("John", 24);

@@ -16,7 +16,10 @@ dartanalyzer --fatal-warnings \
   test/*_test.dart
 fi
 
-TESTS="test/codecs_test.dart test/json_test.dart test/typed_json_test.dart test/double_json_test.dart"
+#Generate Codecs
+pub run tools/build.dart
+
+TESTS="test/all_test.dart"
 # Run vm tests
 pub run test -p vm ${TESTS}
 
