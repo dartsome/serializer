@@ -31,7 +31,7 @@ class M1Codec extends TypeCodec<M1> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['m1'] = value.m1 as String;
+    map['m1'] = value.m1;
     return cleanNullInMap(map);
   }
 
@@ -59,7 +59,7 @@ class M2Codec extends TypeCodec<M2> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['m2'] = value.m2 as String;
+    map['m2'] = value.m2;
     return cleanNullInMap(map);
   }
 
@@ -93,7 +93,7 @@ class EmployeeCodec extends TypeCodec<Employee> {
       map[serializer.typeInfoKey] = typeInfo;
     }
     map['id'] = value.id.toInt();
-    map['name'] = value.name as String;
+    map['name'] = value.name;
     map['address'] = serializer?.toPrimaryObject(value.address,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['manager'] = serializer?.toPrimaryObject(value.manager,
@@ -129,7 +129,7 @@ class AddressCodec extends TypeCodec<Address> {
       map[serializer.typeInfoKey] = typeInfo;
     }
     map['id'] = value.id.toInt();
-    map['location'] = value.location as String;
+    map['location'] = value.location;
     map['owner'] = serializer?.toPrimaryObject(value.owner,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
@@ -159,7 +159,7 @@ class WithStaticConstCodec extends TypeCodec<WithStaticConst> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['other'] = value.other as String;
+    map['other'] = value.other;
     return cleanNullInMap(map);
   }
 
@@ -187,7 +187,7 @@ class WithStaticCodec extends TypeCodec<WithStatic> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['other'] = value.other as String;
+    map['other'] = value.other;
     return cleanNullInMap(map);
   }
 
@@ -217,7 +217,7 @@ class PetCodec extends TypeCodec<Pet> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['name'] = value.name as String;
+    map['name'] = value.name;
     map['animal'] = serializer?.toPrimaryObject(value.animal,
         useTypeInfo: useTypeInfo, withTypeInfo: true);
     return cleanNullInMap(map);
@@ -248,8 +248,8 @@ class DogCodec extends TypeCodec<Dog> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['name'] = value.name as String;
-    map['bark'] = value.bark as bool;
+    map['name'] = value.name;
+    map['bark'] = value.bark;
     return cleanNullInMap(map);
   }
 
@@ -278,8 +278,8 @@ class CatCodec extends TypeCodec<Cat> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['name'] = value.name as String;
-    map['mew'] = value.mew as bool;
+    map['name'] = value.name;
+    map['mew'] = value.mew;
     return cleanNullInMap(map);
   }
 
@@ -309,7 +309,7 @@ class PetWithTypeInfoCodec extends TypeCodec<PetWithTypeInfo> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['name'] = value.name as String;
+    map['name'] = value.name;
     map['animal'] = serializer?.toPrimaryObject(value.animal,
         useTypeInfo: useTypeInfo, withTypeInfo: true);
     return cleanNullInMap(map);

@@ -63,8 +63,8 @@ class DoubleComplexCodec extends TypeCodec<DoubleComplex> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['map'] = value.map as Map<String, double>;
-    map['list'] = value.list as List<double>;
+    map['map'] = value.map;
+    map['list'] = value.list;
     return cleanNullInMap(map);
   }
 

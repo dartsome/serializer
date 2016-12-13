@@ -59,7 +59,7 @@ class TypedModelACodec extends TypeCodec<TypedModelA> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['foo'] = value.foo as String;
+    map['foo'] = value.foo;
     return cleanNullInMap(map);
   }
 
@@ -90,7 +90,7 @@ class TypedModelBCodec extends TypeCodec<TypedModelB> {
     }
     map['foo'] = serializer?.toPrimaryObject(value.foo,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
-    map['toto'] = value.toto as String;
+    map['toto'] = value.toto;
     return cleanNullInMap(map);
   }
 
@@ -122,7 +122,7 @@ class TypedModelCCodec extends TypeCodec<TypedModelC> {
     }
     map['foo'] = serializer?.toPrimaryObject(value.foo,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
-    map['plop'] = value.plop as String;
+    map['plop'] = value.plop;
     return cleanNullInMap(map);
   }
 
@@ -181,7 +181,7 @@ class TypedModelECodec extends TypeCodec<TypedModelE> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['tests'] = value.tests as List<String>;
+    map['tests'] = value.tests;
     return cleanNullInMap(map);
   }
 
@@ -211,8 +211,8 @@ class TypedModelRenamedCodec extends TypeCodec<TypedModelRenamed> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['tests'] = value.tests as List<String>;
-    map['new'] = value.original as String;
+    map['tests'] = value.tests;
+    map['new'] = value.original;
     return cleanNullInMap(map);
   }
 
@@ -241,8 +241,8 @@ class TypedWithIgnoreCodec extends TypeCodec<TypedWithIgnore> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['a'] = value.a as String;
-    map['b'] = value.b as String;
+    map['a'] = value.a;
+    map['b'] = value.b;
     return cleanNullInMap(map);
   }
 
@@ -301,8 +301,8 @@ class TypedTestMaxSuperClassCodec extends TypeCodec<TypedTestMaxSuperClass> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['foo'] = value.foo as String;
-    map['serialize'] = value.serialize as String;
+    map['foo'] = value.foo;
+    map['serialize'] = value.serialize;
     return cleanNullInMap(map);
   }
 
@@ -368,20 +368,20 @@ class TypedComplexCodec extends TypeCodec<TypedComplex> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['nums'] = value.nums as List<num>;
-    map['strings'] = value.strings as List<String>;
-    map['bools'] = value.bools as List<bool>;
-    map['ints'] = value.ints as List<int>;
-    map['doubles'] = value.doubles as List<double>;
+    map['nums'] = value.nums;
+    map['strings'] = value.strings;
+    map['bools'] = value.bools;
+    map['ints'] = value.ints;
+    map['doubles'] = value.doubles;
     map['dates'] = serializer?.toPrimaryObject(value.dates,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['ignores'] = serializer?.toPrimaryObject(value.ignores,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
-    map['numSet'] = value.numSet as Map<String, num>;
-    map['stringSet'] = value.stringSet as Map<String, String>;
-    map['boolSet'] = value.boolSet as Map<String, bool>;
-    map['intSet'] = value.intSet as Map<String, int>;
-    map['doubleSet'] = value.doubleSet as Map<String, double>;
+    map['numSet'] = value.numSet;
+    map['stringSet'] = value.stringSet;
+    map['boolSet'] = value.boolSet;
+    map['intSet'] = value.intSet;
+    map['doubleSet'] = value.doubleSet;
     map['dateSet'] = serializer?.toPrimaryObject(value.dateSet,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['ignoreSet'] = serializer?.toPrimaryObject(value.ignoreSet,
@@ -418,10 +418,10 @@ class MixinCodec extends TypeCodec<Mixin> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['m1'] = value.m1 as String;
-    map['m2'] = value.m2 as String;
-    map['a'] = value.a as String;
-    map['b'] = value.b as String;
+    map['m1'] = value.m1;
+    map['m2'] = value.m2;
+    map['a'] = value.a;
+    map['b'] = value.b;
     return cleanNullInMap(map);
   }
 
