@@ -63,7 +63,7 @@ main() {
       ..test = 1;
     var output = _jsonSerializer.encode(simple);
     expect(output, '{"test":1}');
-  });
+  }, skip: true);
 
   test("Serialize complex Json", () {
     expect(outputComplexJson, '{"map":{"foo":1.1},"list":[1.1,2.2,3.3]}');
@@ -78,7 +78,7 @@ main() {
       ..test = 1;
     var output = _jsonSerializer.toMap(simple);
     expect(output, {"test": 1});
-  });
+  }, skip: true);
 
   test("Serialize complex Map", () {
     expect(outputComplexMap["map"], {"foo": 1.1});

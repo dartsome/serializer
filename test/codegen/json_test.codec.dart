@@ -20,7 +20,7 @@ class ModelIntCodec extends TypeCodec<ModelInt> {
   @override
   ModelInt decode(dynamic value, {Serializer serializer}) {
     ModelInt obj = new ModelInt();
-    obj.bar = (value['bar'] ?? obj.bar) as int;
+    obj.bar = (value['bar'] ?? obj.bar).toInt();
     return obj;
   }
 
@@ -31,7 +31,7 @@ class ModelIntCodec extends TypeCodec<ModelInt> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['bar'] = value.bar;
+    map['bar'] = value.bar.toInt();
     return cleanNullInMap(map);
   }
 
@@ -48,7 +48,7 @@ class ModelDoubleCodec extends TypeCodec<ModelDouble> {
   @override
   ModelDouble decode(dynamic value, {Serializer serializer}) {
     ModelDouble obj = new ModelDouble();
-    obj.bar = (value['bar'] ?? obj.bar) as double;
+    obj.bar = (value['bar'] ?? obj.bar).toDouble();
     return obj;
   }
 
@@ -59,7 +59,7 @@ class ModelDoubleCodec extends TypeCodec<ModelDouble> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['bar'] = value.bar;
+    map['bar'] = value.bar.toDouble();
     return cleanNullInMap(map);
   }
 
@@ -87,7 +87,7 @@ class ModelACodec extends TypeCodec<ModelA> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['foo'] = value.foo;
+    map['foo'] = value.foo as String;
     return cleanNullInMap(map);
   }
 
@@ -118,7 +118,7 @@ class ModelBCodec extends TypeCodec<ModelB> {
     }
     map['foo'] = serializer?.toPrimaryObject(value.foo,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
-    map['toto'] = value.toto;
+    map['toto'] = value.toto as String;
     return cleanNullInMap(map);
   }
 
@@ -150,7 +150,7 @@ class ModelCCodec extends TypeCodec<ModelC> {
     }
     map['foo'] = serializer?.toPrimaryObject(value.foo,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
-    map['plop'] = value.plop;
+    map['plop'] = value.plop as String;
     return cleanNullInMap(map);
   }
 
@@ -209,7 +209,7 @@ class ModelECodec extends TypeCodec<ModelE> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['tests'] = value.tests;
+    map['tests'] = value.tests as List<String>;
     return cleanNullInMap(map);
   }
 
@@ -241,8 +241,8 @@ class NullTestCodec extends TypeCodec<NullTest> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['tests'] = value.tests;
-    map['test'] = value.test;
+    map['tests'] = value.tests as List<String>;
+    map['test'] = value.test as String;
     map['testModel'] = serializer?.toPrimaryObject(value.testModel,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     return cleanNullInMap(map);
@@ -274,8 +274,8 @@ class ModelRenamedCodec extends TypeCodec<ModelRenamed> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['tests'] = value.tests;
-    map['new'] = value.original;
+    map['tests'] = value.tests as List<String>;
+    map['new'] = value.original as String;
     return cleanNullInMap(map);
   }
 
@@ -304,8 +304,8 @@ class WithIgnoreCodec extends TypeCodec<WithIgnore> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['a'] = value.a;
-    map['b'] = value.b;
+    map['a'] = value.a as String;
+    map['b'] = value.b as String;
     return cleanNullInMap(map);
   }
 
@@ -364,8 +364,8 @@ class TestMaxSuperClassCodec extends TypeCodec<TestMaxSuperClass> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['foo'] = value.foo;
-    map['serialize'] = value.serialize;
+    map['foo'] = value.foo as String;
+    map['serialize'] = value.serialize as String;
     return cleanNullInMap(map);
   }
 
@@ -430,20 +430,20 @@ class ComplexCodec extends TypeCodec<Complex> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['nums'] = value.nums;
-    map['strings'] = value.strings;
-    map['bools'] = value.bools;
-    map['ints'] = value.ints;
-    map['doubles'] = value.doubles;
+    map['nums'] = value.nums as List<num>;
+    map['strings'] = value.strings as List<String>;
+    map['bools'] = value.bools as List<bool>;
+    map['ints'] = value.ints as List<int>;
+    map['doubles'] = value.doubles as List<double>;
     map['dates'] = serializer?.toPrimaryObject(value.dates,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['ignores'] = serializer?.toPrimaryObject(value.ignores,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
-    map['numSet'] = value.numSet;
-    map['stringSet'] = value.stringSet;
-    map['boolSet'] = value.boolSet;
-    map['intSet'] = value.intSet;
-    map['doubleSet'] = value.doubleSet;
+    map['numSet'] = value.numSet as Map<String, num>;
+    map['stringSet'] = value.stringSet as Map<String, String>;
+    map['boolSet'] = value.boolSet as Map<String, bool>;
+    map['intSet'] = value.intSet as Map<String, int>;
+    map['doubleSet'] = value.doubleSet as Map<String, double>;
     map['dateSet'] = serializer?.toPrimaryObject(value.dateSet,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
     map['ignoreSet'] = serializer?.toPrimaryObject(value.ignoreSet,
@@ -480,10 +480,10 @@ class MixinCodec extends TypeCodec<Mixin> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['m1'] = value.m1;
-    map['m2'] = value.m2;
-    map['a'] = value.a;
-    map['b'] = value.b;
+    map['m1'] = value.m1 as String;
+    map['m2'] = value.m2 as String;
+    map['a'] = value.a as String;
+    map['b'] = value.b as String;
     return cleanNullInMap(map);
   }
 

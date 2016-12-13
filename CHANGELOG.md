@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1
+
+- Fix int/double/num conversion
+
 ## 0.5.0
 
 - Update `reflectable` to 1.0.0
