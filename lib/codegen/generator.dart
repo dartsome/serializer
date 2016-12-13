@@ -125,6 +125,29 @@ class SerializerGenerator extends Generator {
     return false;
   }
 
+  List<String> _numTypes = ["int", "double"];
+
+  String _castType(Field field) {
+    if (_numTypes.contains(field.useType)) {
+      if (field.useType == "int") {
+        return ".toInt()";
+      } else {
+        return ".toDouble()";
+      }
+    }
+    if (_numTypes.contains(field.type.toString())) {
+      if (field.type.toString() == "int") {
+        return ".toInt()";
+      } else {
+        return ".toDouble()";
+      }
+    }
+    if (field.useType != null) {
+      return " as ${field.useType}";
+    }
+    return " as ${field.type}";
+  }
+
   void _generateDecode(
       StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
     buffer.writeln("@override");
@@ -154,12 +177,7 @@ class SerializerGenerator extends Generator {
           buffer.write(
               "serializer?.decode(value['${field.key}'], type: $genericType) ");
         }
-        buffer.write("?? obj.$name) as ");
-        if (field.useType != null) {
-          buffer.writeln("${field.useType};");
-        } else {
-          buffer.writeln("${field.type};");
-        }
+        buffer.write("?? obj.$name)${_castType(field)};");
       }
     });
 
@@ -191,7 +209,7 @@ class SerializerGenerator extends Generator {
           buffer.write(
               "serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo, withTypeInfo: ${_withTypeInfo(field)} );");
         } else {
-          buffer.write("value.$name;");
+          buffer.write("value.$name${_castType(field)};");
         }
       }
     });
