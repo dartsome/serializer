@@ -58,6 +58,13 @@ main() {
     expect(outputSimpleJson, '{"test":1.1}');
   });
 
+  test("Serialize simple Json with int", () {
+    var simple = new DoubleSimple()
+      ..test = 1 as double;
+    var output = _jsonSerializer.encode(simple);
+    expect(output, '{"test":1}');
+  });
+
   test("Serialize complex Json", () {
     expect(outputComplexJson, '{"map":{"foo":1.1},"list":[1.1,2.2,3.3]}');
   });
@@ -66,9 +73,25 @@ main() {
     expect(outputSimpleMap, {"test": 1.1});
   });
 
+  test("Serialize simple Map with int", () {
+    var simple = new DoubleSimple()
+      ..test = 1 as double;
+    var output = _jsonSerializer.toMap(simple);
+    expect(output, {"test": 1});
+  });
+
   test("Serialize complex Map", () {
     expect(outputComplexMap["map"], {"foo": 1.1});
     expect(outputComplexMap["list"], [1.1, 2.2, 3.3]);
+  });
+
+  test("Serialize complex Map with int", () {
+    var complex = new DoubleComplex()
+      ..list = [1, 2, 3] as List<double>
+      ..map = {"foo": 1} as Map<String,double>;
+    var output = _jsonSerializer.toMap(complex);
+    expect(output["map"], {"foo": 1});
+    expect(output["list"], [1, 2, 3]);
   });
 
   test("Deserialize simple Json", () {
@@ -76,10 +99,21 @@ main() {
     expect(_simple.test, 1.1);
   });
 
+  test("Deserialize simple Json with int", () {
+    DoubleSimple output = _jsonSerializer.decode('{"test":1}', type: DoubleSimple);
+    expect(output.test, 1);
+  });
+
   test("Deserialize complex Json", () {
     DoubleComplex _complex = new DoubleComplex.fromJson(outputComplexJson);
     expect(_complex.map, {"foo": 1.1});
     expect(_complex.list, [1.1, 2.2, 3.3]);
+  });
+
+  test("Deserialize complex Json with int", () {
+    DoubleComplex _complex = _jsonSerializer.decode('{"map":{"foo":1},"list":[1,2,3]}', type: DoubleComplex);
+    expect(_complex.map, {"foo": 1});
+    expect(_complex.list, [1, 2, 3]);
   });
 
   test("Deserialize simple Map", () {
@@ -91,5 +125,11 @@ main() {
     DoubleComplex _complex = new DoubleComplex.fromMap(outputComplexMap);
     expect(_complex.map, {"foo": 1.1});
     expect(_complex.list, [1.1, 2.2, 3.3]);
+  });
+
+  test("Deserialize complex Map with int", () {
+    DoubleComplex _complex = new DoubleComplex.fromMap({"map":{"foo":1},"list":[1,2,3]});
+    expect(_complex.map, {"foo": 1});
+    expect(_complex.list, [1, 2, 3]);
   });
 }
