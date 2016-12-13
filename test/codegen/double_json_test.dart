@@ -60,7 +60,7 @@ main() {
 
   test("Serialize simple Json with int", () {
     var simple = new DoubleSimple()
-      ..test = 1 as double;
+      ..test = 1;
     var output = _jsonSerializer.encode(simple);
     expect(output, '{"test":1}');
   });
@@ -75,7 +75,7 @@ main() {
 
   test("Serialize simple Map with int", () {
     var simple = new DoubleSimple()
-      ..test = 1 as double;
+      ..test = 1;
     var output = _jsonSerializer.toMap(simple);
     expect(output, {"test": 1});
   });
@@ -87,8 +87,8 @@ main() {
 
   test("Serialize complex Map with int", () {
     var complex = new DoubleComplex()
-      ..list = [1, 2, 3] as List<double>
-      ..map = {"foo": 1} as Map<String,double>;
+      ..list = [1, 2, 3]
+      ..map = {"foo": 1};
     var output = _jsonSerializer.toMap(complex);
     expect(output["map"], {"foo": 1});
     expect(output["list"], [1, 2, 3]);
