@@ -20,7 +20,7 @@ class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
   @override
   DoubleSimple decode(dynamic value, {Serializer serializer}) {
     DoubleSimple obj = new DoubleSimple();
-    obj.test = (value['test'] ?? obj.test).toDouble();
+    obj.test = (value['test'] ?? obj.test)?.toDouble();
     return obj;
   }
 
@@ -31,7 +31,7 @@ class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['test'] = value.test.toDouble();
+    map['test'] = value.test?.toDouble();
     return cleanNullInMap(map);
   }
 

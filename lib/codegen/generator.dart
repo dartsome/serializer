@@ -118,25 +118,16 @@ class SerializerGenerator extends Generator {
   List<String> _numTypes = ["int", "double"];
 
   String _castType(Field field, [bool as = true]) {
-    if (_numTypes.contains(field.useType)) {
-      if (field.useType == "int") {
-        return ".toInt()";
+    String type = field.useType ?? field.type.toString();
+    if (_numTypes.contains(type)) {
+      if (type == "int") {
+        return "?.toInt()";
       } else {
-        return ".toDouble()";
-      }
-    }
-    if (_numTypes.contains(field.type.toString())) {
-      if (field.type.toString() == "int") {
-        return ".toInt()";
-      } else {
-        return ".toDouble()";
+        return "?.toDouble()";
       }
     }
     if (as == true) {
-      if (field.useType != null) {
-        return " as ${field.useType}";
-      }
-      return " as ${field.type}";
+      return " as $type";
     }
     return "";
   }

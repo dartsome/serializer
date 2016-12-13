@@ -20,7 +20,7 @@ class ModelIntCodec extends TypeCodec<ModelInt> {
   @override
   ModelInt decode(dynamic value, {Serializer serializer}) {
     ModelInt obj = new ModelInt();
-    obj.bar = (value['bar'] ?? obj.bar).toInt();
+    obj.bar = (value['bar'] ?? obj.bar)?.toInt();
     return obj;
   }
 
@@ -31,7 +31,7 @@ class ModelIntCodec extends TypeCodec<ModelInt> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['bar'] = value.bar.toInt();
+    map['bar'] = value.bar?.toInt();
     return cleanNullInMap(map);
   }
 
@@ -48,7 +48,7 @@ class ModelDoubleCodec extends TypeCodec<ModelDouble> {
   @override
   ModelDouble decode(dynamic value, {Serializer serializer}) {
     ModelDouble obj = new ModelDouble();
-    obj.bar = (value['bar'] ?? obj.bar).toDouble();
+    obj.bar = (value['bar'] ?? obj.bar)?.toDouble();
     return obj;
   }
 
@@ -59,7 +59,7 @@ class ModelDoubleCodec extends TypeCodec<ModelDouble> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['bar'] = value.bar.toDouble();
+    map['bar'] = value.bar?.toDouble();
     return cleanNullInMap(map);
   }
 

@@ -76,7 +76,7 @@ class EmployeeCodec extends TypeCodec<Employee> {
   @override
   Employee decode(dynamic value, {Serializer serializer}) {
     Employee obj = new Employee();
-    obj.id = (value['id'] ?? obj.id).toInt();
+    obj.id = (value['id'] ?? obj.id)?.toInt();
     obj.name = (value['name'] ?? obj.name) as String;
     obj.address = (serializer?.decode(value['address'], type: Address) ??
         obj.address) as Address;
@@ -92,7 +92,7 @@ class EmployeeCodec extends TypeCodec<Employee> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['id'] = value.id.toInt();
+    map['id'] = value.id?.toInt();
     map['name'] = value.name;
     map['address'] = serializer?.toPrimaryObject(value.address,
         useTypeInfo: useTypeInfo, withTypeInfo: false);
@@ -114,7 +114,7 @@ class AddressCodec extends TypeCodec<Address> {
   @override
   Address decode(dynamic value, {Serializer serializer}) {
     Address obj = new Address();
-    obj.id = (value['id'] ?? obj.id).toInt();
+    obj.id = (value['id'] ?? obj.id)?.toInt();
     obj.location = (value['location'] ?? obj.location) as String;
     obj.owner = (serializer?.decode(value['owner'], type: Employee) ??
         obj.owner) as Employee;
@@ -128,7 +128,7 @@ class AddressCodec extends TypeCodec<Address> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['id'] = value.id.toInt();
+    map['id'] = value.id?.toInt();
     map['location'] = value.location;
     map['owner'] = serializer?.toPrimaryObject(value.owner,
         useTypeInfo: useTypeInfo, withTypeInfo: false);

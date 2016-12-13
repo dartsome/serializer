@@ -20,7 +20,7 @@ class TypedModelIntCodec extends TypeCodec<TypedModelInt> {
   @override
   TypedModelInt decode(dynamic value, {Serializer serializer}) {
     TypedModelInt obj = new TypedModelInt();
-    obj.bar = (value['bar'] ?? obj.bar).toInt();
+    obj.bar = (value['bar'] ?? obj.bar)?.toInt();
     return obj;
   }
 
@@ -31,7 +31,7 @@ class TypedModelIntCodec extends TypeCodec<TypedModelInt> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
-    map['bar'] = value.bar.toInt();
+    map['bar'] = value.bar?.toInt();
     return cleanNullInMap(map);
   }
 
