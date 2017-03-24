@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+**Breaking changes:**
+
+- Remove reflectable version
+- Update 'source_gen' to 0.5.4+2
+
 ## 0.5.1
 
 - Fix int/double/num conversion
