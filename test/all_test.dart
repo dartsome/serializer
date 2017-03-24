@@ -3,9 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'codegen/all_test.dart' as _codegen;
-import 'reflectable/all_test.dart' as _reflectable;
 
 main() {
   _codegen.main();
-  _reflectable.main();
 }

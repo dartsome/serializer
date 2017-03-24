@@ -10,7 +10,7 @@ import 'model.dart';
 import 'model.codec.dart';
 
 main() {
-  Serializer sz = new ReflectableSerializer.typedJson()
+  Serializer sz = new CodegenSerializer.typedJson()
     ..addAllTypeCodecs(example_model_codecs)
     ..addTypeCodec(ObjectId, new ObjectIdCodec());
 

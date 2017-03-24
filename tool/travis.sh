@@ -13,7 +13,6 @@ dartanalyzer --strong --fatal-warnings \
   lib/*.dart \
   lib/core/*.dart \
   lib/codegen/*.dart \
-  lib/reflectable/*.dart \
   lib/codecs/*.dart \
   test/*_test.dart
 fi
@@ -42,9 +41,5 @@ if [ "${COVERALLS_TOKEN}" ] && [ "${TRAVIS_DART_VERSION}" = "1.15.0" ]; then
   pub global activate dart_coveralls
   pub global run dart_coveralls report \
     --exclude-test-files \
-    test/reflectable/codecs_test.dart \
-    test/reflectable/double_json_test.dart \
-    test/reflectable/json_test.dart \
-    test/reflectable/typed_json_test.dart \
     test/codegen/all_test.dart
 fi
