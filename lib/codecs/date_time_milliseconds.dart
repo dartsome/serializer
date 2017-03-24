@@ -6,6 +6,9 @@ import 'type_codec.dart';
 
 /// A milliseconds since epoch DateTime codec.
 class DateTimeMillisecondsSinceEpochCodec extends TypeCodec<DateTime> {
-  DateTime decode(dynamic value, {Serializer serializer}) => new DateTime.fromMillisecondsSinceEpoch(value);
-  dynamic encode(DateTime value, {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) => value.millisecondsSinceEpoch;
+  DateTime decode(dynamic value, {Serializer serializer}) =>
+      new DateTime.fromMillisecondsSinceEpoch(value);
+  dynamic encode(DateTime value,
+          {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) =>
+      value.millisecondsSinceEpoch;
 }

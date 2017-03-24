@@ -7,13 +7,13 @@ import '../core.dart';
 
 class Serializable extends Reflectable {
   const Serializable()
-    : super.fromList(const [
-    invokingCapability,
-    typeRelationsCapability,
-    metadataCapability,
-    superclassQuantifyCapability,
-    reflectedTypeCapability
-  ]);
+      : super.fromList(const [
+          invokingCapability,
+          typeRelationsCapability,
+          metadataCapability,
+          superclassQuantifyCapability,
+          reflectedTypeCapability
+        ]);
 }
 
 const serializable = const Serializable();
@@ -35,8 +35,14 @@ class _MetadataManager<T> {
   }
 }
 
-const _MetadataManager<SerializedName>         serializedNameMetadataManager         = const _MetadataManager<SerializedName>();
-const _MetadataManager<Referenceable>          referenceableMetadataManager          = const _MetadataManager<Referenceable>();
-const _MetadataManager<Reference>              referenceMetadataManager              = const _MetadataManager<Reference>();
-const _MetadataManager<Ignore>                 ignoreMetadataManager                 = const _MetadataManager<Ignore>();
-const _MetadataManager<SerializedWithTypeInfo> serializedWithTypeInfoMetadataManager = const _MetadataManager<SerializedWithTypeInfo>();
+const _MetadataManager<SerializedName> serializedNameMetadataManager =
+    const _MetadataManager<SerializedName>();
+const _MetadataManager<Referenceable> referenceableMetadataManager =
+    const _MetadataManager<Referenceable>();
+const _MetadataManager<Reference> referenceMetadataManager =
+    const _MetadataManager<Reference>();
+const _MetadataManager<Ignore> ignoreMetadataManager =
+    const _MetadataManager<Ignore>();
+const _MetadataManager<SerializedWithTypeInfo>
+    serializedWithTypeInfoMetadataManager =
+    const _MetadataManager<SerializedWithTypeInfo>();

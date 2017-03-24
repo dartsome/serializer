@@ -7,7 +7,8 @@ import 'package:reflectable/reflectable.dart';
 import '../core.dart';
 import 'annotations.dart';
 
-bool isSerializableClassMirror(Map<String, ClassSerialiazerInfo> serializables, ClassMirror cm) {
+bool isSerializableClassMirror(
+    Map<String, ClassSerialiazerInfo> serializables, ClassMirror cm) {
   return serializables.containsKey(cm.mixin.simpleName);
 }
 
@@ -28,8 +29,11 @@ String serializedName(DeclarationMirror dec) {
   }
 }
 
-bool isEncodeableField(Map<String, ClassSerialiazerInfo> serializables, ClassMirror cm, DeclarationMirror dec, bool withReferenceable) {
-  return withReferenceable || !serializables[cm.mixin.simpleName].isReferenceable || referenceMetadataManager.hasMetadata(dec);
+bool isEncodeableField(Map<String, ClassSerialiazerInfo> serializables,
+    ClassMirror cm, DeclarationMirror dec, bool withReferenceable) {
+  return withReferenceable ||
+      !serializables[cm.mixin.simpleName].isReferenceable ||
+      referenceMetadataManager.hasMetadata(dec);
 }
 
 _printToString(String data) => "$data\n";
@@ -45,19 +49,19 @@ String printAndDumpSerializables() {
     } else {
       print(cm.mixin.simpleName);
     }
-    while (cm != null
-        && cm.superclass != null
-        && isSerializableClassMirror(singletonClasses, cm)) {
+    while (cm != null &&
+        cm.superclass != null &&
+        isSerializableClassMirror(singletonClasses, cm)) {
       output += _printToString("  " + cm.mixin.simpleName);
       print("  " + cm.mixin.simpleName);
       cm.declarations.forEach((symbol, decl) {
         if (!decl.isPrivate) {
           String name = symbol;
           Type type;
-          bool isSetter  = false;
-          bool isGetter  = false;
+          bool isSetter = false;
+          bool isGetter = false;
           bool isIgnored = ignoreMetadataManager.hasMetadata(decl);
-          bool isRef     = referenceMetadataManager.hasMetadata(decl);
+          bool isRef = referenceMetadataManager.hasMetadata(decl);
           String renamed = serializedName(decl);
 
           if (decl is VariableMirror) {
@@ -83,9 +87,9 @@ String printAndDumpSerializables() {
 
           if (type != null) {
             var line = "    ";
-            line += isRef     ? "R" : "-";
-            line += isSetter  ? "G" : "-";
-            line += isGetter  ? "S" : "-";
+            line += isRef ? "R" : "-";
+            line += isSetter ? "G" : "-";
+            line += isGetter ? "S" : "-";
             line += isIgnored ? "I" : "-";
             line += ": $type $name";
             line += renamed != name ? " => $renamed" : "";
@@ -100,35 +104,35 @@ String printAndDumpSerializables() {
   return output;
 }
 
-
 // Singleton that maps every class annotated with @serializable
 class ClassSerialiazerInfo {
   ClassMirror classMirror;
-  bool        isReferenceable;
+  bool isReferenceable;
   ClassSerialiazerInfo(this.classMirror, this.isReferenceable);
 }
-
 
 final singletonClasses = <String, ClassSerialiazerInfo>{};
 final correspondingMinifiedTypes = <String, String>{};
 initSingletonClasses() {
   if (singletonClasses.isEmpty) {
     for (ClassMirror classMirror in serializable.annotatedClasses) {
-      if (classMirror != null
-          && classMirror.simpleName != null
-          && classMirror.metadata.contains(serializable)) {
-
+      if (classMirror != null &&
+          classMirror.simpleName != null &&
+          classMirror.metadata.contains(serializable)) {
         // Searching for referenceable annotation
         var isReferenceable = false;
         var cm = classMirror;
         while (cm != null && cm.superclass != null) {
-          isReferenceable = isReferenceable || referenceableMetadataManager.hasMetadata(cm);
+          isReferenceable =
+              isReferenceable || referenceableMetadataManager.hasMetadata(cm);
           cm = cm?.superclass;
         }
 
-       // singletonClasses[classMirror.reflectedType.toString()] = new ClassSerialiazerInfo(classMirror, isReferenceable);
-        singletonClasses[classMirror.simpleName] = new ClassSerialiazerInfo(classMirror, isReferenceable);
-        correspondingMinifiedTypes[classMirror.reflectedType.toString()] = classMirror.simpleName;
+        // singletonClasses[classMirror.reflectedType.toString()] = new ClassSerialiazerInfo(classMirror, isReferenceable);
+        singletonClasses[classMirror.simpleName] =
+            new ClassSerialiazerInfo(classMirror, isReferenceable);
+        correspondingMinifiedTypes[classMirror.reflectedType.toString()] =
+            classMirror.simpleName;
       }
     }
   }

@@ -11,14 +11,18 @@ bool isPrimaryType(Type obj) =>
     obj == num || obj == String || obj == bool || obj == int || obj == double;
 
 bool isPrimaryTypeString(String obj) =>
-    obj == "num" || obj == "String" || obj == "bool" || obj == "int" || obj == "double";
+    obj == "num" ||
+    obj == "String" ||
+    obj == "bool" ||
+    obj == "int" ||
+    obj == "double";
 
-final String MapTypeString  = {}.runtimeType.toString();
+final String MapTypeString = {}.runtimeType.toString();
 final String ListTypeString = [].runtimeType.toString();
 
 Map cleanNullInMap(Map<String, dynamic> map) {
   Iterable<String> keys = new List.from(map.keys);
-  keys.forEach((String k){
+  keys.forEach((String k) {
     if (map[k] == null) {
       map.remove(k);
     }
@@ -35,7 +39,9 @@ abstract class Serializer {
 
   /// Return if typeInfoKey must be enabled
   bool enableTypeInfo(bool useTypeInfo, bool withTypeInfo) =>
-      useTypeInfo != null ? useTypeInfo || (withTypeInfo ?? false) : this.useTypeInfo || (withTypeInfo ?? false);
+      useTypeInfo != null
+          ? useTypeInfo || (withTypeInfo ?? false)
+          : this.useTypeInfo || (withTypeInfo ?? false);
 
   /// Registers a [typeCodec] for the specific [type].
   addTypeCodec(Type type, TypeCodec typeCodec);
@@ -53,7 +59,8 @@ abstract class Serializer {
   bool isSerializable(Type type);
 
   /// Convert the object to a Map
-  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo});
+  Map<String, dynamic> toMap(Object input,
+      {bool useTypeInfo, bool withTypeInfo});
 
   /// Convert to a Map or a List recursively
   Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo});
@@ -62,11 +69,14 @@ abstract class Serializer {
   String encode(Object input, {bool useTypeInfo, bool withTypeInfo});
 
   /// Decode the object from a seriablized string
-  Object decode(dynamic encoded, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
+  Object decode(dynamic encoded,
+      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
 
   /// Convert a serialized object to map
-  Object fromMap(Map<String, dynamic> map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
+  Object fromMap(Map<String, dynamic> map,
+      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List fromList(List<dynamic> list, {Type type, bool useTypeInfo, bool withTypeInfo});
+  List fromList(List<dynamic> list,
+      {Type type, bool useTypeInfo, bool withTypeInfo});
 }

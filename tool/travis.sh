@@ -21,11 +21,7 @@ fi
 #Generate Codecs
 pub run tool/build.dart
 
-TESTS="test/reflectable/codecs_test.dart \
-           test/reflectable/double_json_test.dart \
-           test/reflectable/json_test.dart \
-           test/reflectable/typed_json_test.dart \
-           test/codegen/all_test.dart"
+TESTS="test/codegen/all_test.dart"
 
 # Run vm tests
 pub run test -p vm ${TESTS}

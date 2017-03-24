@@ -2,26 +2,31 @@ import 'dart:async';
 
 import 'package:dart_style/dart_style.dart';
 import 'package:build/build.dart' as _build;
+import 'package:build_runner/build_runner.dart' as _runner;
 import 'package:source_gen/src/utils.dart';
 import 'package:source_gen/src/generated_output.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:logging/logging.dart';
+
 import 'generator.dart';
+
+final Logger _log = new Logger("serializer.builder");
 
 class SerializerGeneratorBuilder extends _build.Builder {
   final String library;
   final String generatedExtension;
   static SerializerGenerator _gen;
-  SerializerGeneratorBuilder(this.library, {this.generatedExtension: '.codec.dart'}) {
+  SerializerGeneratorBuilder(this.library,
+      {this.generatedExtension: '.codec.dart'}) {
     _gen = new SerializerGenerator(library);
   }
 
   @override
   Future build(_build.BuildStep buildStep) async {
-    var id = buildStep.input.id;
-    var resolver = await buildStep.resolve(id, resolveAllConstants: false);
+    var id = buildStep.inputId;
+    var resolver = await buildStep.resolver;
     var lib = resolver.getLibrary(id);
     await _generateForLibrary(lib, buildStep);
-    resolver.release();
   }
 
   @override
@@ -35,33 +40,33 @@ class SerializerGeneratorBuilder extends _build.Builder {
 
   Future _generateForLibrary(
       LibraryElement library, _build.BuildStep buildStep) async {
-    buildStep.logger.fine('Running $_gen for ${buildStep.input.id}');
+    _log.fine('Running $_gen for ${buildStep.inputId}');
 
     _gen.initCodecsMap();
-    var generatedOutputs =
-    await _generate(library, buildStep).toList();
+    var generatedOutputs = await _generate(library, buildStep).toList();
 
     // Don't outputs useless files.
     if (generatedOutputs.isEmpty == true) return;
 
     var contentBuffer = new StringBuffer();
 
-
     for (GeneratedOutput output in generatedOutputs) {
       if (output.output.isEmpty == false) {
         contentBuffer.writeln('');
         contentBuffer.writeln(_headerLine);
         contentBuffer.writeln('// Generator: ${output.generator}');
-        contentBuffer
-            .writeln('// Target: ${friendlyNameForElement(output.sourceMember)}');
+        contentBuffer.writeln(
+            '// Target: ${friendlyNameForElement(output.sourceMember)}');
         contentBuffer.writeln(_headerLine);
         contentBuffer.writeln('');
 
         contentBuffer.writeln(output.output);
       }
     }
-    String codecMapName = buildStep.input.id.path.split(".").first.replaceAll("/", "_");
-    contentBuffer.writeln("Map<String, TypeCodec<dynamic>> ${codecMapName}_codecs = ${_gen.codescMapAsString}");
+    String codecMapName =
+        buildStep.inputId.path.split(".").first.replaceAll("/", "_");
+    contentBuffer.writeln(
+        "Map<String, TypeCodec<dynamic>> ${codecMapName}_codecs = ${_gen.codescMapAsString}");
 
     var genPartContent = contentBuffer.toString();
 
@@ -69,7 +74,7 @@ class SerializerGeneratorBuilder extends _build.Builder {
     try {
       genPartContent = formatter.format(genPartContent);
     } catch (e, stack) {
-      buildStep.logger.severe(
+      _log.severe(
           """Error formatting the generated source code.
 This may indicate an issue in the generated code or in the formatter.
 Please check the generated code and file an issue on source_gen
@@ -78,11 +83,12 @@ if approppriate.""",
           stack);
     }
 
-    var outputId = _generatedFile(buildStep.input.id);
-    var output = new _build.Asset(outputId, '$_topHeader$genPartContent');
-    buildStep.writeAsString(output);
+    var outputId = _generatedFile(buildStep.inputId);
+    buildStep.writeAsString(outputId, '$_topHeader$genPartContent');
   }
-  Stream<GeneratedOutput> _generate(LibraryElement unit, _build.BuildStep buildStep) async* {
+
+  Stream<GeneratedOutput> _generate(
+      LibraryElement unit, _build.BuildStep buildStep) async* {
     for (var element in getElementsFromLibraryElement(unit)) {
       yield* _processUnitMember(element, buildStep);
     }
@@ -91,21 +97,19 @@ if approppriate.""",
   Stream<GeneratedOutput> _processUnitMember(
       Element element, _build.BuildStep buildStep) async* {
     try {
-      buildStep.logger.finer('Running $_gen for $element');
+      _log.finer('Running $_gen for $element');
       var createdUnit = await _gen.generate(element, buildStep);
 
       if (createdUnit != null) {
-        buildStep.logger.finest(() => 'Generated $createdUnit for $element');
+        _log.finest(() => 'Generated $createdUnit for $element');
         yield new GeneratedOutput(element, _gen, createdUnit);
       }
     } catch (e, stack) {
-      buildStep.logger.severe('Error running $_gen for $element.', e, stack);
+      _log.severe('Error running $_gen for $element.', e, stack);
       yield new GeneratedOutput.fromError(element, _gen, e, stack);
     }
   }
 }
-
-
 
 const _topHeader = '''// GENERATED CODE - DO NOT MODIFY BY HAND
 
@@ -113,13 +117,12 @@ const _topHeader = '''// GENERATED CODE - DO NOT MODIFY BY HAND
 
 final _headerLine = '// '.padRight(77, '*');
 
-
-
-_build.PhaseGroup _phases(String library, final List<String> files) =>
-    new _build.PhaseGroup.singleAction(new SerializerGeneratorBuilder(library), new _build.InputSet(library, files));
+_runner.PhaseGroup _phases(String library, final List<String> files) =>
+    new _runner.PhaseGroup.singleAction(new SerializerGeneratorBuilder(library),
+        new _runner.InputSet(library, files));
 
 build(String library, final List<String> files) async =>
-    _build.build(_phases(library, files), deleteFilesByDefault: true);
+    _runner.build(_phases(library, files), deleteFilesByDefault: true);
 
 watch(String library, final List<String> files) async =>
-    _build.watch(_phases(library, files), deleteFilesByDefault: true);
+    _runner.watch(_phases(library, files), deleteFilesByDefault: true);

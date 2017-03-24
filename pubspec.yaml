@@ -1,6 +1,6 @@
 name: serializer
 description: Serialization to JSON using reflectable or codegen
-version: 0.5.1
+version: 0.6.0
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>
@@ -12,20 +12,14 @@ environment:
 
 dependencies:
   bson: ^0.2.0
-  reflectable: ^1.0.0
-  source_gen: ^0.5.0
-  build: '>=0.3.0 <0.6.0'
+  build_runner: ^0.3.0+1
+  source_gen: ^0.5.4+2
 
 dev_dependencies:
   test: ^0.12.0
   browser: ^0.10.0
 
 transformers:
-  - reflectable:
-      entry_points:
-        - example/**_example.dart
-        - test/reflectable/*_test.dart
-        - web/index.dart
   - test/pub_serve:
       $include:
         - test/reflectable/*_test{.*,}.dart
