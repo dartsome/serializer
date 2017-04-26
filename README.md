@@ -2,6 +2,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/dartsome/serializer/badge.svg?branch=master)](https://coveralls.io/github/dartsome/serializer?branch=master)
 [![Pub version](https://img.shields.io/pub/v/serializer.svg)](https://pub.dartlang.org/packages/serializer)
 
+**DISCLAIMER**
+
+**No maintenance on this package anymore.**
+
+**Documentation aren't aligned with last version.**
+
 # Serializer
 
 Serialize and Deserialize Dart Object with reflectable or codegen
