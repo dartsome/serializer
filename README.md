@@ -4,7 +4,7 @@
 
 **DISCLAIMER**
 
-**No maintenance on this package anymore.**
+**No maintenance on this package anymore. Prefer to use [jaguar_serializer](https://github.com/Jaguar-dart/jaguar_serializer)**
 
 **Documentation aren't aligned with last version.**
 
