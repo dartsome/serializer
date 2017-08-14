@@ -1,6 +1,6 @@
 name: serializer
 description: Serialization to JSON using reflectable or codegen
-version: 0.6.2
+version: 0.6.2+1
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>
@@ -12,7 +12,7 @@ environment:
 
 dependencies:
   bson: ^0.2.0
-  build: ^0.7.2
+#  build: ^0.7.2
   build_runner: ^0.3.0+1
   source_gen: ^0.5.5
 
