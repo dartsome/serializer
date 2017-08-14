@@ -95,22 +95,24 @@ class SerializerGenerator extends Generator {
   void _classCodec(StringBuffer buffer, String className) => generateClass(
       buffer, "class", "${className}Codec", "TypeCodec<$className>");
 
-  String _findGenericOfList(String type) {
-    RegExp reg = new RegExp(r"^List<(.*)>$");
-    Iterable<Match> matches = reg.allMatches(type);
-    if (matches == null || matches.isEmpty) {
-      return null;
+  String _findGenericOfList(DartType type) {
+    if (type is ParameterizedType) {
+      if (type.typeArguments.length == 1) {
+        var name = type.typeArguments[0].name;
+        return name;
+      }
     }
-    return matches.first.group(1);
+    return null;
   }
 
-  String _findGenericOfMap(String type) {
-    RegExp reg = new RegExp(r"^Map<(.*)\ *,\ *(.*)>$");
-    Iterable<Match> matches = reg.allMatches(type);
-    if (matches == null || matches.isEmpty) {
-      return null;
+  String _findGenericOfMap(DartType type) {
+    if (type is ParameterizedType) {
+      if (type.typeArguments.length == 2) {
+        var name = type.typeArguments[1].name;
+        return name;
+      }
     }
-    return matches.first.group(2);
+    return null;
   }
 
   bool _decodeWithTypeInfo(Field field) {
@@ -219,9 +221,9 @@ class SerializerGenerator extends Generator {
   }
 
   String _getType(Field field) {
-    String t = _findGenericOfMap(field.type.toString());
+    String t = _findGenericOfMap(field.type);
     if (t == null) {
-      t = _findGenericOfList(field.type.toString());
+      t = _findGenericOfList(field.type);
     }
     t ??= field.type.toString();
     if (t == "dynamic") {
