@@ -491,6 +491,33 @@ class MixinCodec extends TypeCodec<Mixin> {
   String get typeInfo => 'Mixin';
 }
 
+// **************************************************************************
+// Generator: SerializerGenerator
+// Target: class GetterOnly
+// **************************************************************************
+
+class GetterOnlyCodec extends TypeCodec<GetterOnly> {
+  @override
+  GetterOnly decode(dynamic value, {Serializer serializer}) {
+    GetterOnly obj = new GetterOnly();
+    return obj;
+  }
+
+  @override
+  dynamic encode(GetterOnly value,
+      {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) {
+    Map<String, dynamic> map = new Map<String, dynamic>();
+    if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
+      map[serializer.typeInfoKey] = typeInfo;
+    }
+    map['value'] = value.value;
+    return cleanNullInMap(map);
+  }
+
+  @override
+  String get typeInfo => 'GetterOnly';
+}
+
 Map<String, TypeCodec<dynamic>> test_codegen_json_test_codecs =
     <String, TypeCodec<dynamic>>{
   'ModelInt': new ModelIntCodec(),
@@ -507,4 +534,5 @@ Map<String, TypeCodec<dynamic>> test_codegen_json_test_codecs =
   'TestMaxSuperClass': new TestMaxSuperClassCodec(),
   'Complex': new ComplexCodec(),
   'Mixin': new MixinCodec(),
+  'GetterOnly': new GetterOnlyCodec(),
 };

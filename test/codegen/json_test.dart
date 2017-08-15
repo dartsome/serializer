@@ -145,6 +145,14 @@ class Mixin extends ProxyA with M1, M2 {
   String b;
 }
 
+@serializable
+class GetterOnly {
+  String _value;
+  String get value => _value;
+
+  GetterOnly([this._value]);
+}
+
 Serializer serializer;
 
 main() {
@@ -354,6 +362,11 @@ main() {
   });
 
   group("Deserialize", () {
+    test("getter only", () {
+      GetterOnly getterOnly = serializer.decode('{"value":"foo"}', type: GetterOnly) as GetterOnly;
+      expect(getterOnly.value, "foo");
+    });
+
     test("simple test - fromJson", () {
       ModelA a = serializer.decode('{"foo":"toto"}', type: ModelA);
 
