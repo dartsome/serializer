@@ -2,7 +2,6 @@
 
 // **************************************************************************
 // Generator: SerializerGenerator
-// Target: library
 // **************************************************************************
 
 library models_test.codec;
@@ -10,11 +9,6 @@ library models_test.codec;
 import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
 import 'package:serializer/codecs.dart';
 import 'models_test.dart';
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class M1
-// **************************************************************************
 
 class M1Codec extends TypeCodec<M1> {
   @override
@@ -39,11 +33,6 @@ class M1Codec extends TypeCodec<M1> {
   String get typeInfo => 'M1';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class M2
-// **************************************************************************
-
 class M2Codec extends TypeCodec<M2> {
   @override
   M2 decode(dynamic value, {Serializer serializer}) {
@@ -66,11 +55,6 @@ class M2Codec extends TypeCodec<M2> {
   @override
   String get typeInfo => 'M2';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Employee
-// **************************************************************************
 
 class EmployeeCodec extends TypeCodec<Employee> {
   @override
@@ -105,11 +89,6 @@ class EmployeeCodec extends TypeCodec<Employee> {
   String get typeInfo => 'Employee';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Address
-// **************************************************************************
-
 class AddressCodec extends TypeCodec<Address> {
   @override
   Address decode(dynamic value, {Serializer serializer}) {
@@ -139,11 +118,6 @@ class AddressCodec extends TypeCodec<Address> {
   String get typeInfo => 'Address';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class WithStaticConst
-// **************************************************************************
-
 class WithStaticConstCodec extends TypeCodec<WithStaticConst> {
   @override
   WithStaticConst decode(dynamic value, {Serializer serializer}) {
@@ -167,11 +141,6 @@ class WithStaticConstCodec extends TypeCodec<WithStaticConst> {
   String get typeInfo => 'WithStaticConst';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class WithStatic
-// **************************************************************************
-
 class WithStaticCodec extends TypeCodec<WithStatic> {
   @override
   WithStatic decode(dynamic value, {Serializer serializer}) {
@@ -194,11 +163,6 @@ class WithStaticCodec extends TypeCodec<WithStatic> {
   @override
   String get typeInfo => 'WithStatic';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Pet
-// **************************************************************************
 
 class PetCodec extends TypeCodec<Pet> {
   @override
@@ -227,11 +191,6 @@ class PetCodec extends TypeCodec<Pet> {
   String get typeInfo => 'Pet';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Dog
-// **************************************************************************
-
 class DogCodec extends TypeCodec<Dog> {
   @override
   Dog decode(dynamic value, {Serializer serializer}) {
@@ -257,11 +216,6 @@ class DogCodec extends TypeCodec<Dog> {
   String get typeInfo => 'Dog';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Cat
-// **************************************************************************
-
 class CatCodec extends TypeCodec<Cat> {
   @override
   Cat decode(dynamic value, {Serializer serializer}) {
@@ -286,11 +240,6 @@ class CatCodec extends TypeCodec<Cat> {
   @override
   String get typeInfo => 'Cat';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class PetWithTypeInfo
-// **************************************************************************
 
 class PetWithTypeInfoCodec extends TypeCodec<PetWithTypeInfo> {
   @override

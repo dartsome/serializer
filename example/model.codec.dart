@@ -2,7 +2,6 @@
 
 // **************************************************************************
 // Generator: SerializerGenerator
-// Target: library
 // **************************************************************************
 
 library model.codec;
@@ -10,11 +9,6 @@ library model.codec;
 import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
 import 'package:serializer/codecs.dart';
 import 'model.dart';
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class User
-// **************************************************************************
 
 class UserCodec extends TypeCodec<User> {
   @override
@@ -39,11 +33,6 @@ class UserCodec extends TypeCodec<User> {
   @override
   String get typeInfo => 'User';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Id
-// **************************************************************************
 
 class IdCodec extends TypeCodec<Id> {
   @override
@@ -70,11 +59,6 @@ class IdCodec extends TypeCodec<Id> {
   String get typeInfo => 'Id';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Model
-// **************************************************************************
-
 class ModelCodec extends TypeCodec<Model> {
   @override
   Model decode(dynamic value, {Serializer serializer}) {
@@ -97,11 +81,6 @@ class ModelCodec extends TypeCodec<Model> {
   @override
   String get typeInfo => 'Model';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class CustomUser
-// **************************************************************************
 
 class CustomUserCodec extends TypeCodec<CustomUser> {
   @override

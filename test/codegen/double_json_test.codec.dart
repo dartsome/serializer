@@ -2,7 +2,6 @@
 
 // **************************************************************************
 // Generator: SerializerGenerator
-// Target: library
 // **************************************************************************
 
 library double_json_test.codec;
@@ -10,11 +9,6 @@ library double_json_test.codec;
 import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
 import 'package:serializer/codecs.dart';
 import 'double_json_test.dart';
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class DoubleSimple
-// **************************************************************************
 
 class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
   @override
@@ -38,11 +32,6 @@ class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
   @override
   String get typeInfo => 'DoubleSimple';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class DoubleComplex
-// **************************************************************************
 
 class DoubleComplexCodec extends TypeCodec<DoubleComplex> {
   @override

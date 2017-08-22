@@ -2,7 +2,6 @@
 
 // **************************************************************************
 // Generator: SerializerGenerator
-// Target: library
 // **************************************************************************
 
 library json_test.codec;
@@ -10,11 +9,6 @@ library json_test.codec;
 import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
 import 'package:serializer/codecs.dart';
 import 'json_test.dart';
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelInt
-// **************************************************************************
 
 class ModelIntCodec extends TypeCodec<ModelInt> {
   @override
@@ -39,11 +33,6 @@ class ModelIntCodec extends TypeCodec<ModelInt> {
   String get typeInfo => 'ModelInt';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelDouble
-// **************************************************************************
-
 class ModelDoubleCodec extends TypeCodec<ModelDouble> {
   @override
   ModelDouble decode(dynamic value, {Serializer serializer}) {
@@ -67,11 +56,6 @@ class ModelDoubleCodec extends TypeCodec<ModelDouble> {
   String get typeInfo => 'ModelDouble';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelA
-// **************************************************************************
-
 class ModelACodec extends TypeCodec<ModelA> {
   @override
   ModelA decode(dynamic value, {Serializer serializer}) {
@@ -94,11 +78,6 @@ class ModelACodec extends TypeCodec<ModelA> {
   @override
   String get typeInfo => 'ModelA';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelB
-// **************************************************************************
 
 class ModelBCodec extends TypeCodec<ModelB> {
   @override
@@ -125,11 +104,6 @@ class ModelBCodec extends TypeCodec<ModelB> {
   @override
   String get typeInfo => 'ModelB';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelC
-// **************************************************************************
 
 class ModelCCodec extends TypeCodec<ModelC> {
   @override
@@ -158,11 +132,6 @@ class ModelCCodec extends TypeCodec<ModelC> {
   String get typeInfo => 'ModelC';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelD
-// **************************************************************************
-
 class ModelDCodec extends TypeCodec<ModelD> {
   @override
   ModelD decode(dynamic value, {Serializer serializer}) {
@@ -188,11 +157,6 @@ class ModelDCodec extends TypeCodec<ModelD> {
   String get typeInfo => 'ModelD';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelE
-// **************************************************************************
-
 class ModelECodec extends TypeCodec<ModelE> {
   @override
   ModelE decode(dynamic value, {Serializer serializer}) {
@@ -216,11 +180,6 @@ class ModelECodec extends TypeCodec<ModelE> {
   @override
   String get typeInfo => 'ModelE';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class NullTest
-// **************************************************************************
 
 class NullTestCodec extends TypeCodec<NullTest> {
   @override
@@ -252,11 +211,6 @@ class NullTestCodec extends TypeCodec<NullTest> {
   String get typeInfo => 'NullTest';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class ModelRenamed
-// **************************************************************************
-
 class ModelRenamedCodec extends TypeCodec<ModelRenamed> {
   @override
   ModelRenamed decode(dynamic value, {Serializer serializer}) {
@@ -283,11 +237,6 @@ class ModelRenamedCodec extends TypeCodec<ModelRenamed> {
   String get typeInfo => 'ModelRenamed';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class WithIgnore
-// **************************************************************************
-
 class WithIgnoreCodec extends TypeCodec<WithIgnore> {
   @override
   WithIgnore decode(dynamic value, {Serializer serializer}) {
@@ -312,11 +261,6 @@ class WithIgnoreCodec extends TypeCodec<WithIgnore> {
   @override
   String get typeInfo => 'WithIgnore';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Date
-// **************************************************************************
 
 class DateCodec extends TypeCodec<Date> {
   @override
@@ -343,11 +287,6 @@ class DateCodec extends TypeCodec<Date> {
   String get typeInfo => 'Date';
 }
 
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class TestMaxSuperClass
-// **************************************************************************
-
 class TestMaxSuperClassCodec extends TypeCodec<TestMaxSuperClass> {
   @override
   TestMaxSuperClass decode(dynamic value, {Serializer serializer}) {
@@ -372,11 +311,6 @@ class TestMaxSuperClassCodec extends TypeCodec<TestMaxSuperClass> {
   @override
   String get typeInfo => 'TestMaxSuperClass';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Complex
-// **************************************************************************
 
 class ComplexCodec extends TypeCodec<Complex> {
   @override
@@ -456,11 +390,6 @@ class ComplexCodec extends TypeCodec<Complex> {
   @override
   String get typeInfo => 'Complex';
 }
-
-// **************************************************************************
-// Generator: SerializerGenerator
-// Target: class Mixin
-// **************************************************************************
 
 class MixinCodec extends TypeCodec<Mixin> {
   @override

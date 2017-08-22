@@ -1,14 +1,49 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:mirrors';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
+import 'package:path/path.dart' as p;
 import 'package:source_gen/source_gen.dart';
-import 'package:source_gen/src/annotation.dart';
-import 'package:source_gen/src/utils.dart';
 
 import '../core.dart';
 import "annotations.dart";
+
+// Copied from pkg/source_gen - lib/src/utils.
+String friendlyNameForElement(Element element) {
+  var friendlyName = element.displayName;
+
+  if (friendlyName == null) {
+    throw new ArgumentError(
+        'Cannot get friendly name for $element - ${element.runtimeType}.');
+  }
+
+  var names = <String>[friendlyName];
+  if (element is ClassElement) {
+    names.insert(0, 'class');
+    if (element.isAbstract) {
+      names.insert(0, 'abstract');
+    }
+  }
+  if (element is VariableElement) {
+    names.insert(0, element.type.toString());
+
+    if (element.isConst) {
+      names.insert(0, 'const');
+    }
+
+    if (element.isFinal) {
+      names.insert(0, 'final');
+    }
+  }
+  if (element is LibraryElement) {
+    names.insert(0, 'library');
+  }
+
+  return names.join(' ');
+}
 
 void closeBrace(StringBuffer buffer) => buffer.writeln("}");
 
@@ -40,7 +75,7 @@ void import(StringBuffer buffer, String import,
 
 void semiColumn(StringBuffer buffer) => buffer.writeln(";");
 
-class SerializerGenerator extends Generator {
+class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
   final String library;
 
   StringBuffer _codecsBuffer;
@@ -50,27 +85,51 @@ class SerializerGenerator extends Generator {
   String get codescMapAsString => (_codecsBuffer..writeln("};")).toString();
 
   @override
-  Future<String> generate(Element element, BuildStep buildStep) async {
+  Future<String> generate(
+      LibraryReader libraryReader, BuildStep buildStep) async {
     StringBuffer buffer = new StringBuffer();
-    if (friendlyNameForElement(element).startsWith("library")) {
-      buffer.writeln("library ${buildStep.inputId.path
-          .split("/")
-          .last
-          .split(".")
-          .first}.codec;");
-      import(buffer, "package:serializer/core.dart",
-          show: ["Serializer", "cleanNullInMap"]);
-      import(buffer, "package:serializer/codecs.dart");
-      import(buffer, buildStep.inputId.path.split("/").last);
-    } else if (element is ClassElement &&
-        _isClassSerializable(element) == true &&
-        element.isAbstract == false &&
-        element.isPrivate == false) {
+
+    buffer.writeln("library ${buildStep.inputId.path
+        .split("/")
+        .last
+        .split(".")
+        .first}.codec;");
+    import(buffer, "package:serializer/core.dart",
+        show: ["Serializer", "cleanNullInMap"]);
+    import(buffer, "package:serializer/codecs.dart");
+    import(buffer, buildStep.inputId.path.split("/").last);
+
+    initCodecsBuffer();
+    buffer.write(await super.generate(libraryReader, buildStep));
+
+    String codecMapName =
+        buildStep.inputId.path.split(".").first.replaceAll("/", "_");
+    buffer.writeln(
+        "Map<String, TypeCodec<dynamic>> ${codecMapName}_codecs = ${codescMapAsString}");
+
+    return buffer.toString();
+  }
+
+  @override
+  FutureOr<String> generateForAnnotatedElement(
+      Element element, ConstantReader annotation, BuildStep buildStep) {
+    if (element is! ClassElement) {
+      var friendlyName = friendlyNameForElement(element);
+      throw new InvalidGenerationSourceError(
+          'Generator cannot target `$friendlyName`.',
+          todo: 'Remove the Serializable annotation from `$friendlyName`.');
+    }
+
+    var classElement = element as ClassElement;
+    var buffer = new StringBuffer();
+    if (_isClassSerializable(element) == true &&
+        classElement.isAbstract == false &&
+        classElement.isPrivate == false) {
       Map<String, Field> fields = _getFields(element);
-      _classCodec(buffer, element.displayName);
-      _generateDecode(buffer, element, fields);
-      _generateEncode(buffer, element, fields);
-      _generateUtils(buffer, element);
+      _classCodec(buffer, classElement.displayName);
+      _generateDecode(buffer, classElement, fields);
+      _generateEncode(buffer, classElement, fields);
+      _generateUtils(buffer, classElement);
 
       closeBrace(buffer);
 
@@ -80,7 +139,7 @@ class SerializerGenerator extends Generator {
     return buffer.toString();
   }
 
-  initCodecsMap() {
+  void initCodecsBuffer() {
     _codecsBuffer = new StringBuffer("<String,TypeCodec<dynamic>>{");
   }
 
@@ -419,12 +478,71 @@ String _getUseType(Element field) {
 
 bool _matchAnnotation(Type annotationType, ElementAnnotation annotation) {
   try {
-    return matchAnnotation(annotationType, annotation);
+    var annotationValueType = annotation.constantValue?.type;
+    if (annotationValueType == null) {
+      throw new ArgumentError.value(annotation, 'annotation',
+          'Could not determine type of annotation. Are you missing a dependency?');
+    }
+
+    return _matchTypes(annotationType, annotationValueType);
   } catch (e, _) {
     //print(e);
     //print(s);
   }
   return false;
+}
+
+bool _matchTypes(Type annotationType, ParameterizedType annotationValueType) {
+  var classMirror = reflectClass(annotationType);
+  var classMirrorSymbol = classMirror.simpleName;
+
+  var annTypeName = annotationValueType.name;
+  var annotationTypeSymbol = new Symbol(annTypeName);
+
+  if (classMirrorSymbol != annotationTypeSymbol) {
+    return false;
+  }
+
+  var annotationLibSource = annotationValueType.element.library.source;
+
+  var libOwnerUri = (classMirror.owner as LibraryMirror).uri;
+  var annotationLibSourceUri = annotationLibSource.uri;
+
+  if (annotationLibSourceUri.scheme == 'file' &&
+      libOwnerUri.scheme == 'package') {
+    // try to turn the libOwnerUri into a file uri
+    libOwnerUri = _fileUriFromPackageUri(libOwnerUri);
+  } else if (annotationLibSourceUri.scheme == 'asset' &&
+      libOwnerUri.scheme == 'package') {
+    // try to turn the libOwnerUri into a asset uri
+    libOwnerUri = _assetUriFromPackageUri(libOwnerUri);
+  }
+
+  return annotationLibSource.uri == libOwnerUri;
+}
+
+Uri _fileUriFromPackageUri(Uri libraryPackageUri) {
+  assert(libraryPackageUri.scheme == 'package');
+
+  var fullLibraryPath = p.join(_packageRoot, libraryPackageUri.path);
+
+  var file = new File(fullLibraryPath);
+
+  assert(file.existsSync());
+
+  var normalPath = file.resolveSymbolicLinksSync();
+
+  return new Uri.file(normalPath);
+}
+
+Uri _assetUriFromPackageUri(Uri libraryPackageUri) {
+  assert(libraryPackageUri.scheme == 'package');
+  var originalSegments = libraryPackageUri.pathSegments;
+  var newSegments = [originalSegments[0]]
+    ..add('lib')
+    ..addAll(originalSegments.getRange(1, originalSegments.length));
+
+  return new Uri(scheme: 'asset', pathSegments: newSegments);
 }
 
 bool _isFieldSerializable(Element field) =>
@@ -439,3 +557,22 @@ bool _isClassSerializable(Element elem) =>
         true;
 
 String _getElementName(Element element) => element.name.split(("=")).first;
+
+String get _packageRoot {
+  if (_packageRootCache == null) {
+    var dir = Platform.packageRoot;
+
+    if (dir.isEmpty) {
+      dir = p.join(p.current, 'packages');
+    }
+
+    // Handle the case where we're running via pub and dir is a file: URI
+    dir = p.prettyUri(dir);
+
+    assert(FileSystemEntity.isDirectorySync(dir));
+    _packageRootCache = dir;
+  }
+  return _packageRootCache;
+}
+
+String _packageRootCache;
