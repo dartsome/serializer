@@ -15,7 +15,7 @@ List<runner.BuildAction> _buildActions(String library, final List<String> inputs
     ];
 
 Future<runner.BuildResult> build(String library, final List<String> files) =>
-    runner.build(_buildActions(library, files));
+    runner.build(_buildActions(library, files), deleteFilesByDefault: true);
 
 Stream<runner.BuildResult> watch(String library, final List<String> files) =>
-    runner.watch(_buildActions(library, files));
+    runner.watch(_buildActions(library, files), deleteFilesByDefault: true);
