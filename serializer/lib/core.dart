@@ -1,4 +1,8 @@
+// Copyright (c) 2016-2017, the Serializer project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 library serializer.core;
 
-export 'core/api.dart';
-export 'core/annotations.dart';
+export 'src/core/annotations.dart';
+export 'src/core/api.dart';
