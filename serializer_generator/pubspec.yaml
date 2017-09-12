@@ -1,6 +1,6 @@
 name: serializer_generator
 description: Serialization to JSON using source_gen
-version: 0.7.0
+version: 0.7.1
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>
@@ -20,6 +20,7 @@ dependencies:
 
 dev_dependencies:
   browser: ^0.10.0+2
+  bson: ^0.3.0
   test: ^0.12.24+2
 
 #dependency_overrides:

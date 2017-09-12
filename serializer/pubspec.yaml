@@ -1,6 +1,6 @@
 name: serializer
 description: Serialization to JSON using source_gen
-version: 0.7.0
+version: 0.7.1
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>

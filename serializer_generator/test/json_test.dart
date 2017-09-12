@@ -160,6 +160,14 @@ main() {
   });
 
   group("Serialize", () {
+    test("simple map", () {
+      Map a = {"foo": "toto", "bar": {"a":1, "b":2, "c": ["A", "B", "C"]}};
+
+      expect("{foo: toto, bar: {a: 1, b: 2, c: [A, B, C]}}", serializer.toMap(a).toString());
+      expect('{"foo":"toto","bar":{"a":1,"b":2,"c":["A","B","C"]}}', serializer.encode(a));
+      expect({"foo": "toto", "bar": {"a":1, "b":2, "c": ["A", "B", "C"]}}, serializer.toMap(a));
+    });
+
     test("simple test", () {
       ModelA a = new ModelA("toto");
 
@@ -354,6 +362,13 @@ main() {
   });
 
   group("Deserialize", () {
+    test("simple map", () {
+      Map a = serializer.decode('{"foo":"toto","bar":{"a":1,"b":2,"c":["A","B","C"]}}', type: Map);
+
+      expect(a is Map, isTrue);
+      expect({"foo":"toto","bar":{"a":1,"b":2,"c":["A","B","C"]}}, a);
+    });
+
     test("simple test - fromJson", () {
       ModelA a = serializer.decode('{"foo":"toto"}', type: ModelA);
 

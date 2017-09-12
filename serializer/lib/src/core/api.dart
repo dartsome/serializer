@@ -291,7 +291,7 @@ class Serializer extends _Serializer {
     if (type == Map) {
       Type embedType = mapOf != null && mapOf.length >= 2 ? mapOf[1] : null;
       Map data = new Map();
-      map.forEach((key, value) => data[key.toString()] =
+      map.forEach((key, value) => data[key.toString()] = embedType == null && useTypeInfo == null ? value :
           _decodeValue(value, embedType, useTypeInfo: useTypeInfo));
       return data;
     }
