@@ -476,7 +476,7 @@ String _getUseType(Element field) {
 
 bool _matchAnnotation(Type annotationType, ElementAnnotation annotation) {
   try {
-    var annotationValueType = annotation.constantValue?.type;
+    var annotationValueType = annotation.computeConstantValue()?.type;
     if (annotationValueType == null) {
       throw new ArgumentError.value(annotation, 'annotation',
           'Could not determine type of annotation. Are you missing a dependency?');
