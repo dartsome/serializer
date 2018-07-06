@@ -4,7 +4,7 @@
 
 **DISCLAIMER**
 
-**No maintenance on this package anymore. Prefer to use [jaguar_serializer](https://github.com/Jaguar-dart/jaguar_serializer)**
+**No maintenance on this package anymore. Prefer to use [build_value](https://pub.dartlang.org/packages/built_value)**
 
 **Documentation aren't aligned with last version.**
 
