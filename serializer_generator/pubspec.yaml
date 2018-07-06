@@ -21,6 +21,6 @@ dev_dependencies:
   bson: ^0.3.1
   test: ^1.2.0
 
-dependency_overrides:
-  serializer:
-    path: ../serializer
+#dependency_overrides:
+#  serializer:
+#    path: ../serializer
