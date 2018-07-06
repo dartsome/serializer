@@ -1,6 +1,6 @@
 name: serializer_generator
 description: Serialization to JSON using source_gen
-version: 0.7.1+1
+version: 0.8.0
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>
@@ -8,28 +8,19 @@ authors:
 homepage: https://github.com/dartsome/serializer
 
 environment:
-  sdk: '>=1.24.0 <2.0.0'
+  sdk: '>=2.0.0-dev.1.2 <2.0.0'
 
 dependencies:
-  analyzer: ^0.30.0+2
-  build: ^0.10.0+1
-  build_runner: ^0.4.0+3
-  path: ^1.4.2
-  serializer: ^0.7.0
-  source_gen: ^0.7.1
+  analyzer: ^0.32.3
+  build: ^0.12.7
+  build_runner: ^0.9.1
+  serializer: ^0.8.0
+  source_gen: ^0.8.3
 
 dev_dependencies:
-  browser: ^0.10.0+2
-  bson: ^0.3.0
-  test: ^0.12.24+2
+  bson: ^0.3.1
+  test: ^1.2.0
 
-#dependency_overrides:
-#  serializer:
-#    path: ../serializer
-
-transformers:
-  - test/pub_serve:
-      $include:
-        - test/*_test{.*,}.dart
-  - $dart2js:
-      minify: false
+dependency_overrides:
+  serializer:
+    path: ../serializer

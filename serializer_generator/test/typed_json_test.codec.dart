@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: SerializerGenerator
+// SerializerGenerator
 // **************************************************************************
 
 library typed_json_test.codec;
@@ -14,7 +14,7 @@ class TypedModelIntCodec extends TypeCodec<TypedModelInt> {
   @override
   TypedModelInt decode(dynamic value, {Serializer serializer}) {
     TypedModelInt obj = new TypedModelInt();
-    obj.bar = (value['bar'] ?? obj.bar)?.toInt();
+    obj.bar = value['bar']?.toInt() ?? obj.bar;
     return obj;
   }
 
@@ -37,7 +37,7 @@ class TypedModelACodec extends TypeCodec<TypedModelA> {
   @override
   TypedModelA decode(dynamic value, {Serializer serializer}) {
     TypedModelA obj = new TypedModelA();
-    obj.foo = (value['foo'] ?? obj.foo) as String;
+    obj.foo = value['foo'] as String ?? obj.foo;
     return obj;
   }
 
@@ -60,8 +60,8 @@ class TypedModelBCodec extends TypeCodec<TypedModelB> {
   @override
   TypedModelB decode(dynamic value, {Serializer serializer}) {
     TypedModelB obj = new TypedModelB();
-    obj.foo = (serializer?.decode(value['foo'], type: Test) ?? obj.foo) as Test;
-    obj.toto = (value['toto'] ?? obj.toto) as String;
+    obj.foo = serializer?.decode(value['foo'], type: Test) ?? obj.foo;
+    obj.toto = value['toto'] as String ?? obj.toto;
     return obj;
   }
 
@@ -86,9 +86,8 @@ class TypedModelCCodec extends TypeCodec<TypedModelC> {
   @override
   TypedModelC decode(dynamic value, {Serializer serializer}) {
     TypedModelC obj = new TypedModelC();
-    obj.foo = (serializer?.decode(value['foo'], type: TypedModelA) ?? obj.foo)
-        as TypedModelA;
-    obj.plop = (value['plop'] ?? obj.plop) as String;
+    obj.foo = serializer?.decode(value['foo'], type: TypedModelA) ?? obj.foo;
+    obj.plop = value['plop'] as String ?? obj.plop;
     return obj;
   }
 
@@ -113,8 +112,9 @@ class TypedModelDCodec extends TypeCodec<TypedModelD> {
   @override
   TypedModelD decode(dynamic value, {Serializer serializer}) {
     TypedModelD obj = new TypedModelD();
-    obj.tests = (serializer?.decode(value['tests'], type: TypedModelA) ??
-        obj.tests) as List<TypedModelA>;
+    List _tests = serializer?.decode(value['tests'], type: TypedModelA);
+    obj.tests = (_tests != null ? new List<TypedModelA>.from(_tests) : null) ??
+        obj.tests;
     return obj;
   }
 
@@ -138,8 +138,9 @@ class TypedModelECodec extends TypeCodec<TypedModelE> {
   @override
   TypedModelE decode(dynamic value, {Serializer serializer}) {
     TypedModelE obj = new TypedModelE();
-    obj.tests = (serializer?.decode(value['tests'], type: String) ?? obj.tests)
-        as List<String>;
+    List _tests = serializer?.decode(value['tests'], type: String);
+    obj.tests =
+        (_tests != null ? new List<String>.from(_tests) : null) ?? obj.tests;
     return obj;
   }
 
@@ -162,9 +163,10 @@ class TypedModelRenamedCodec extends TypeCodec<TypedModelRenamed> {
   @override
   TypedModelRenamed decode(dynamic value, {Serializer serializer}) {
     TypedModelRenamed obj = new TypedModelRenamed();
-    obj.tests = (serializer?.decode(value['tests'], type: String) ?? obj.tests)
-        as List<String>;
-    obj.original = (value['new'] ?? obj.original) as String;
+    List _tests = serializer?.decode(value['tests'], type: String);
+    obj.tests =
+        (_tests != null ? new List<String>.from(_tests) : null) ?? obj.tests;
+    obj.original = value['new'] as String ?? obj.original;
     return obj;
   }
 
@@ -188,8 +190,8 @@ class TypedWithIgnoreCodec extends TypeCodec<TypedWithIgnore> {
   @override
   TypedWithIgnore decode(dynamic value, {Serializer serializer}) {
     TypedWithIgnore obj = new TypedWithIgnore();
-    obj.a = (value['a'] ?? obj.a) as String;
-    obj.b = (value['b'] ?? obj.b) as String;
+    obj.a = value['a'] as String ?? obj.a;
+    obj.b = value['b'] as String ?? obj.b;
     return obj;
   }
 
@@ -213,8 +215,7 @@ class TypedDateCodec extends TypeCodec<TypedDate> {
   @override
   TypedDate decode(dynamic value, {Serializer serializer}) {
     TypedDate obj = new TypedDate();
-    obj.date = (serializer?.decode(value['date'], type: DateTime) ?? obj.date)
-        as DateTime;
+    obj.date = serializer?.decode(value['date'], type: DateTime) ?? obj.date;
     return obj;
   }
 
@@ -238,8 +239,8 @@ class TypedTestMaxSuperClassCodec extends TypeCodec<TypedTestMaxSuperClass> {
   @override
   TypedTestMaxSuperClass decode(dynamic value, {Serializer serializer}) {
     TypedTestMaxSuperClass obj = new TypedTestMaxSuperClass();
-    obj.foo = (value['foo'] ?? obj.foo) as String;
-    obj.serialize = (value['serialize'] ?? obj.serialize) as String;
+    obj.foo = value['foo'] as String ?? obj.foo;
+    obj.serialize = value['serialize'] as String ?? obj.serialize;
     return obj;
   }
 
@@ -263,45 +264,69 @@ class TypedComplexCodec extends TypeCodec<TypedComplex> {
   @override
   TypedComplex decode(dynamic value, {Serializer serializer}) {
     TypedComplex obj = new TypedComplex();
-    obj.nums =
-        (serializer?.decode(value['nums'], type: num) ?? obj.nums) as List<num>;
-    obj.strings = (serializer?.decode(value['strings'], type: String) ??
-        obj.strings) as List<String>;
-    obj.bools = (serializer?.decode(value['bools'], type: bool) ?? obj.bools)
-        as List<bool>;
-    obj.ints =
-        (serializer?.decode(value['ints'], type: int) ?? obj.ints) as List<int>;
-    obj.doubles = (serializer?.decode(value['doubles'], type: double) ??
-        obj.doubles) as List<double>;
-    obj.dates = (serializer?.decode(value['dates'], type: DateTime) ??
-        obj.dates) as List<DateTime>;
+    List _nums = serializer?.decode(value['nums'], type: num);
+    obj.nums = (_nums != null ? new List<num>.from(_nums) : null) ?? obj.nums;
+    List _strings = serializer?.decode(value['strings'], type: String);
+    obj.strings = (_strings != null ? new List<String>.from(_strings) : null) ??
+        obj.strings;
+    List _bools = serializer?.decode(value['bools'], type: bool);
+    obj.bools =
+        (_bools != null ? new List<bool>.from(_bools) : null) ?? obj.bools;
+    List _ints = serializer?.decode(value['ints'], type: int);
+    obj.ints = (_ints != null
+            ? new List<int>.from(_ints.map((item) => item?.toInt()))
+            : null) ??
+        obj.ints;
+    List _doubles = serializer?.decode(value['doubles'], type: double);
+    obj.doubles = (_doubles != null
+            ? new List<double>.from(_doubles.map((item) => item?.toDouble()))
+            : null) ??
+        obj.doubles;
+    List _dates = serializer?.decode(value['dates'], type: DateTime);
+    obj.dates =
+        (_dates != null ? new List<DateTime>.from(_dates) : null) ?? obj.dates;
+    List _ignores = serializer?.decode(value['ignores'], type: TypedWithIgnore);
     obj.ignores =
-        (serializer?.decode(value['ignores'], type: TypedWithIgnore) ??
-            obj.ignores) as List<TypedWithIgnore>;
-    obj.numSet =
-        (serializer?.decode(value['numSet'], mapOf: const [String, num]) ??
-            obj.numSet) as Map<String, num>;
-    obj.stringSet = (serializer
-            ?.decode(value['stringSet'], mapOf: const [String, String]) ??
-        obj.stringSet) as Map<String, String>;
+        (_ignores != null ? new List<TypedWithIgnore>.from(_ignores) : null) ??
+            obj.ignores;
+    Map _numSet =
+        serializer?.decode(value['numSet'], mapOf: const [String, num]);
+    obj.numSet = (_numSet != null ? new Map.from(_numSet) : null) ?? obj.numSet;
+    Map _stringSet =
+        serializer?.decode(value['stringSet'], mapOf: const [String, String]);
+    obj.stringSet =
+        (_stringSet != null ? new Map.from(_stringSet) : null) ?? obj.stringSet;
+    Map _boolSet =
+        serializer?.decode(value['boolSet'], mapOf: const [String, bool]);
     obj.boolSet =
-        (serializer?.decode(value['boolSet'], mapOf: const [String, bool]) ??
-            obj.boolSet) as Map<String, bool>;
-    obj.intSet =
-        (serializer?.decode(value['intSet'], mapOf: const [String, int]) ??
-            obj.intSet) as Map<String, int>;
-    obj.doubleSet = (serializer
-            ?.decode(value['doubleSet'], mapOf: const [String, double]) ??
-        obj.doubleSet) as Map<String, double>;
-    obj.dateSet = (serializer
-            ?.decode(value['dateSet'], mapOf: const [String, DateTime]) ??
-        obj.dateSet) as Map<String, DateTime>;
-    obj.ignoreSet = (serializer?.decode(value['ignoreSet'],
-            mapOf: const [String, TypedWithIgnore]) ??
-        obj.ignoreSet) as Map<String, TypedWithIgnore>;
-    obj.listInnerMap = (serializer
-            ?.decode(value['listInnerMap'], mapOf: const [String, List]) ??
-        obj.listInnerMap) as Map<String, List<dynamic>>;
+        (_boolSet != null ? new Map.from(_boolSet) : null) ?? obj.boolSet;
+    Map _intSet =
+        serializer?.decode(value['intSet'], mapOf: const [String, int]);
+    obj.intSet = (_intSet != null
+            ? new Map.fromIterable(_intSet.keys,
+                key: (key) => key, value: (key) => _intSet[key]?.toInt())
+            : null) ??
+        obj.intSet;
+    Map _doubleSet =
+        serializer?.decode(value['doubleSet'], mapOf: const [String, double]);
+    obj.doubleSet = (_doubleSet != null
+            ? new Map.fromIterable(_doubleSet.keys,
+                key: (key) => key, value: (key) => _doubleSet[key]?.toDouble())
+            : null) ??
+        obj.doubleSet;
+    Map _dateSet =
+        serializer?.decode(value['dateSet'], mapOf: const [String, DateTime]);
+    obj.dateSet =
+        (_dateSet != null ? new Map.from(_dateSet) : null) ?? obj.dateSet;
+    Map _ignoreSet = serializer
+        ?.decode(value['ignoreSet'], mapOf: const [String, TypedWithIgnore]);
+    obj.ignoreSet =
+        (_ignoreSet != null ? new Map.from(_ignoreSet) : null) ?? obj.ignoreSet;
+    Map _listInnerMap =
+        serializer?.decode(value['listInnerMap'], mapOf: const [String, List]);
+    obj.listInnerMap =
+        (_listInnerMap != null ? new Map.from(_listInnerMap) : null) ??
+            obj.listInnerMap;
     return obj;
   }
 
@@ -343,10 +368,10 @@ class MixinCodec extends TypeCodec<Mixin> {
   @override
   Mixin decode(dynamic value, {Serializer serializer}) {
     Mixin obj = new Mixin();
-    obj.m1 = (value['m1'] ?? obj.m1) as String;
-    obj.m2 = (value['m2'] ?? obj.m2) as String;
-    obj.a = (value['a'] ?? obj.a) as String;
-    obj.b = (value['b'] ?? obj.b) as String;
+    obj.m1 = value['m1'] as String ?? obj.m1;
+    obj.m2 = value['m2'] as String ?? obj.m2;
+    obj.a = value['a'] as String ?? obj.a;
+    obj.b = value['b'] as String ?? obj.b;
     return obj;
   }
 

@@ -1,20 +1,21 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: SerializerGenerator
+// SerializerGenerator
 // **************************************************************************
 
 library models_test.codec;
 
 import 'package:serializer/core.dart' show Serializer, cleanNullInMap;
 import 'package:serializer/codecs.dart';
-import 'models_test.dart';
+import 'models.dart';
 
 class M1Codec extends TypeCodec<M1> {
   @override
   M1 decode(dynamic value, {Serializer serializer}) {
     M1 obj = new M1();
-    obj.m1 = (value['m1'] ?? obj.m1) as String;
+// decode with primary type
+    obj.m1 = value['m1'] ?? obj.m1;
     return obj;
   }
 
@@ -37,7 +38,8 @@ class M2Codec extends TypeCodec<M2> {
   @override
   M2 decode(dynamic value, {Serializer serializer}) {
     M2 obj = new M2();
-    obj.m2 = (value['m2'] ?? obj.m2) as String;
+// decode with primary type
+    obj.m2 = value['m2'] ?? obj.m2;
     return obj;
   }
 
@@ -60,12 +62,16 @@ class EmployeeCodec extends TypeCodec<Employee> {
   @override
   Employee decode(dynamic value, {Serializer serializer}) {
     Employee obj = new Employee();
-    obj.id = (value['id'] ?? obj.id)?.toInt();
-    obj.name = (value['name'] ?? obj.name) as String;
-    obj.address = (serializer?.decode(value['address'], type: Address) ??
-        obj.address) as Address;
-    obj.manager = (serializer?.decode(value['manager'], type: Employee) ??
-        obj.manager) as Employee;
+// decode with primary type
+    obj.id = value['id'] ?? obj.id;
+// decode with primary type
+    obj.name = value['name'] ?? obj.name;
+// decode as generic (Address)
+    obj.address =
+        serializer?.decode(value['address'], type: Address) ?? obj.address;
+// decode as generic (Employee)
+    obj.manager =
+        serializer?.decode(value['manager'], type: Employee) ?? obj.manager;
     return obj;
   }
 
@@ -93,10 +99,12 @@ class AddressCodec extends TypeCodec<Address> {
   @override
   Address decode(dynamic value, {Serializer serializer}) {
     Address obj = new Address();
-    obj.id = (value['id'] ?? obj.id)?.toInt();
-    obj.location = (value['location'] ?? obj.location) as String;
-    obj.owner = (serializer?.decode(value['owner'], type: Employee) ??
-        obj.owner) as Employee;
+// decode with primary type
+    obj.id = value['id'] ?? obj.id;
+// decode with primary type
+    obj.location = value['location'] ?? obj.location;
+// decode as generic (Employee)
+    obj.owner = serializer?.decode(value['owner'], type: Employee) ?? obj.owner;
     return obj;
   }
 
@@ -122,7 +130,8 @@ class WithStaticConstCodec extends TypeCodec<WithStaticConst> {
   @override
   WithStaticConst decode(dynamic value, {Serializer serializer}) {
     WithStaticConst obj = new WithStaticConst();
-    obj.other = (value['other'] ?? obj.other) as String;
+// decode with primary type
+    obj.other = value['other'] ?? obj.other;
     return obj;
   }
 
@@ -145,7 +154,8 @@ class WithStaticCodec extends TypeCodec<WithStatic> {
   @override
   WithStatic decode(dynamic value, {Serializer serializer}) {
     WithStatic obj = new WithStatic();
-    obj.other = (value['other'] ?? obj.other) as String;
+// decode with primary type
+    obj.other = value['other'] ?? obj.other;
     return obj;
   }
 
@@ -168,9 +178,11 @@ class PetCodec extends TypeCodec<Pet> {
   @override
   Pet decode(dynamic value, {Serializer serializer}) {
     Pet obj = new Pet();
-    obj.name = (value['name'] ?? obj.name) as String;
-    obj.animal = (serializer?.decode(value['animal'], useTypeInfo: true) ??
-        obj.animal) as dynamic;
+// decode with primary type
+    obj.name = value['name'] ?? obj.name;
+// decode with useType
+    obj.animal =
+        serializer?.decode(value['animal'], useTypeInfo: true) ?? obj.animal;
     return obj;
   }
 
@@ -195,8 +207,10 @@ class DogCodec extends TypeCodec<Dog> {
   @override
   Dog decode(dynamic value, {Serializer serializer}) {
     Dog obj = new Dog();
-    obj.name = (value['name'] ?? obj.name) as String;
-    obj.bark = (value['bark'] ?? obj.bark) as bool;
+// decode with primary type
+    obj.name = value['name'] ?? obj.name;
+// decode with primary type
+    obj.bark = value['bark'] ?? obj.bark;
     return obj;
   }
 
@@ -220,8 +234,10 @@ class CatCodec extends TypeCodec<Cat> {
   @override
   Cat decode(dynamic value, {Serializer serializer}) {
     Cat obj = new Cat();
-    obj.name = (value['name'] ?? obj.name) as String;
-    obj.mew = (value['mew'] ?? obj.mew) as bool;
+// decode with primary type
+    obj.name = value['name'] ?? obj.name;
+// decode with primary type
+    obj.mew = value['mew'] ?? obj.mew;
     return obj;
   }
 
@@ -245,9 +261,11 @@ class PetWithTypeInfoCodec extends TypeCodec<PetWithTypeInfo> {
   @override
   PetWithTypeInfo decode(dynamic value, {Serializer serializer}) {
     PetWithTypeInfo obj = new PetWithTypeInfo();
-    obj.name = (value['name'] ?? obj.name) as String;
-    obj.animal = (serializer?.decode(value['animal'], useTypeInfo: true) ??
-        obj.animal) as Animal;
+// decode with primary type
+    obj.name = value['name'] ?? obj.name;
+// decode with useType
+    obj.animal =
+        serializer?.decode(value['animal'], useTypeInfo: true) ?? obj.animal;
     return obj;
   }
 

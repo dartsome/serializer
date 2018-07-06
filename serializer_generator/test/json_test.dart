@@ -6,11 +6,11 @@
 import 'package:test/test.dart';
 import 'package:serializer/codecs.dart';
 import 'package:serializer/serializer.dart';
-import 'models_test.dart';
+import 'models.dart';
 import 'json_test.codec.dart';
-import 'models_test.codec.dart';
+import 'models.codec.dart';
 
-export 'models_test.codec.dart';
+export 'models.codec.dart';
 
 abstract class DontWantToBeSerialize {
   String foo = "bar";
@@ -392,14 +392,14 @@ main() {
 
     test("Map fromMap Map", () {
       Map a = {"titi": serializer.toMap(new ModelA())};
-      Map b = serializer.fromMap(a as Map<String, dynamic>, type: Map, mapOf: [String, ModelA]);
+      Map b = serializer.fromMap(a, type: Map, mapOf: [String, ModelA]);
 
       expect(ModelA, b["titi"].runtimeType);
       expect("bar", b["titi"].foo);
     });
 
     test("list - fromJson", () {
-      List<ModelA> list = serializer.decode('[{"foo":"toto"},{"foo":"bar"}]', type: ModelA) as List<ModelA>;
+      List<ModelA> list = new List<ModelA>.from(serializer.decode('[{"foo":"toto"},{"foo":"bar"}]', type: ModelA));
 
       expect(2, list.length);
       expect("toto", list[0]?.foo);
@@ -504,13 +504,13 @@ main() {
 
     test("Already Decode", () {
       List a = [new ModelA()];
-      List<ModelA> b = serializer.fromList(a, type: ModelA) as List<ModelA>;
+      List<ModelA> b = new List<ModelA>.from(serializer.fromList(a, type: ModelA));
 
       expect(a, equals(b));
 
       Map c = {"test": new ModelA()};
       Map<String, ModelA> d =
-          serializer.fromMap(c as Map<String, dynamic>, type: Map, mapOf: [String, ModelA]) as Map<String, ModelA>;
+          new Map.from(serializer.fromMap(c, type: Map, mapOf: [String, ModelA]));
 
       expect(c, equals(d));
     });

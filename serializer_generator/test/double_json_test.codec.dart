@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: SerializerGenerator
+// SerializerGenerator
 // **************************************************************************
 
 library double_json_test.codec;
@@ -14,7 +14,7 @@ class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
   @override
   DoubleSimple decode(dynamic value, {Serializer serializer}) {
     DoubleSimple obj = new DoubleSimple();
-    obj.test = (value['test'] ?? obj.test)?.toDouble();
+    obj.test = value['test']?.toDouble() ?? obj.test;
     return obj;
   }
 
@@ -37,11 +37,17 @@ class DoubleComplexCodec extends TypeCodec<DoubleComplex> {
   @override
   DoubleComplex decode(dynamic value, {Serializer serializer}) {
     DoubleComplex obj = new DoubleComplex();
-    obj.map =
-        (serializer?.decode(value['map'], mapOf: const [String, double]) ??
-            obj.map) as Map<String, double>;
-    obj.list = (serializer?.decode(value['list'], type: double) ?? obj.list)
-        as List<double>;
+    Map _map = serializer?.decode(value['map'], mapOf: const [String, double]);
+    obj.map = (_map != null
+            ? new Map.fromIterable(_map.keys,
+                key: (key) => key, value: (key) => _map[key]?.toDouble())
+            : null) ??
+        obj.map;
+    List _list = serializer?.decode(value['list'], type: double);
+    obj.list = (_list != null
+            ? new List<double>.from(_list.map((item) => item?.toDouble()))
+            : null) ??
+        obj.list;
     return obj;
   }
 

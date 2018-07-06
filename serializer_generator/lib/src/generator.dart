@@ -1,21 +1,20 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
-import 'package:path/path.dart' as p;
 import "package:serializer/serializer.dart";
 import 'package:source_gen/source_gen.dart';
+
+bool _logDebug = false;
 
 // Copied from pkg/source_gen - lib/src/utils.
 String friendlyNameForElement(Element element) {
   var friendlyName = element.displayName;
 
   if (friendlyName == null) {
-    throw new ArgumentError(
-        'Cannot get friendly name for $element - ${element.runtimeType}.');
+    throw new ArgumentError('Cannot get friendly name for $element - ${element.runtimeType}.');
   }
 
   var names = <String>[friendlyName];
@@ -45,84 +44,66 @@ String friendlyNameForElement(Element element) {
 
 void closeBrace(StringBuffer buffer) => buffer.writeln("}");
 
-void generateClass(StringBuffer buffer, String classType, String name,
-    [String extendsClass]) {
-  buffer.writeln(
-      "$classType $name ${ extendsClass != null ? 'extends $extendsClass' : '' } {");
+void generateClass(StringBuffer buffer, String classType, String name, [String extendsClass]) {
+  buffer.writeln("$classType $name ${extendsClass != null ? 'extends $extendsClass' : ''} {");
 }
 
-void generateFunction(StringBuffer buffer, String returnType, String name,
-    List<String> parameters, List<String> namedParameters) {
-  buffer.writeln(
-      "$returnType $name(${parameters.join((", "))}${ namedParameters?.isNotEmpty == true
-          ? ",{${namedParameters.join(", ")}}"
-          : ''}) {");
+void generateFunction(
+    StringBuffer buffer, String returnType, String name, List<String> parameters, List<String> namedParameters) {
+  buffer.writeln("$returnType $name(${parameters.join((", "))}${namedParameters?.isNotEmpty == true
+      ? ",{${namedParameters.join(", ")}}"
+      : ''}) {");
 }
 
-void generateGetter(
-    StringBuffer buffer, String returnType, String name, String value) {
+void generateGetter(StringBuffer buffer, String returnType, String name, String value) {
   buffer.writeln("$returnType get $name => $value;");
 }
 
-void import(StringBuffer buffer, String import,
-        {List<String> show, String as}) =>
-    buffer.writeln(
-        "import '$import' ${show?.isNotEmpty == true ? "show ${show.join(",")}" : as?.isNotEmpty == true
-            ? "as $as"
-            : ""};");
+void import(StringBuffer buffer, String import, {List<String> show, String as}) =>
+    buffer.writeln("import '$import' ${show?.isNotEmpty == true
+        ? "show ${show.join(",")}"
+        : as?.isNotEmpty == true ? "as $as" : ""};");
 
 void semiColumn(StringBuffer buffer) => buffer.writeln(";");
 
 class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
   final String library;
 
-  StringBuffer _codecsBuffer;
+  Map<AssetId, StringBuffer> _codecsBuffer = <AssetId, StringBuffer>{};
 
   SerializerGenerator(this.library);
 
-  String get codescMapAsString => (_codecsBuffer..writeln("};")).toString();
+  String codescMapAsString(AssetId inputId) => (_codecsBuffer[inputId]..writeln("};")).toString();
 
   @override
-  Future<String> generate(
-      LibraryReader libraryReader, BuildStep buildStep) async {
+  Future<String> generate(LibraryReader libraryReader, BuildStep buildStep) async {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.writeln("library ${buildStep.inputId.path
-        .split("/")
-        .last
-        .split(".")
-        .first}.codec;");
-    import(buffer, "package:serializer/core.dart",
-        show: ["Serializer", "cleanNullInMap"]);
+    buffer.writeln("library ${buildStep.inputId.path.split("/").last.split(".").first}.codec;");
+    import(buffer, "package:serializer/core.dart", show: ["Serializer", "cleanNullInMap"]);
     import(buffer, "package:serializer/codecs.dart");
     import(buffer, buildStep.inputId.path.split("/").last);
 
-    initCodecsBuffer();
+    initCodecsBuffer(buildStep.inputId);
     buffer.write(await super.generate(libraryReader, buildStep));
 
-    String codecMapName =
-        buildStep.inputId.path.split(".").first.replaceAll("/", "_");
-    buffer.writeln(
-        "Map<String, TypeCodec<dynamic>> ${codecMapName}_codecs = ${codescMapAsString}");
+    String codecMapName = buildStep.inputId.path.split(".").first.replaceAll("/", "_");
+    buffer.writeln("Map<String, TypeCodec<dynamic>> ${codecMapName}_codecs = ${codescMapAsString(buildStep.inputId)}");
 
     return buffer.toString();
   }
 
   @override
-  FutureOr<String> generateForAnnotatedElement(
-      Element element, ConstantReader annotation, BuildStep buildStep) {
+  FutureOr<String> generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
     if (element is! ClassElement) {
       var friendlyName = friendlyNameForElement(element);
-      throw new InvalidGenerationSourceError(
-          'Generator cannot target `$friendlyName`.',
+      throw new InvalidGenerationSourceError('Generator cannot target `$friendlyName`.',
           todo: 'Remove the Serializable annotation from `$friendlyName`.');
     }
 
     var classElement = element as ClassElement;
     var buffer = new StringBuffer();
-    if (_isClassSerializable(element) == true &&
-        classElement.isAbstract == false &&
-        classElement.isPrivate == false) {
+    if (_isClassSerializable(element) == true && classElement.isAbstract == false && classElement.isPrivate == false) {
       Map<String, Field> fields = _getFields(element);
       _classCodec(buffer, classElement.displayName);
       _generateDecode(buffer, classElement, fields);
@@ -131,26 +112,24 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
 
       closeBrace(buffer);
 
-      _codecsBuffer.writeln(
-          "'${element.displayName}': new ${element.displayName}Codec(),");
+      _codecsBuffer[buildStep.inputId].writeln("'${element.displayName}': new ${element.displayName}Codec(),");
     }
     return buffer.toString();
   }
 
-  void initCodecsBuffer() {
-    _codecsBuffer = new StringBuffer("<String,TypeCodec<dynamic>>{");
+  void initCodecsBuffer(AssetId inputId) {
+    _codecsBuffer[inputId] = new StringBuffer("<String,TypeCodec<dynamic>>{");
   }
 
   String _withTypeInfo(Field field) {
-    if (field.useType == null &&
-        (field.serializeWithTypeInfo || field.type.toString() == "dynamic")) {
+    if (field.useType == null && (field.serializeWithTypeInfo || field.type.toString() == "dynamic")) {
       return "true";
     }
     return "false";
   }
 
-  void _classCodec(StringBuffer buffer, String className) => generateClass(
-      buffer, "class", "${className}Codec", "TypeCodec<$className>");
+  void _classCodec(StringBuffer buffer, String className) =>
+      generateClass(buffer, "class", "${className}Codec", "TypeCodec<$className>");
 
   String _findGenericOfList(DartType type) {
     if (type is ParameterizedType) {
@@ -178,22 +157,25 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
 
       return field.type.element.displayName == "dynamic" ||
           field.serializeWithTypeInfo == true ||
-          (_isClassSerializable(elem) == true &&
-              (elem as ClassElement).isAbstract == true);
+          (_isClassSerializable(elem) == true && (elem as ClassElement).isAbstract == true);
     }
     return false;
   }
 
   List<String> _numTypes = ["int", "double"];
 
+  String _castNum(String type) {
+    if (type == "int") {
+      return "?.toInt()";
+    } else {
+      return "?.toDouble()";
+    }
+  }
+
   String _castType(Field field, [bool as = true]) {
     String type = field.useType ?? field.type.toString();
     if (_numTypes.contains(type)) {
-      if (type == "int") {
-        return "?.toInt()";
-      } else {
-        return "?.toDouble()";
-      }
+      return _castNum(type);
     }
     if (as == true) {
       return " as $type";
@@ -201,14 +183,17 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
     return "";
   }
 
-  void _generateDecode(
-      StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
-    buffer.writeln("@override");
-    generateFunction(buffer, "${element.displayName}", "decode",
-        ["dynamic value"], ["Serializer serializer"]);
+  void _debug(StringBuffer buffer, String log) {
+    if (_logDebug == true) {
+      buffer.writeln(log);
+    }
+  }
 
-    buffer
-        .writeln("${element.displayName} obj = new ${element.displayName}();");
+  void _generateDecode(StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
+    buffer.writeln("@override");
+    generateFunction(buffer, "${element.displayName}", "decode", ["dynamic value"], ["Serializer serializer"]);
+
+    buffer.writeln("${element.displayName} obj = new ${element.displayName}();");
 
     fields.forEach((String name, Field field) {
       if (field.isSetter && field.ignore == false) {
@@ -216,21 +201,42 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
         if (field.useType != null) {
           genericType = field.useType;
         }
-        buffer.write("obj.$name = (");
-        if (isPrimaryTypeString(genericType) &&
-            genericType == "${field.type}") {
-          buffer.write("value['${field.key}']");
+        if (isPrimaryTypeString(genericType) && genericType == "${field.type}") {
+          _debug(buffer, "// decode with primary type");
+          buffer.write("obj.$name = value['${field.key}']${_castType(field)}");
         } else if (_decodeWithTypeInfo(field)) {
-          buffer.write(
-              "serializer?.decode(value['${field.key}'], useTypeInfo: true) ");
+          _debug(buffer, "// decode with useType");
+          buffer.write("obj.$name = serializer?.decode(value['${field.key}'], useTypeInfo: true) ");
         } else if (field.type.toString().split("<").first == "Map") {
-          buffer.write(
-              "serializer?.decode(value['${field.key}'], mapOf: const [String, $genericType]) ");
+          _debug(buffer, "// decode as Map");
+          buffer
+              .writeln("Map _$name = serializer?.decode(value['${field.key}'], mapOf: const [String, $genericType]);");
+          if (_numTypes.contains(genericType)) {
+            _debug(buffer, "// With $genericType as num");
+            buffer.write(
+                "obj.$name = (_$name != null ? new Map.fromIterable(_$name.keys, key: (key) => key, value: (key) => _$name[key]${_castNum(
+                    genericType)}) : null)");
+          } else {
+            buffer.write("obj.$name = (_$name != null ? new Map.from(_$name) : null)");
+          }
         } else {
-          buffer.write(
-              "serializer?.decode(value['${field.key}'], type: $genericType) ");
+          if (field.type.toString().split("<").first == "List") {
+            _debug(buffer, "// decode as list of generic ($genericType)");
+            buffer.writeln("List _$name = serializer?.decode(value['${field.key}'], type: $genericType);");
+            if (_numTypes.contains(genericType)) {
+              _debug(buffer, "// With $genericType as num");
+              buffer.write(
+                  "obj.$name = (_$name != null ? new List<$genericType>.from(_$name.map((item) => item${_castNum(
+                      genericType)})) : null)");
+            } else {
+              buffer.write("obj.$name = (_$name != null ? new List<$genericType>.from(_$name) : null)");
+            }
+          } else {
+            _debug(buffer, "// decode as generic ($genericType)");
+            buffer.write("obj.$name = serializer?.decode(value['${field.key}'], type: $genericType) ");
+          }
         }
-        buffer.write("?? obj.$name)${_castType(field)};");
+        buffer.writeln("?? obj.$name;");
       }
     });
 
@@ -239,20 +245,14 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
     closeBrace(buffer);
   }
 
-  void _generateEncode(
-      StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
+  void _generateEncode(StringBuffer buffer, ClassElement element, Map<String, Field> fields) {
     buffer.writeln("@override");
-    generateFunction(
-        buffer,
-        "dynamic",
-        "encode",
-        ["${element.displayName} value"],
+    generateFunction(buffer, "dynamic", "encode", ["${element.displayName} value"],
         ["Serializer serializer", "bool useTypeInfo", "bool withTypeInfo"]);
 
     buffer.writeln("Map<String, dynamic> map = new Map<String, dynamic>();");
 
-    buffer
-        .writeln("if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {");
+    buffer.writeln("if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {");
     buffer.writeln("map[serializer.typeInfoKey] = typeInfo;");
     closeBrace(buffer);
     fields.forEach((String name, Field field) {
@@ -260,7 +260,8 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
         buffer.write("map['${field.key}'] = ");
         if (isPrimaryTypeString(_getType(field)) == false) {
           buffer.write(
-              "serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo, withTypeInfo: ${_withTypeInfo(field)} );");
+              "serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo, withTypeInfo: ${_withTypeInfo(
+                  field)} );");
         } else {
           buffer.write("value.$name${_castType(field, false)};");
         }
@@ -291,8 +292,7 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
 
   //fixme dirty
   bool _isInSameLibrary(ClassElement element) {
-    return element.displayName != "Object" &&
-        element.librarySource.fullName.split("|").first == library;
+    return element.displayName != "Object" && element.librarySource.fullName.split("|").first == library;
   }
 
   List _getFieldsFromMixins(ClassElement element) {
@@ -334,10 +334,8 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
     all.forEach((e) {
       if (e.isPrivate == false &&
           e.isStatic == false &&
-          (e is PropertyAccessorElement ||
-              (e is FieldElement && e.isFinal == false))) {
-        if (fields.containsKey(_getElementName(e)) == false &&
-            _isFieldSerializable(e) == true) {
+          (e is PropertyAccessorElement || (e is FieldElement && e.isFinal == false))) {
+        if (fields.containsKey(_getElementName(e)) == false && _isFieldSerializable(e) == true) {
           fields[_getElementName(e)] = new Field(e);
         } else {
           fields[_getElementName(e)]?.update(e);
@@ -440,23 +438,17 @@ class Field {
 }
 
 bool _ignoreField(Element field) =>
-    field.metadata.firstWhere(
-        (ElementAnnotation a) => _matchAnnotation(Ignore, a),
-        orElse: () => null) !=
-    null;
+    field.metadata.firstWhere((ElementAnnotation a) => _matchAnnotation(Ignore, a), orElse: () => null) != null;
 bool _serializeFieldWithType(Element field) =>
-    field.metadata.firstWhere(
-        (ElementAnnotation a) => _matchAnnotation(SerializedWithTypeInfo, a),
-        orElse: () => null) !=
+    field.metadata
+        .firstWhere((ElementAnnotation a) => _matchAnnotation(SerializedWithTypeInfo, a), orElse: () => null) !=
     null;
 
 //fixme: very dirty
 String _getSerializedName(Element field) {
   String key = _getElementName(field);
   field.metadata.forEach((ElementAnnotation a) {
-    if (a
-        .toString()
-        .contains("@SerializedName(String name) → SerializedName")) {
+    if (a.toString().contains("@SerializedName(String name) → SerializedName")) {
       key = a.computeConstantValue().getField("name").toStringValue();
     }
   });
@@ -478,8 +470,8 @@ bool _matchAnnotation(Type annotationType, ElementAnnotation annotation) {
   try {
     var annotationValueType = annotation.computeConstantValue()?.type;
     if (annotationValueType == null) {
-      throw new ArgumentError.value(annotation, 'annotation',
-          'Could not determine type of annotation. Are you missing a dependency?');
+      throw new ArgumentError.value(
+          annotation, 'annotation', 'Could not determine type of annotation. Are you missing a dependency?');
     }
 
     return _matchTypes(annotationType, annotationValueType);
@@ -506,12 +498,10 @@ bool _matchTypes(Type annotationType, ParameterizedType annotationValueType) {
   var libOwnerUri = (classMirror.owner as LibraryMirror).uri;
   var annotationLibSourceUri = annotationLibSource.uri;
 
-  if (annotationLibSourceUri.scheme == 'file' &&
-      libOwnerUri.scheme == 'package') {
+  if (annotationLibSourceUri.scheme == 'file' && libOwnerUri.scheme == 'package') {
     // try to turn the libOwnerUri into a file uri
     libOwnerUri = _fileUriFromPackageUri(libOwnerUri);
-  } else if (annotationLibSourceUri.scheme == 'asset' &&
-      libOwnerUri.scheme == 'package') {
+  } else if (annotationLibSourceUri.scheme == 'asset' && libOwnerUri.scheme == 'package') {
     // try to turn the libOwnerUri into a asset uri
     libOwnerUri = _assetUriFromPackageUri(libOwnerUri);
   }
@@ -522,15 +512,7 @@ bool _matchTypes(Type annotationType, ParameterizedType annotationValueType) {
 Uri _fileUriFromPackageUri(Uri libraryPackageUri) {
   assert(libraryPackageUri.scheme == 'package');
 
-  var fullLibraryPath = p.join(_packageRoot, libraryPackageUri.path);
-
-  var file = new File(fullLibraryPath);
-
-  assert(file.existsSync());
-
-  var normalPath = file.resolveSymbolicLinksSync();
-
-  return new Uri.file(normalPath);
+  return libraryPackageUri;
 }
 
 Uri _assetUriFromPackageUri(Uri libraryPackageUri) {
@@ -544,33 +526,9 @@ Uri _assetUriFromPackageUri(Uri libraryPackageUri) {
 }
 
 bool _isFieldSerializable(Element field) =>
-    field is PropertyAccessorElement &&
-    field.isStatic == false &&
-    field.isPrivate == false;
+    field is PropertyAccessorElement && field.isStatic == false && field.isPrivate == false;
 
 bool _isClassSerializable(Element elem) =>
-    elem is ClassElement &&
-    elem.metadata
-            .any((ElementAnnotation a) => _matchAnnotation(Serializable, a)) ==
-        true;
+    elem is ClassElement && elem.metadata.any((ElementAnnotation a) => _matchAnnotation(Serializable, a)) == true;
 
 String _getElementName(Element element) => element.name.split(("=")).first;
-
-String get _packageRoot {
-  if (_packageRootCache == null) {
-    var dir = Platform.packageRoot;
-
-    if (dir.isEmpty) {
-      dir = p.join(p.current, 'packages');
-    }
-
-    // Handle the case where we're running via pub and dir is a file: URI
-    dir = p.prettyUri(dir);
-
-    assert(FileSystemEntity.isDirectorySync(dir));
-    _packageRootCache = dir;
-  }
-  return _packageRootCache;
-}
-
-String _packageRootCache;

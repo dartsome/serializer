@@ -1,6 +1,6 @@
 name: serializer
 description: Serialization to JSON using source_gen
-version: 0.7.1
+version: 0.8.0
 authors:
   - Hadrien Lejard <hadrien.lejard@gmail.com>
   - Stéphane Este-Gracias <sestegra@gmail.com>
@@ -8,7 +8,7 @@ authors:
 homepage: https://github.com/dartsome/serializer
 
 environment:
-  sdk: '>=1.24.0 <2.0.0'
+  sdk: '>=2.0.0-dev.1.2 <2.0.0'
 
-#dependencies:
-#  bson: ^0.3.0
+dependencies:
+  bson: any

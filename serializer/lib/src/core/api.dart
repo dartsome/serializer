@@ -7,15 +7,10 @@ import 'dart:convert';
 
 import '../codecs/type_codec.dart';
 
-bool isPrimaryType(Type obj) =>
-    obj == num || obj == String || obj == bool || obj == int || obj == double;
+bool isPrimaryType(Type obj) => obj == num || obj == String || obj == bool || obj == int || obj == double;
 
 bool isPrimaryTypeString(String obj) =>
-    obj == "num" ||
-    obj == "String" ||
-    obj == "bool" ||
-    obj == "int" ||
-    obj == "double";
+    obj == "num" || obj == "String" || obj == "bool" || obj == "int" || obj == "double";
 
 final String MapTypeString = {}.runtimeType.toString();
 final String ListTypeString = [].runtimeType.toString();
@@ -39,9 +34,7 @@ abstract class _Serializer {
 
   /// Return if typeInfoKey must be enabled
   bool enableTypeInfo(bool useTypeInfo, bool withTypeInfo) =>
-      useTypeInfo != null
-          ? useTypeInfo || (withTypeInfo ?? false)
-          : this.useTypeInfo || (withTypeInfo ?? false);
+      useTypeInfo != null ? useTypeInfo || (withTypeInfo ?? false) : this.useTypeInfo || (withTypeInfo ?? false);
 
   /// Registers a [typeCodec] for the specific [type].
   addTypeCodec(Type type, TypeCodec typeCodec);
@@ -59,8 +52,7 @@ abstract class _Serializer {
   bool isSerializable(Type type);
 
   /// Convert the object to a Map
-  Map<String, dynamic> toMap(Object input,
-      {bool useTypeInfo, bool withTypeInfo});
+  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo});
 
   /// Convert to a Map or a List recursively
   Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo});
@@ -69,16 +61,13 @@ abstract class _Serializer {
   String encode(Object input, {bool useTypeInfo, bool withTypeInfo});
 
   /// Decode the object from a seriablized string
-  Object decode(dynamic encoded,
-      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
+  Object decode(dynamic encoded, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
 
   /// Convert a serialized object to map
-  Object fromMap(Map<String, dynamic> map,
-      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
+  Object fromMap(Map<String, dynamic> map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo});
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List fromList(List<dynamic> list,
-      {Type type, bool useTypeInfo, bool withTypeInfo});
+  List fromList(List<dynamic> list, {Type type, bool useTypeInfo, bool withTypeInfo});
 }
 
 /// Utility class to access to the serializer api
@@ -98,11 +87,7 @@ class Serializer extends _Serializer {
   String get typeInfoKey => _typeInfoKey;
   bool get useTypeInfo => _useTypeInfo;
 
-  Serializer(
-      {Map<String, TypeCodec> typesCodecs,
-        Codec codec: JSON,
-        String typeInfoKey: "@type",
-        useTypeInfo: false})
+  Serializer({Map<String, TypeCodec> typesCodecs, Codec codec: json, String typeInfoKey: "@type", useTypeInfo: false})
       : _codec = codec,
         _typeInfoKey = typeInfoKey,
         _useTypeInfo = useTypeInfo {
@@ -110,76 +95,52 @@ class Serializer extends _Serializer {
   }
 
   factory Serializer.json({Map<String, TypeCodec> typesCodecs}) {
-    return new Serializer(typesCodecs: typesCodecs, codec: JSON);
+    return new Serializer(typesCodecs: typesCodecs, codec: json);
   }
 
   factory Serializer.typedJson({Map<String, TypeCodec> typesCodecs}) {
-    return new Serializer(
-        typesCodecs: typesCodecs, codec: JSON, useTypeInfo: true);
+    return new Serializer(typesCodecs: typesCodecs, codec: json, useTypeInfo: true);
   }
 
-  addTypeCodec(Type type, TypeCodec typeCodec) =>
-      _typeCodecs[type.toString()] = typeCodec;
+  addTypeCodec(Type type, TypeCodec typeCodec) => _typeCodecs[type.toString()] = typeCodec;
 
   @override
   addAllTypeCodecs(Map<String, TypeCodec> typesCodecs) {
     _typeCodecs.addAll(typesCodecs ?? {});
   }
 
-  bool hasTypeCodec(Type type) =>
-      _typeCodecs.values?.any((TypeCodec tc) => tc.type == type);
+  bool hasTypeCodec(Type type) => _typeCodecs.values?.any((TypeCodec tc) => tc.type == type);
 
-  TypeCodec typeCodec(Type type) => _typeCodecs.values
-      .firstWhere((TypeCodec tc) => tc.type == type, orElse: () => null);
+  TypeCodec typeCodec(Type type) =>
+      _typeCodecs.values.firstWhere((TypeCodec tc) => tc.type == type, orElse: () => null);
 
-  TypeCodec typeCodecFromString(String type) => _typeCodecs.values
-      .firstWhere((TypeCodec tc) => tc.typeInfo == type, orElse: () => null);
+  TypeCodec typeCodecFromString(String type) =>
+      _typeCodecs.values.firstWhere((TypeCodec tc) => tc.typeInfo == type, orElse: () => null);
 
   bool isSerializable(Type type) => hasTypeCodec(type);
 
-  Map<String, dynamic> toMap(Object input,
-      {bool useTypeInfo, bool withTypeInfo}) =>
-      toPrimaryObject(input,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo) as Map<String, dynamic>;
+  Map<String, dynamic> toMap(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
+      toPrimaryObject(input, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo) as Map<String, dynamic>;
 
   /// Convert to a Map or a List recursively
   Object toPrimaryObject(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
-      _encodeValue(input,
-          withReferenceable: true,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo);
+      _encodeValue(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Encode the object to serialized string
   String encode(Object input, {bool useTypeInfo, bool withTypeInfo}) =>
-      _encode(input,
-          withReferenceable: true,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo);
+      _encode(input, withReferenceable: true, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Decode the object from a seriablized string
-  Object decode(dynamic encoded,
-      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
-      _decode(encoded,
-          type: type,
-          mapOf: mapOf,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo);
+  Object decode(dynamic encoded, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
+      _decode(encoded, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object to map
-  Object fromMap(Map map,
-      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
-      _fromMap(map,
-          type: type,
-          mapOf: mapOf,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo);
+  Object fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) =>
+      _fromMap(map, type: type, mapOf: mapOf, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   /// Convert a serialized object's [list] to a list of the given [type]
-  List<dynamic> fromList(List list,
-      {Type type, bool useTypeInfo, bool withTypeInfo}) =>
-      _fromList(list,
-          type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  List<dynamic> fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) =>
+      _fromList(list, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
 
   ///////////////////
   // Private
@@ -191,10 +152,7 @@ class Serializer extends _Serializer {
     if (matches == null || matches.isEmpty) {
       return null;
     }
-    return [
-      _decodeType(matches.first.group(1)),
-      _decodeType(matches.first.group(2))
-    ];
+    return [_decodeType(matches.first.group(1)), _decodeType(matches.first.group(2))];
   }
 
   Type _findGenericOfList(Type type) {
@@ -243,8 +201,7 @@ class Serializer extends _Serializer {
     }
   }
 
-  Object _decode(dynamic encoded,
-      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) {
+  Object _decode(dynamic encoded, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) {
     if (encoded == null) {
       return null;
     }
@@ -253,35 +210,26 @@ class Serializer extends _Serializer {
       if (value.isEmpty) {
         return null;
       }
-      if ((value.startsWith("{") && value.endsWith("}")) ||
-          (value.startsWith("[") && value.endsWith("]"))) {
+      if ((value.startsWith("{") && value.endsWith("}")) || (value.startsWith("[") && value.endsWith("]"))) {
         value = _codec.decode(encoded);
       } else {
-        value = num.parse(encoded, (_) => null) ?? value;
+        value = num.tryParse(encoded) ?? value;
       }
     }
     if (value is Map) {
-      return _fromMap(value,
-          type: type,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo,
-          mapOf: mapOf);
+      return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo, mapOf: mapOf);
     } else if (value is List) {
-      return _fromList(value,
-          type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     }
-    return _decodeValue(value, type,
-        useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+    return _decodeValue(value, type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
   }
 
-  Object _fromMap(Map map,
-      {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) {
+  Object _fromMap(Map map, {Type type, List<Type> mapOf, bool useTypeInfo, bool withTypeInfo}) {
     if (map == null || map.isEmpty) {
       return null;
     }
 
-    if ((enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) &&
-        map.containsKey(_typeInfoKey)) {
+    if ((enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
       type = _decodeType(map[_typeInfoKey]);
     } else {
       type ??= Map;
@@ -291,31 +239,25 @@ class Serializer extends _Serializer {
     if (type == Map) {
       Type embedType = mapOf != null && mapOf.length >= 2 ? mapOf[1] : null;
       Map data = new Map();
-      map.forEach((key, value) => data[key.toString()] = embedType == null && useTypeInfo == null ? value :
-          _decodeValue(value, embedType, useTypeInfo: useTypeInfo));
+      map.forEach((key, value) => data[key.toString()] =
+          embedType == null && useTypeInfo == null ? value : _decodeValue(value, embedType, useTypeInfo: useTypeInfo));
       return data;
     }
-    return _decodeValue(map, type,
-        useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+    return _decodeValue(map, type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
   }
 
-  List<dynamic> _fromList(List list,
-      {Type type, bool useTypeInfo, bool withTypeInfo}) {
+  List<dynamic> _fromList(List list, {Type type, bool useTypeInfo, bool withTypeInfo}) {
     List<dynamic> data = new List<dynamic>();
-    list.forEach((value) => data.add(_decodeValue(value, type,
-        useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo)));
+    list.forEach((value) => data.add(_decodeValue(value, type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo)));
     return data;
   }
 
-  Object _decodeValue(Object value, Type type,
-      {bool useTypeInfo, bool withTypeInfo}) {
+  Object _decodeValue(Object value, Type type, {bool useTypeInfo, bool withTypeInfo}) {
     if (value == null) {
       return null;
     }
     String t = value.runtimeType.toString();
-    if (value is Map &&
-        (_useTypeInfo == true || useTypeInfo == true) &&
-        value[typeInfoKey] != null) {
+    if (value is Map && (_useTypeInfo == true || useTypeInfo == true) && value[typeInfoKey] != null) {
       t = value[typeInfoKey];
     }
     type ??= _decodeType(t);
@@ -327,95 +269,59 @@ class Serializer extends _Serializer {
       TypeCodec codec = typeCodec(type);
       dynamic val = codec.decode(value, serializer: this);
       return val;
-    } else if (type.toString().startsWith("Map") ||
-        type.toString().startsWith("List")) {
+    } else if (type.toString().startsWith("Map") || type.toString().startsWith("List")) {
       if (value is Map) {
         if (type.toString().startsWith("Map")) {
           return _fromMap(value,
-              type: Map,
-              mapOf: _findGenericOfMap(type),
-              useTypeInfo: useTypeInfo,
-              withTypeInfo: withTypeInfo);
+              type: Map, mapOf: _findGenericOfMap(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
         }
-        return _fromMap(value,
-            type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+        return _fromMap(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
       } else if (value is List) {
         if (type.toString().startsWith("List") && value is List) {
-          return _fromList(value,
-              type: _findGenericOfList(type),
-              useTypeInfo: useTypeInfo,
-              withTypeInfo: withTypeInfo);
+          return _fromList(value, type: _findGenericOfList(type), useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
         }
-        return _fromList(value,
-            type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+        return _fromList(value, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
       }
     }
 
     return null;
   }
 
-  Object _encodeValue(Object value,
-      {bool withReferenceable: false,
-        Type type,
-        bool useTypeInfo,
-        bool withTypeInfo}) {
+  Object _encodeValue(Object value, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
     if (isPrimaryType(value.runtimeType) == true) {
       return value;
     } else if (hasTypeCodec(value.runtimeType) == true) {
       TypeCodec codec = typeCodec(value.runtimeType);
-      return codec.encode(value,
-          serializer: this,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo);
+      return codec.encode(value, serializer: this, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (value is Map) {
       return _encodeMap(value,
-          withReferenceable: withReferenceable,
-          type: type,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo);
+          withReferenceable: withReferenceable, type: type, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     } else if (value is List) {
       return _encodeList(value,
-          withReferenceable: withReferenceable,
-          useTypeInfo: useTypeInfo,
-          withTypeInfo: withTypeInfo);
+          withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     }
     return null;
   }
 
-  Object _encodeMap(Map value,
-      {bool withReferenceable: false,
-        Type type,
-        bool useTypeInfo,
-        bool withTypeInfo}) {
+  Object _encodeMap(Map value, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
     Map<String, dynamic> map = new Map<String, dynamic>();
 
     value.forEach((dynamic key, dynamic val) {
-      map[key.toString()] = toPrimaryObject(val,
-          useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+      map[key.toString()] = toPrimaryObject(val, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     });
 
     return map;
   }
 
-  List _encodeList(List list,
-      {bool withReferenceable: false,
-        Type type,
-        bool useTypeInfo,
-        bool withTypeInfo}) {
+  List _encodeList(List list, {bool withReferenceable: false, Type type, bool useTypeInfo, bool withTypeInfo}) {
     return list
         .map((elem) => _encodeValue(elem,
-        withReferenceable: withReferenceable,
-        useTypeInfo: useTypeInfo,
-        withTypeInfo: withTypeInfo))
+            withReferenceable: withReferenceable, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo))
         .toList(growable: false);
   }
 
-  String _encode(Object obj,
-      {bool withReferenceable: false,
-        bool useTypeInfo,
-        bool withTypeInfo: false}) {
-    Object val = toPrimaryObject(obj,
-        useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
+  String _encode(Object obj, {bool withReferenceable: false, bool useTypeInfo, bool withTypeInfo: false}) {
+    Object val = toPrimaryObject(obj, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
     return _codec.encode(val);
   }
 }

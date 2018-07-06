@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// Generator: SerializerGenerator
+// SerializerGenerator
 // **************************************************************************
 
 library model.codec;
@@ -14,7 +14,7 @@ class UserCodec extends TypeCodec<User> {
   @override
   User decode(dynamic value, {Serializer serializer}) {
     User obj = new User();
-    obj.login = (value['login'] ?? obj.login) as String;
+    obj.login = value['login'] as String ?? obj.login;
     return obj;
   }
 
@@ -38,8 +38,7 @@ class IdCodec extends TypeCodec<Id> {
   @override
   Id decode(dynamic value, {Serializer serializer}) {
     Id obj = new Id();
-    obj.id = (serializer?.decode(value['_id'], type: ObjectId) ?? obj.id)
-        as ObjectId;
+    obj.id = serializer?.decode(value['_id'], type: ObjectId) ?? obj.id;
     return obj;
   }
 
@@ -63,7 +62,7 @@ class ModelCodec extends TypeCodec<Model> {
   @override
   Model decode(dynamic value, {Serializer serializer}) {
     Model obj = new Model();
-    obj.foo = (value['foo'] ?? obj.foo) as String;
+    obj.foo = value['foo'] as String ?? obj.foo;
     return obj;
   }
 
@@ -86,17 +85,16 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
   @override
   CustomUser decode(dynamic value, {Serializer serializer}) {
     CustomUser obj = new CustomUser();
-    obj.login = (value['login'] ?? obj.login) as String;
-    obj.name = (value['n'] ?? obj.name) as String;
-    obj.entity = (value['entity'] ?? obj.entity) as String;
-    obj.id = (serializer?.decode(value['_id'], type: ObjectId) ?? obj.id)
-        as ObjectId;
-    obj.creationDate = (serializer?.decode(value['d'], type: DateTime) ??
-        obj.creationDate) as DateTime;
-    obj.test = (value['test'] ?? obj.test) as String;
-    obj.models =
-        (serializer?.decode(value['models'], mapOf: const [String, Model]) ??
-            obj.models) as Map<String, Model>;
+    obj.name = value['n'] as String ?? obj.name;
+    obj.login = value['login'] as String ?? obj.login;
+    obj.entity = value['entity'] as String ?? obj.entity;
+    obj.id = serializer?.decode(value['_id'], type: ObjectId) ?? obj.id;
+    obj.creationDate =
+        serializer?.decode(value['d'], type: DateTime) ?? obj.creationDate;
+    obj.test = value['test'] as String ?? obj.test;
+    Map _models =
+        serializer?.decode(value['models'], mapOf: const [String, Model]);
+    obj.models = (_models != null ? new Map.from(_models) : null) ?? obj.models;
     return obj;
   }
 
@@ -107,9 +105,9 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
     if (serializer.enableTypeInfo(useTypeInfo, withTypeInfo)) {
       map[serializer.typeInfoKey] = typeInfo;
     }
+    map['n'] = value.name;
     map['login'] = value.login;
     map['toto'] = value.toto;
-    map['n'] = value.name;
     map['entity'] = value.entity;
     map['_id'] = serializer?.toPrimaryObject(value.id,
         useTypeInfo: useTypeInfo, withTypeInfo: false);

@@ -5,9 +5,9 @@
 import 'package:test/test.dart';
 import 'package:serializer/codecs.dart';
 import 'package:serializer/serializer.dart';
-import 'models_test.dart';
+import 'models.dart';
 import 'typed_json_test.codec.dart';
-import 'models_test.codec.dart';
+import 'models.codec.dart';
 
 abstract class TypedDontWantToBeSerialize {
   String foo = "bar";
@@ -240,7 +240,7 @@ main() {
     test("Serialized name", () {
       TypedModelRenamed _model = new TypedModelRenamed("Hello")..tests = ["A", "B", "C"];
       print(serializer.encode(_model));
-     /* expect('{"@type":"TypedModelRenamed","new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
+      /* expect('{"@type":"TypedModelRenamed","new":"Hello","tests":["A","B","C"]}', serializer.encode(_model));
       expect({
         "@type": "TypedModelRenamed",
         "new": "Hello",
@@ -326,8 +326,8 @@ main() {
     }, skip: "Too complex to handle, not required for the moment");
 
     test("list - fromJson", () {
-      List<TypedModelA> list = serializer
-          .decode('[{"@type":"TypedModelA","foo":"toto"},{"@type":"TypedModelA","foo":"bar"}]') as List<TypedModelA>;
+      List<TypedModelA> list = new List<TypedModelA>.from(
+          serializer.decode('[{"@type":"TypedModelA","foo":"toto"},{"@type":"TypedModelA","foo":"bar"}]'));
 
       expect(2, list.length);
       expect("toto", list[0]?.foo);
@@ -560,7 +560,7 @@ main() {
         ..m2 = "M2";
       var json = serializer.encode(mixin);
       print(json);
-     /* expect(json, '{"@type":"Mixin","a":"A","b":"B","m2":"M2","m1":"M1"}');*/ //fixme: not the same order
+      /* expect(json, '{"@type":"Mixin","a":"A","b":"B","m2":"M2","m1":"M1"}');*/ //fixme: not the same order
     });
 
     test("Deserialize", () {

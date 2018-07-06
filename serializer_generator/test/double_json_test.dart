@@ -25,8 +25,7 @@ class DoubleComplex {
 
   DoubleComplex();
   factory DoubleComplex.fromJson(String json) => _typedJsonSerializer.decode(json, type: DoubleComplex);
-  factory DoubleComplex.fromMap(Map map) =>
-      _typedJsonSerializer.fromMap(map as Map<String, dynamic>, type: DoubleComplex);
+  factory DoubleComplex.fromMap(Map map) => _typedJsonSerializer.fromMap(map, type: DoubleComplex);
 }
 
 main() {
@@ -41,8 +40,7 @@ main() {
 
   setUpAll(() {
     _jsonSerializer = new Serializer.json()..addAllTypeCodecs(test_double_json_test_codecs);
-    _typedJsonSerializer = new Serializer.typedJson()
-      ..addAllTypeCodecs(test_double_json_test_codecs);
+    _typedJsonSerializer = new Serializer.typedJson()..addAllTypeCodecs(test_double_json_test_codecs);
 
     simple = new DoubleSimple();
     complex = new DoubleComplex();
@@ -59,8 +57,7 @@ main() {
   });
 
   test("Serialize simple Json with int", () {
-    var simple = new DoubleSimple()
-      ..test = 1.toDouble();
+    var simple = new DoubleSimple()..test = 1.toDouble();
     var output = _jsonSerializer.encode(simple);
     expect(output, '{"test":1}');
   }, skip: true);
@@ -74,8 +71,7 @@ main() {
   });
 
   test("Serialize simple Map with int", () {
-    var simple = new DoubleSimple()
-      ..test = 1.toDouble();
+    var simple = new DoubleSimple()..test = 1.toDouble();
     var output = _jsonSerializer.toMap(simple);
     expect(output, {"test": 1});
   }, skip: true);
@@ -128,7 +124,10 @@ main() {
   });
 
   test("Deserialize complex Map with int", () {
-    DoubleComplex _complex = new DoubleComplex.fromMap({"map":{"foo":1},"list":[1,2,3]});
+    DoubleComplex _complex = new DoubleComplex.fromMap({
+      "map": {"foo": 1},
+      "list": [1, 2, 3]
+    });
     expect(_complex.map, {"foo": 1});
     expect(_complex.list, [1, 2, 3]);
   });
