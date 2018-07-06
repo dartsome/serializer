@@ -10,5 +10,5 @@ homepage: https://github.com/dartsome/serializer
 environment:
   sdk: '>=2.0.0-dev.1.2 <2.0.0'
 
-dependencies:
-  bson: any
+#dependencies:
+#  bson: any
