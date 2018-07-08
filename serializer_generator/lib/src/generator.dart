@@ -228,12 +228,14 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
               buffer.write(
                   "obj.$name = (_$name != null ? new List<$genericType>.from(_$name.map((item) => item${_castNum(
                       genericType)})) : null)");
+            } else if (genericType == "null") {
+              buffer.write("obj.$name = _$name");
             } else {
               buffer.write("obj.$name = (_$name != null ? new List<$genericType>.from(_$name) : null)");
             }
           } else {
             _debug(buffer, "// decode as generic ($genericType)");
-            buffer.write("obj.$name = serializer?.decode(value['${field.key}'], type: $genericType) ");
+            buffer.write("obj.$name = serializer?.decode(value['${field.key}'], type: $genericType)");
           }
         }
         buffer.writeln("?? obj.$name;");
