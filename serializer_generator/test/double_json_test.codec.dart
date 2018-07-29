@@ -14,7 +14,7 @@ class DoubleSimpleCodec extends TypeCodec<DoubleSimple> {
   @override
   DoubleSimple decode(dynamic value, {Serializer serializer}) {
     DoubleSimple obj = new DoubleSimple();
-    obj.test = value['test']?.toDouble() ?? obj.test;
+    obj.test = (value['test'] as num)?.toDouble() ?? obj.test;
     return obj;
   }
 
@@ -40,12 +40,14 @@ class DoubleComplexCodec extends TypeCodec<DoubleComplex> {
     Map _map = serializer?.decode(value['map'], mapOf: const [String, double]);
     obj.map = (_map != null
             ? new Map.fromIterable(_map.keys,
-                key: (key) => key, value: (key) => _map[key]?.toDouble())
+                key: (key) => key as String,
+                value: (key) => (_map[key] as num)?.toDouble())
             : null) ??
         obj.map;
     List _list = serializer?.decode(value['list'], type: double);
     obj.list = (_list != null
-            ? new List<double>.from(_list.map((item) => item?.toDouble()))
+            ? new List<double>.from(
+                _list.map((item) => (item as num)?.toDouble()))
             : null) ??
         obj.list;
     return obj;

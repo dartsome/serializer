@@ -38,7 +38,8 @@ class IdCodec extends TypeCodec<Id> {
   @override
   Id decode(dynamic value, {Serializer serializer}) {
     Id obj = new Id();
-    obj.id = serializer?.decode(value['_id'], type: ObjectId) ?? obj.id;
+    obj.id =
+        serializer?.decode(value['_id'], type: ObjectId) as ObjectId ?? obj.id;
     return obj;
   }
 
@@ -88,9 +89,11 @@ class CustomUserCodec extends TypeCodec<CustomUser> {
     obj.name = value['n'] as String ?? obj.name;
     obj.login = value['login'] as String ?? obj.login;
     obj.entity = value['entity'] as String ?? obj.entity;
-    obj.id = serializer?.decode(value['_id'], type: ObjectId) ?? obj.id;
+    obj.id =
+        serializer?.decode(value['_id'], type: ObjectId) as ObjectId ?? obj.id;
     obj.creationDate =
-        serializer?.decode(value['d'], type: DateTime) ?? obj.creationDate;
+        serializer?.decode(value['d'], type: DateTime) as DateTime ??
+            obj.creationDate;
     obj.test = value['test'] as String ?? obj.test;
     Map _models =
         serializer?.decode(value['models'], mapOf: const [String, Model]);

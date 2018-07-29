@@ -22,7 +22,7 @@ class Id implements Identifiable {
   dynamic id;
 
   @override
-  ObjectId getId() => id;
+  ObjectId getId() => id as ObjectId;
 
   @override
   void setId(ObjectId id) {

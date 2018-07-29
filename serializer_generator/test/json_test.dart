@@ -151,7 +151,7 @@ main() {
   setUpAll(() {
     serializer = new Serializer.json()
       ..addAllTypeCodecs(test_json_test_codecs)
-      ..addAllTypeCodecs(test_models_test_codecs)
+      ..addAllTypeCodecs(test_models_codecs)
       ..addTypeCodec(DateTime, new DateTimeCodec());
   });
 
@@ -161,11 +161,25 @@ main() {
 
   group("Serialize", () {
     test("simple map", () {
-      Map a = {"foo": "toto", "bar": {"a":1, "b":2, "c": ["A", "B", "C"]}};
+      Map a = {
+        "foo": "toto",
+        "bar": {
+          "a": 1,
+          "b": 2,
+          "c": ["A", "B", "C"]
+        }
+      };
 
       expect("{foo: toto, bar: {a: 1, b: 2, c: [A, B, C]}}", serializer.toMap(a).toString());
       expect('{"foo":"toto","bar":{"a":1,"b":2,"c":["A","B","C"]}}', serializer.encode(a));
-      expect({"foo": "toto", "bar": {"a":1, "b":2, "c": ["A", "B", "C"]}}, serializer.toMap(a));
+      expect({
+        "foo": "toto",
+        "bar": {
+          "a": 1,
+          "b": 2,
+          "c": ["A", "B", "C"]
+        }
+      }, serializer.toMap(a));
     });
 
     test("simple test", () {
@@ -366,7 +380,14 @@ main() {
       Map a = serializer.decode('{"foo":"toto","bar":{"a":1,"b":2,"c":["A","B","C"]}}', type: Map);
 
       expect(a is Map, isTrue);
-      expect({"foo":"toto","bar":{"a":1,"b":2,"c":["A","B","C"]}}, a);
+      expect({
+        "foo": "toto",
+        "bar": {
+          "a": 1,
+          "b": 2,
+          "c": ["A", "B", "C"]
+        }
+      }, a);
     });
 
     test("simple test - fromJson", () {
@@ -399,7 +420,8 @@ main() {
     });
 
     test("list - fromJson", () {
-      List<ModelA> list = new List<ModelA>.from(serializer.decode('[{"foo":"toto"},{"foo":"bar"}]', type: ModelA));
+      List<ModelA> list =
+          new List<ModelA>.from(serializer.decode('[{"foo":"toto"},{"foo":"bar"}]', type: ModelA) as List);
 
       expect(2, list.length);
       expect("toto", list[0]?.foo);
@@ -509,8 +531,7 @@ main() {
       expect(a, equals(b));
 
       Map c = {"test": new ModelA()};
-      Map<String, ModelA> d =
-          new Map.from(serializer.fromMap(c, type: Map, mapOf: [String, ModelA]));
+      Map<String, ModelA> d = new Map.from(serializer.fromMap(c, type: Map, mapOf: [String, ModelA]) as Map);
 
       expect(c, equals(d));
     });
@@ -518,7 +539,7 @@ main() {
     test("dynamic", () {
       Pet pet;
 
-      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', type: Pet);
+      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}', type: Pet) as Pet;
       expect(pet.name, "Pet");
       print(pet.animal);
       expect(pet.animal is Cat, isTrue);
@@ -526,7 +547,7 @@ main() {
       expect(cat.name, "Felix");
       expect(cat.mew, false);
 
-      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', type: Pet);
+      pet = serializer.decode('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}', type: Pet) as Pet;
       expect(pet.name, "Pet");
       expect(pet.animal is Dog, isTrue);
       var dog = pet.animal as Dog;
@@ -538,7 +559,7 @@ main() {
       PetWithTypeInfo pet;
 
       pet = serializer.decode('{"name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}',
-          type: PetWithTypeInfo);
+          type: PetWithTypeInfo) as PetWithTypeInfo;
       expect(pet.name, "Pet");
       print(pet.animal);
       expect(pet.animal is Cat, isTrue);
@@ -547,7 +568,7 @@ main() {
       expect(cat.mew, false);
 
       pet = serializer.decode('{"name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}',
-          type: PetWithTypeInfo);
+          type: PetWithTypeInfo) as PetWithTypeInfo;
       expect(pet.name, "Pet");
       expect(pet.animal is Dog, isTrue);
       var dog = pet.animal as Dog;
@@ -651,7 +672,7 @@ main() {
 
   group("Mixin", () {
     test("Serialize", () {
-     /* var mixin = new Mixin()
+      /* var mixin = new Mixin()
         ..a = "A"
         ..b = "B"
         ..m1 = "M1"

@@ -8,8 +8,6 @@ import 'type_codec.dart';
 /// A simple ObjectId codec.
 class ObjectIdCodec extends TypeCodec<ObjectId> {
   ObjectId decode(dynamic value, {Serializer serializer}) =>
-      value is ObjectId ? value : ObjectId.parse(value);
-  dynamic encode(ObjectId value,
-          {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) =>
-      value;
+      value is ObjectId ? value : ObjectId.parse(value as String);
+  dynamic encode(ObjectId value, {Serializer serializer, bool useTypeInfo, bool withTypeInfo}) => value;
 }

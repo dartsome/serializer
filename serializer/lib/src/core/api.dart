@@ -87,7 +87,8 @@ class Serializer extends _Serializer {
   String get typeInfoKey => _typeInfoKey;
   bool get useTypeInfo => _useTypeInfo;
 
-  Serializer({Map<String, TypeCodec> typesCodecs, Codec codec: json, String typeInfoKey: "@type", useTypeInfo: false})
+  Serializer(
+      {Map<String, TypeCodec> typesCodecs, Codec codec: json, String typeInfoKey: "@type", bool useTypeInfo: false})
       : _codec = codec,
         _typeInfoKey = typeInfoKey,
         _useTypeInfo = useTypeInfo {
@@ -207,13 +208,14 @@ class Serializer extends _Serializer {
     }
     dynamic value = encoded;
     if (value is String) {
-      if (value.isEmpty) {
+      var string = value as String;
+      if (string.isEmpty) {
         return null;
       }
-      if ((value.startsWith("{") && value.endsWith("}")) || (value.startsWith("[") && value.endsWith("]"))) {
+      if ((string.startsWith("{") && string.endsWith("}")) || (string.startsWith("[") && string.endsWith("]"))) {
         value = _codec.decode(encoded);
       } else {
-        value = num.tryParse(encoded) ?? value;
+        value = num.tryParse(encoded as String) ?? value;
       }
     }
     if (value is Map) {
@@ -230,7 +232,7 @@ class Serializer extends _Serializer {
     }
 
     if ((enableTypeInfo(useTypeInfo, withTypeInfo) || type == dynamic) && map.containsKey(_typeInfoKey)) {
-      type = _decodeType(map[_typeInfoKey]);
+      type = _decodeType(map[_typeInfoKey] as String);
     } else {
       type ??= Map;
     }
@@ -258,7 +260,7 @@ class Serializer extends _Serializer {
     }
     String t = value.runtimeType.toString();
     if (value is Map && (_useTypeInfo == true || useTypeInfo == true) && value[typeInfoKey] != null) {
-      t = value[typeInfoKey];
+      t = value[typeInfoKey] as String;
     }
     type ??= _decodeType(t);
     if (isPrimaryType(type) ||
@@ -322,6 +324,6 @@ class Serializer extends _Serializer {
 
   String _encode(Object obj, {bool withReferenceable: false, bool useTypeInfo, bool withTypeInfo: false}) {
     Object val = toPrimaryObject(obj, useTypeInfo: useTypeInfo, withTypeInfo: withTypeInfo);
-    return _codec.encode(val);
+    return _codec.encode(val) as String;
   }
 }

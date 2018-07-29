@@ -14,7 +14,7 @@ class ModelIntCodec extends TypeCodec<ModelInt> {
   @override
   ModelInt decode(dynamic value, {Serializer serializer}) {
     ModelInt obj = new ModelInt();
-    obj.bar = value['bar']?.toInt() ?? obj.bar;
+    obj.bar = (value['bar'] as num)?.toInt() ?? obj.bar;
     return obj;
   }
 
@@ -37,7 +37,7 @@ class ModelDoubleCodec extends TypeCodec<ModelDouble> {
   @override
   ModelDouble decode(dynamic value, {Serializer serializer}) {
     ModelDouble obj = new ModelDouble();
-    obj.bar = value['bar']?.toDouble() ?? obj.bar;
+    obj.bar = (value['bar'] as num)?.toDouble() ?? obj.bar;
     return obj;
   }
 
@@ -83,7 +83,7 @@ class ModelBCodec extends TypeCodec<ModelB> {
   @override
   ModelB decode(dynamic value, {Serializer serializer}) {
     ModelB obj = new ModelB();
-    obj.foo = serializer?.decode(value['foo'], type: Test) ?? obj.foo;
+    obj.foo = serializer?.decode(value['foo'], type: Test) as Test ?? obj.foo;
     obj.toto = value['toto'] as String ?? obj.toto;
     return obj;
   }
@@ -109,7 +109,8 @@ class ModelCCodec extends TypeCodec<ModelC> {
   @override
   ModelC decode(dynamic value, {Serializer serializer}) {
     ModelC obj = new ModelC();
-    obj.foo = serializer?.decode(value['foo'], type: ModelA) ?? obj.foo;
+    obj.foo =
+        serializer?.decode(value['foo'], type: ModelA) as ModelA ?? obj.foo;
     obj.plop = value['plop'] as String ?? obj.plop;
     return obj;
   }
@@ -271,7 +272,8 @@ class DateCodec extends TypeCodec<Date> {
   @override
   Date decode(dynamic value, {Serializer serializer}) {
     Date obj = new Date();
-    obj.date = serializer?.decode(value['date'], type: DateTime) ?? obj.date;
+    obj.date = serializer?.decode(value['date'], type: DateTime) as DateTime ??
+        obj.date;
     return obj;
   }
 
@@ -330,12 +332,13 @@ class ComplexCodec extends TypeCodec<Complex> {
         (_bools != null ? new List<bool>.from(_bools) : null) ?? obj.bools;
     List _ints = serializer?.decode(value['ints'], type: int);
     obj.ints = (_ints != null
-            ? new List<int>.from(_ints.map((item) => item?.toInt()))
+            ? new List<int>.from(_ints.map((item) => (item as num)?.toInt()))
             : null) ??
         obj.ints;
     List _doubles = serializer?.decode(value['doubles'], type: double);
     obj.doubles = (_doubles != null
-            ? new List<double>.from(_doubles.map((item) => item?.toDouble()))
+            ? new List<double>.from(
+                _doubles.map((item) => (item as num)?.toDouble()))
             : null) ??
         obj.doubles;
     List _dates = serializer?.decode(value['dates'], type: DateTime);
@@ -360,14 +363,16 @@ class ComplexCodec extends TypeCodec<Complex> {
         serializer?.decode(value['intSet'], mapOf: const [String, int]);
     obj.intSet = (_intSet != null
             ? new Map.fromIterable(_intSet.keys,
-                key: (key) => key, value: (key) => _intSet[key]?.toInt())
+                key: (key) => key as String,
+                value: (key) => (_intSet[key] as num)?.toInt())
             : null) ??
         obj.intSet;
     Map _doubleSet =
         serializer?.decode(value['doubleSet'], mapOf: const [String, double]);
     obj.doubleSet = (_doubleSet != null
             ? new Map.fromIterable(_doubleSet.keys,
-                key: (key) => key, value: (key) => _doubleSet[key]?.toDouble())
+                key: (key) => key as String,
+                value: (key) => (_doubleSet[key] as num)?.toDouble())
             : null) ??
         obj.doubleSet;
     Map _dateSet =

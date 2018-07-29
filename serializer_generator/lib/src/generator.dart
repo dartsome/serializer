@@ -50,19 +50,16 @@ void generateClass(StringBuffer buffer, String classType, String name, [String e
 
 void generateFunction(
     StringBuffer buffer, String returnType, String name, List<String> parameters, List<String> namedParameters) {
-  buffer.writeln("$returnType $name(${parameters.join((", "))}${namedParameters?.isNotEmpty == true
-      ? ",{${namedParameters.join(", ")}}"
-      : ''}) {");
+  buffer.writeln(
+      "$returnType $name(${parameters.join((", "))}${namedParameters?.isNotEmpty == true ? ",{${namedParameters.join(", ")}}" : ''}) {");
 }
 
 void generateGetter(StringBuffer buffer, String returnType, String name, String value) {
   buffer.writeln("$returnType get $name => $value;");
 }
 
-void import(StringBuffer buffer, String import, {List<String> show, String as}) =>
-    buffer.writeln("import '$import' ${show?.isNotEmpty == true
-        ? "show ${show.join(",")}"
-        : as?.isNotEmpty == true ? "as $as" : ""};");
+void import(StringBuffer buffer, String import, {List<String> show, String as}) => buffer.writeln(
+    "import '$import' ${show?.isNotEmpty == true ? "show ${show.join(",")}" : as?.isNotEmpty == true ? "as $as" : ""};");
 
 void semiColumn(StringBuffer buffer) => buffer.writeln(";");
 
@@ -104,7 +101,7 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
     var classElement = element as ClassElement;
     var buffer = new StringBuffer();
     if (_isClassSerializable(element) == true && classElement.isAbstract == false && classElement.isPrivate == false) {
-      Map<String, Field> fields = _getFields(element);
+      Map<String, Field> fields = _getFields(classElement);
       _classCodec(buffer, classElement.displayName);
       _generateDecode(buffer, classElement, fields);
       _generateEncode(buffer, classElement, fields);
@@ -164,23 +161,35 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
 
   List<String> _numTypes = ["int", "double"];
 
-  String _castNum(String type) {
+  String _toNum(String value, String type) {
     if (type == "int") {
-      return "?.toInt()";
+      return "$value?.toInt()";
     } else {
-      return "?.toDouble()";
+      return "$value?.toDouble()";
     }
   }
 
-  String _castType(Field field, [bool as = true]) {
+  String _castNum(String value, String type) {
+    if (type == "int") {
+      return "($value as num)?.toInt()";
+    } else {
+      return "($value as num)?.toDouble()";
+    }
+  }
+
+  String _castType(String value, Field field, [bool as = true]) {
     String type = field.useType ?? field.type.toString();
-    if (_numTypes.contains(type)) {
-      return _castNum(type);
-    }
     if (as == true) {
-      return " as $type";
+      if (_numTypes.contains(type)) {
+        return _castNum(value, type);
+      }
+      return "$value as $type";
+    } else {
+      if (_numTypes.contains(type)) {
+        return _toNum(value, type);
+      }
     }
-    return "";
+    return value;
   }
 
   void _debug(StringBuffer buffer, String log) {
@@ -203,19 +212,20 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
         }
         if (isPrimaryTypeString(genericType) && genericType == "${field.type}") {
           _debug(buffer, "// decode with primary type");
-          buffer.write("obj.$name = value['${field.key}']${_castType(field)}");
+          var value = "value['${field.key}']";
+          buffer.write("obj.$name = ${_castType(value, field)}");
         } else if (_decodeWithTypeInfo(field)) {
           _debug(buffer, "// decode with useType");
-          buffer.write("obj.$name = serializer?.decode(value['${field.key}'], useTypeInfo: true) ");
+          buffer.write("obj.$name = serializer?.decode(value['${field.key}'], useTypeInfo: true) as ${field.type} ");
         } else if (field.type.toString().split("<").first == "Map") {
           _debug(buffer, "// decode as Map");
           buffer
               .writeln("Map _$name = serializer?.decode(value['${field.key}'], mapOf: const [String, $genericType]);");
           if (_numTypes.contains(genericType)) {
             _debug(buffer, "// With $genericType as num");
+            var value = "_$name[key]";
             buffer.write(
-                "obj.$name = (_$name != null ? new Map.fromIterable(_$name.keys, key: (key) => key, value: (key) => _$name[key]${_castNum(
-                    genericType)}) : null)");
+                "obj.$name = (_$name != null ? new Map.fromIterable(_$name.keys, key: (key) => key as String, value: (key) => ${_castNum(value, genericType)}) : null)");
           } else {
             buffer.write("obj.$name = (_$name != null ? new Map.from(_$name) : null)");
           }
@@ -226,8 +236,7 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
             if (_numTypes.contains(genericType)) {
               _debug(buffer, "// With $genericType as num");
               buffer.write(
-                  "obj.$name = (_$name != null ? new List<$genericType>.from(_$name.map((item) => item${_castNum(
-                      genericType)})) : null)");
+                  "obj.$name = (_$name != null ? new List<$genericType>.from(_$name.map((item) => ${_castNum('item', genericType)})) : null)");
             } else if (genericType == "null") {
               buffer.write("obj.$name = _$name");
             } else {
@@ -235,7 +244,7 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
             }
           } else {
             _debug(buffer, "// decode as generic ($genericType)");
-            buffer.write("obj.$name = serializer?.decode(value['${field.key}'], type: $genericType)");
+            buffer.write("obj.$name = serializer?.decode(value['${field.key}'], type: $genericType) as $genericType");
           }
         }
         buffer.writeln("?? obj.$name;");
@@ -262,10 +271,10 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
         buffer.write("map['${field.key}'] = ");
         if (isPrimaryTypeString(_getType(field)) == false) {
           buffer.write(
-              "serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo, withTypeInfo: ${_withTypeInfo(
-                  field)} );");
+              "serializer?.toPrimaryObject(value.$name, useTypeInfo: useTypeInfo, withTypeInfo: ${_withTypeInfo(field)} );");
         } else {
-          buffer.write("value.$name${_castType(field, false)};");
+          var value = "value.$name";
+          buffer.write("${_castType(value, field, false)};");
         }
       }
     });
@@ -297,8 +306,8 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
     return element.displayName != "Object" && element.librarySource.fullName.split("|").first == library;
   }
 
-  List _getFieldsFromMixins(ClassElement element) {
-    List list = [];
+  List<Element> _getFieldsFromMixins(ClassElement element) {
+    var list = <Element>[];
 
     for (InterfaceType m in element.mixins) {
       for (InterfaceType s in m.element.allSupertypes) {
@@ -320,7 +329,7 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
   Map<String, Field> _getFields(ClassElement element) {
     Map<String, Field> fields = {};
 
-    List<dynamic> all = [];
+    var all = <Element>[];
 
     element.allSupertypes.forEach((InterfaceType t) {
       if (_isInSameLibrary(t.element)) {
@@ -335,7 +344,7 @@ class SerializerGenerator extends GeneratorForAnnotation<Serializable> {
 
     all.forEach((e) {
       if (e.isPrivate == false &&
-          e.isStatic == false &&
+          ((e is ClassMemberElement && e.isStatic == false) || (!(e is ClassMemberElement))) &&
           (e is PropertyAccessorElement || (e is FieldElement && e.isFinal == false))) {
         if (fields.containsKey(_getElementName(e)) == false && _isFieldSerializable(e) == true) {
           fields[_getElementName(e)] = new Field(e);

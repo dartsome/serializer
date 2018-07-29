@@ -14,8 +14,9 @@ class DoubleSimple {
   double test = 1.1;
 
   DoubleSimple();
-  factory DoubleSimple.fromJson(String json) => _jsonSerializer.decode(json, type: DoubleSimple);
-  factory DoubleSimple.fromMap(Map map) => _jsonSerializer.fromMap(map as Map<String, dynamic>, type: DoubleSimple);
+  factory DoubleSimple.fromJson(String json) => _jsonSerializer.decode(json, type: DoubleSimple) as DoubleSimple;
+  factory DoubleSimple.fromMap(Map map) =>
+      _jsonSerializer.fromMap(map as Map<String, dynamic>, type: DoubleSimple) as DoubleSimple;
 }
 
 @serializable
@@ -24,8 +25,9 @@ class DoubleComplex {
   List<double> list = [1.1, 2.2, 3.3];
 
   DoubleComplex();
-  factory DoubleComplex.fromJson(String json) => _typedJsonSerializer.decode(json, type: DoubleComplex);
-  factory DoubleComplex.fromMap(Map map) => _typedJsonSerializer.fromMap(map, type: DoubleComplex);
+  factory DoubleComplex.fromJson(String json) =>
+      _typedJsonSerializer.decode(json, type: DoubleComplex) as DoubleComplex;
+  factory DoubleComplex.fromMap(Map map) => _typedJsonSerializer.fromMap(map, type: DoubleComplex) as DoubleComplex;
 }
 
 main() {

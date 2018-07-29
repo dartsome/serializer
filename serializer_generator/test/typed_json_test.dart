@@ -88,7 +88,7 @@ class TypedWithIgnore extends TypedProxyA {
 
 Serializer _dateSerializer = new Serializer.typedJson()
   ..addAllTypeCodecs(test_typed_json_test_codecs)
-  ..addAllTypeCodecs(test_models_test_codecs)
+  ..addAllTypeCodecs(test_models_codecs)
   ..addTypeCodec(DateTime, new DateTimeCodec());
 
 @serializable
@@ -137,7 +137,7 @@ main() {
   setUpAll(() {
     serializer = new Serializer.typedJson()
       ..addAllTypeCodecs(test_typed_json_test_codecs)
-      ..addAllTypeCodecs(test_models_test_codecs)
+      ..addAllTypeCodecs(test_models_codecs)
       ..addTypeCodec(DateTime, new DateTimeCodec());
   });
 
@@ -327,7 +327,7 @@ main() {
 
     test("list - fromJson", () {
       List<TypedModelA> list = new List<TypedModelA>.from(
-          serializer.decode('[{"@type":"TypedModelA","foo":"toto"},{"@type":"TypedModelA","foo":"bar"}]'));
+          serializer.decode('[{"@type":"TypedModelA","foo":"toto"},{"@type":"TypedModelA","foo":"bar"}]') as List);
 
       expect(2, list.length);
       expect("toto", list[0]?.foo);
@@ -427,14 +427,16 @@ main() {
     test("dynamic", () {
       Pet pet;
 
-      pet = serializer.decode('{"@type":"Pet","name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}');
+      pet =
+          serializer.decode('{"@type":"Pet","name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}') as Pet;
       expect(pet.name, "Pet");
       expect(pet.animal is Cat, isTrue);
       var cat = pet.animal as Cat;
       expect(cat.name, "Felix");
       expect(cat.mew, false);
 
-      pet = serializer.decode('{"@type":"Pet","name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}');
+      pet =
+          serializer.decode('{"@type":"Pet","name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}') as Pet;
       expect(pet.name, "Pet");
       expect(pet.animal is Dog, isTrue);
       var dog = pet.animal as Dog;
@@ -446,7 +448,8 @@ main() {
       PetWithTypeInfo pet;
 
       pet = serializer
-          .decode('{"@type":"PetWithTypeInfo","name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}');
+              .decode('{"@type":"PetWithTypeInfo","name":"Pet","animal":{"@type":"Cat","name":"Felix","mew":false}}')
+          as PetWithTypeInfo;
       expect(pet.name, "Pet");
       expect(pet.animal is Cat, isTrue);
       var cat = pet.animal as Cat;
@@ -454,7 +457,8 @@ main() {
       expect(cat.mew, false);
 
       pet = serializer
-          .decode('{"@type":"PetWithTypeInfo","name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}');
+              .decode('{"@type":"PetWithTypeInfo","name":"Pet","animal":{"@type":"Dog","name":"Medor","bark":true}}')
+          as PetWithTypeInfo;
       expect(pet.name, "Pet");
       expect(pet.animal is Dog, isTrue);
       var dog = pet.animal as Dog;
